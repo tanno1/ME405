@@ -12,6 +12,10 @@ Lab 0x00 - Serial Communication and ADC Reading
 """
 
 # imports
+from pyb import Pin, Timer
+from array import array
+from time import sleep_ms
+
 
 # main
 
@@ -19,4 +23,7 @@ Lab 0x00 - Serial Communication and ADC Reading
     # configure PC1 as digital output
     # configure PC0 as ADC
     
-# timer, trigger callbacks @ 1KHz w/ pyb.Timer class
+# timer, trigger callbacks @ 1KHz w/ pyb.Timer class (timer 6, 7)
+def tim_cb(tim):
+    global data, idx
+    #f(n) code here!
