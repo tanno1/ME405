@@ -10,7 +10,7 @@ Lab 0x00 - Serial Communication and ADC Reading
 
 # imports
 import pyb
-from pyb import Pin, Timer, ADC
+from pyb import Pin, Timer, ADC, ExtInt
 from time import sleep_ms   
 from array import array
 
@@ -22,40 +22,44 @@ PC1 = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)
 PC1.low()
 PC0 = Pin(Pin.cpu.C0)
 adc = pyb.ADC(PC0)
+PA5 = Pin(Pin.cpu.A5, mode=Pin.OUT_PP)
+print_flag = False
 
 
 data = array('H', 2500 * [0])  # Initialize an array of unsigned shorts (2 bytes each) with 1000 zeros.
 idx = 0
-    
+
 # timer, trigger callbacks @ 1KHz w/ pyb.Timer class (timer 6, 7)
 tim7 = Timer(7, freq = 1000)
-#tim7.callback(tim_cb)
-
-print("above tim func")
 
 def tim_cb(tim7):
     global data, idx
-    #if idx == 2500:
-        #tim7.callback(None)
-        #print("data collected")
-    val = adc.read()
-    print(val)
-    data[idx] = adc.read()
-    idx += 1
-    #print("collected for idx " + idx)
-    
-    
-
-print("above collect data func")
+    if idx == 2500:
+        tim7.callback(None)
+    else:
+        data[idx] = adc.read()
+        idx += 1
 
 def collect_data():
     PC1.high() # turn PC1 high
-    while idx != 2500:
-        tim_cb(tim7) # timer callback
-    print("data collected")
-    sleep_ms(5000)
-    for i in range(0, 2500):
-        print(f"{[i]}, {data[i]}")
+    tim7.callback(tim_cb)
+    sleep_ms(2500)
+    print("Type print_data() to print the new data")
     PC1.low()
-    
+    idx = 0
 
+print("Type collect_data() to begin data collection")
+
+def print_data():
+    for i in range(0, 2500):
+        print(f"{i}, {data[i]}")
+    print("Type collect_data() to collect new data")
+    
+#print("Press Blue Button to Collect Data")    
+#button_press = ExtInt(Pin.cpu.C13, ExtInt.IRQ_FALLING, Pin.PULL_NONE, collect_data)
+
+#while True:
+    #if print_flag == True:
+        #for i in range(0, 2500):
+            #print(f"{i}, {data[i]}")
+        #print_flag = False
