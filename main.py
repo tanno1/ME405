@@ -14,16 +14,12 @@ from pyb import Pin, Timer, ADC, ExtInt
 from time import sleep_ms   
 from array import array
 
-
-# main
-
 # pin configuration
 PC1 = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)
 PC1.low()
 PC0 = Pin(Pin.cpu.C0)
 adc = pyb.ADC(PC0)
 PA5 = Pin(Pin.cpu.A5, mode=Pin.OUT_PP)
-print_flag = False
 
 
 data = array('H', 2500 * [0])  # Initialize an array of unsigned shorts (2 bytes each) with 1000 zeros.
@@ -54,12 +50,3 @@ def print_data():
     for i in range(0, 2500):
         print(f"{i}, {data[i]}")
     print("Type collect_data() to collect new data")
-    
-#print("Press Blue Button to Collect Data")    
-#button_press = ExtInt(Pin.cpu.C13, ExtInt.IRQ_FALLING, Pin.PULL_NONE, collect_data)
-
-#while True:
-    #if print_flag == True:
-        #for i in range(0, 2500):
-            #print(f"{i}, {data[i]}")
-        #print_flag = False
