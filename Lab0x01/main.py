@@ -35,9 +35,10 @@ class L6206:
         pass
     
     def enable (self):
+
         self.EN.high()
-        '''
         pass
+        
 
 if __name__ == '__main__':
     # adjust the following to write a test program for the L6206 class
