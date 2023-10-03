@@ -14,11 +14,19 @@ class L6206:
     '''
 
     def __init__ (self, PWM_tim, IN1_pin, IN2_pin):
-        '''!@brief      Initialize and returns an object associated with a DC motor.
-        '''
-        pass
+        self.tim = PWM_tim
+        self.PWM1 = self.tim.channel(1, mode=Timer.PWM)
+        self.PWM2 = self.tim.channel(2, mode=Timer.PWM)
+        self.EN = EN_pin
 
     def set_duty (self, duty):
+
+        "add logic"
+        self.PWM_1.pulse_width_percent(duty)
+        self.PWM_2.pulse_width_percent(0)
+        
+        self.PWM_1.pulse_width_percent(0)
+        self.PWM_2.pulse_width_percent(-1*duty)
         '''!@brief      set the PWM duty cycle for the DC motor
             @details
 
@@ -27,8 +35,7 @@ class L6206:
         pass
     
     def enable (self):
-        '''!@brief      Enable one channel of the L6206
-            @details
+        self.EN.high()
         '''
         pass
 
