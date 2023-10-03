@@ -39,8 +39,7 @@ if __name__ == '__main__':
     tim_A = Timer(n, freq = 20_000)
 
     # create an L6206 driver object
-    mot_A = L6206(tim_A, Pin.cpu.xx, Pin.cpu.yy)
-    mot_B = L6206(tim_A, Pin.cpu.xx, Pin.cpu.yy)
+    mot_A = L6206(tim_A, pin.cpu.xx, pin.cpu.yy)
 
     # enable the L6206 driver
     mot_A.enable()
