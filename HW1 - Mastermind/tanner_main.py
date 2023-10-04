@@ -7,12 +7,16 @@ Fall 2023
 
 """
 
+# imports
+import random
+
 # definitions and initialization
 # set state into for state automatically
 state = 1
 win_amount = 0
 loss_amount = 0
 false_guess = 0
+correctness = ''
 
 # print statements
 empty_grid = """
@@ -68,7 +72,10 @@ while True:
             if not enter:
                 break
 
-        state = 2                           # set next state
+        state = 2                                                   # set next state
+
+        correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
+        
 
     # state 2 - guess
     if state == 2:
@@ -81,34 +88,38 @@ while True:
         while True: 
             enter = input('Enter a guess: ')
             for n in enter: 
-                if n not in [0, 1, 2, 3, 4, 5] == True:
+                if n not in ['0', '1', '2', '3', '4', '5']:
                     false_guess += 1
                     True
-            if false_guess != 0: 
+            if false_guess != 0 or len(enter) != 4: 
                 print('Invalid entry, try again')
-            if n in [0, 1, 2, 3, 4, 5] and len(enter) == 4:
-                 False
+            
+            else:
+                false_guess = 0
+                break
+        
+        # start checking values now that we have a valid entry
+        state = 3
+        # set iterable temp idx to loop through for correct, wrong, and misplaced
+        temp_idx = 0
+                    
 
-    # state 3 - invalid guess
+
+    # state 3 - correct value
     if state == 3:
-        pass
+        if enter[temp_idx] == correct_code[temp_idx]:
+            correctness = correctness + '+'
+        state = 4
 
-    # state 4 - correct value
+    # state 4 - misplaced
     if state == 4:
-        pass
+        if enter[temp_idx] != correct_code[temp_idx]:
 
-    # state 5 - wrong value
+
+    # state 5 - win
     if state == 5:
         pass
 
-    # state 6 - misplaced value
+    # state 6 - lose
     if state == 6:
-        pass
-
-    # state 7 - win
-    if state == 7:
-        pass
-
-    # state 8 - lose
-    if state == 8:
         pass
