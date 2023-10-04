@@ -12,7 +12,7 @@ Fall 2023
 state = 1
 win_amount = 0
 loss_amount = 0
-guess = 
+false_guess = 0
 
 # print statements
 empty_grid = """
@@ -81,11 +81,13 @@ while True:
         while True: 
             enter = input('Enter a guess: ')
             for n in enter: 
-                if n not in [0, 1, 2, 3, 4, 5]:
-                    print('Invalid guess...')
+                if n not in [0, 1, 2, 3, 4, 5] == True:
+                    false_guess += 1
                     True
-                elif n in [0, 1, 2, 3, 4, 5] and len(enter) == 4:
-                    False
+            if false_guess != 0: 
+                print('Invalid entry, try again')
+            if n in [0, 1, 2, 3, 4, 5] and len(enter) == 4:
+                 False
 
     # state 3 - invalid guess
     if state == 3:
