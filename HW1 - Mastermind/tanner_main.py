@@ -114,6 +114,9 @@ while True:
     # state 4 - misplaced
     if state == 4:
         if enter[temp_idx] != correct_code[temp_idx]:
+            for idx in range(4):
+                if enter[temp_idx] == correct_code[idx]:
+                    correctness = correctness + '-'         # only adds a - for current temp_idx ( no iterate through all of enter values )
 
 
     # state 5 - win
