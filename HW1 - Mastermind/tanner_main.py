@@ -9,6 +9,7 @@ Fall 2023
 
 # imports
 import random
+import sys
 
 # definitions and initialization
 # set state into for state automatically
@@ -180,9 +181,9 @@ while True:
                 while True:
                     exit_program = input('Press enter to exit')
                     if exit_program == '':
-                        break
+                        sys.exit()
                     else:
-                        'Welcome to the backrooms'
+                        'Welcome to the backrooms...'
 
 
 
