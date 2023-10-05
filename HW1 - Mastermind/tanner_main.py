@@ -78,6 +78,7 @@ while True:
                 break
 
         state = 2                                                   # set next state
+        guess_count = 0                                             # initialize the guess count to 0 guesses, used for printing board
 
         #correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
         correct_code = '1024'
@@ -128,6 +129,20 @@ while True:
                     list_correct_code[idx] = 'X'
 
         # print results from second pass
+        for idx in range(0,4):
+            if idx == 0: 
+                list_empty_grid[-42-44*guess_count] = enter[]
+            if idx == 1: 
+                list_empty_grid[-38-44*guess_count] = enter[1]
+            if idx == 2: 
+                list_empty_grid[-34-44*guess_count] = enter[2]
+            if idx == 3: 
+                list_empty_grid[-30-44*guess_count] = enter[3]
+
+        new_grid_print = ''.join(list_empty_grid)
+        print(new_grid_print)
+        guess_count += 1                                            # increment guess count after each print, first go needs to have 0!
+        
         
 
 
