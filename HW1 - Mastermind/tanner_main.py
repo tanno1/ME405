@@ -78,7 +78,8 @@ while True:
 
         state = 2                                                   # set next state
 
-        correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
+        #correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
+        correct_code = '1024'
         
 
     # state 2 - guess
@@ -114,6 +115,7 @@ while True:
                 correctness = correctness + '+'
                 list_enter[idx] = 'X'                                   # set the idxs of temp lists to 'X' so they aren't reused later
                 list_correct_code[idx] = 'X'
+        state = 4
 
     # state 4 - second pass
     if state == 4:
