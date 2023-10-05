@@ -131,25 +131,40 @@ while True:
         # print results from second pass
         for idx in range(0,4):
             if idx == 0: 
-                list_empty_grid[-42-44*guess_count] = enter[]
+                list_empty_grid[-42-44*guess_count] = enter[0]
             if idx == 1: 
                 list_empty_grid[-38-44*guess_count] = enter[1]
             if idx == 2: 
                 list_empty_grid[-34-44*guess_count] = enter[2]
             if idx == 3: 
                 list_empty_grid[-30-44*guess_count] = enter[3]
-
+        
+        # append the correctness count on the right side
+        correctness_list = [str(let) for let in correctness]
+        if guess_count == 0:
+            index_to_insert = -27
+        elif guess_count > 0:
+            index_to_insert = -27 * guess_count
+        for val in correctness_list:
+            list_empty_grid.insert(index_to_insert, val)
+        #list_empty_grid.insert(index_to_insert, '\n')
         new_grid_print = ''.join(list_empty_grid)
         print(new_grid_print)
         guess_count += 1                                            # increment guess count after each print, first go needs to have 0!
-        
-        
 
+        state = 5                                                   # set next state
 
     # state 5 - win
     if state == 5:
-        pass
+        if enter == correct_code:
+            pass
+        else:
+            state = 6
 
     # state 6 - lose
     if state == 6:
-        pass
+        if guess_count == 12 and enter == correct_code:
+            # loss conditions
+            pass
+        else:
+            state = 2
