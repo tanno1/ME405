@@ -17,6 +17,7 @@ win_amount = 0
 loss_amount = 0
 false_guess = 0
 correctness = ''
+rep = 0
 
 # print statements
 empty_grid = """
@@ -58,7 +59,10 @@ start_text = """                    Welcome to the game of Mastermind!
                                         Press enter to begin
             """
 new_game = "Mastermind! Try to break the code. \n"
-        
+
+def print_current():
+    pass
+
 # grid layout for the beginning of the game
 
 while True:
@@ -100,23 +104,25 @@ while True:
         
         # start checking values now that we have a valid entry
         state = 3
-        # set iterable temp idx to loop through for correct, wrong, and misplaced
-        temp_idx = 0
                     
-
-
-    # state 3 - correct value
+    # state 3 - first pass
     if state == 3:
-        if enter[temp_idx] == correct_code[temp_idx]:
-            correctness = correctness + '+'
-        state = 4
+        list_enter = [ val for val in enter ]
+        list_correct_code = [ val for val in correct_code ]
+        for idx in range(4):
+            if list_enter[idx] == correct_code[idx]:
+                correctness = correctness + '+'
+                list_enter[idx] = 'X'                                   # set the idxs of temp lists to 'X' so they aren't reused later
+                list_correct_code[idx] = 'X'
 
-    # state 4 - misplaced
+    # state 4 - second pass
     if state == 4:
-        if enter[temp_idx] != correct_code[temp_idx]:
-            for idx in range(4):
-                if enter[temp_idx] == correct_code[idx]:
-                    correctness = correctness + '-'         # only adds a - for current temp_idx ( no iterate through all of enter values )
+        for i in range(4):
+            for j in range(4):
+                if list_enter[i] == list_correct_code[j] and list_enter[i] != 'X':
+                    correctness = correctness + '-'
+                    list_enter[idx] = 'X'                               # set the idxs of temp lists to 'X' so they aren't reused later
+                    list_correct_code[idx] = 'X' 
 
 
     # state 5 - win
