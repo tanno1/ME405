@@ -47,6 +47,9 @@ empty_grid = """
     |   |   |   |   |
     +−−−+−−−+−−−+−−−+
     """
+list_empty_grid = []
+for let in empty_grid:
+    list_empty_grid.append(let)
 wins = "wins: "
 losses = "losses: "
 start_text = """                    Welcome to the game of Mastermind!
@@ -60,8 +63,6 @@ start_text = """                    Welcome to the game of Mastermind!
             """
 new_game = "Mastermind! Try to break the code. \n"
 
-def print_current():
-    pass
 
 # grid layout for the beginning of the game
 
@@ -124,7 +125,10 @@ while True:
                 if list_enter[i] == list_correct_code[j] and list_enter[i] != 'X':
                     correctness = correctness + '-'
                     list_enter[idx] = 'X'                               # set the idxs of temp lists to 'X' so they aren't reused later
-                    list_correct_code[idx] = 'X' 
+                    list_correct_code[idx] = 'X'
+
+        # print results from second pass
+        
 
 
     # state 5 - win
