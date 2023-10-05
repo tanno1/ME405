@@ -146,7 +146,7 @@ while True:
         if guess_count == 0:
             index_to_insert = -27
         elif guess_count > 0:
-            index_to_insert = -27 - (-27* guess_count)
+            index_to_insert = -27 - (44* guess_count) - prev_correctness
         for val in correctness_list:
             list_empty_grid.insert(index_to_insert, val)
         #list_empty_grid.insert(index_to_insert, '\n')
