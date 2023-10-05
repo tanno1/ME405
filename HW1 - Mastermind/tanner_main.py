@@ -172,12 +172,12 @@ while True:
             # loss conditions
             print('You Lose!\n')
             again = input('Play again? Enter (y) for yes: ')
-            if again == 'y' or 'Y':
+            if again == ('y' or 'Y'):
                 state = 1
             else:
                 print('Thanks for playing!\n')
-                print(' Total wins: ' + win_amount + '\n' )
-                print(' Total losses: ' + loss_amount + '\n' )
+                print(' Total wins: ' + str(win_amount) + '\n' )
+                print(' Total losses: ' + str(loss_amount) + '\n' )
                 while True:
                     exit_program = input('Press enter to exit')
                     if exit_program == '':
