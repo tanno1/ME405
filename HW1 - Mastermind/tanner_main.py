@@ -167,8 +167,25 @@ while True:
 
     # state 6 - lose
     if state == 6:
-        if guess_count == 12 and enter == correct_code:
+        if guess_count == 12 and enter != correct_code:
             # loss conditions
+            print('You Lose!\n')
+            again = input('Play again? Enter (y) for yes: ')
+            if again == 'y' or 'Y':
+                state = 1
+            else:
+                print('Thanks for playing!\n')
+                print(' Total wins: ' + win_amount + '\n' )
+                print(' Total losses: ' + loss_amount + '\n' )
+                while True:
+                    exit_program = input('Press enter to exit')
+                    if exit_program == '':
+                        break
+                    else:
+                        'Welcome to the backrooms'
+
+
+
             pass
         else:
             state = 2
