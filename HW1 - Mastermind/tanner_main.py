@@ -20,6 +20,7 @@ false_guess = 0
 correctness = ''
 prev_correctness = 0
 rep = 0
+first_run = 0
 
 # print statements
 empty_grid = """
@@ -71,24 +72,24 @@ new_game = "Mastermind! Try to break the code. \n"
 while True:
     if state == 1:
         # state 1 - setup
-        # print starting text 
-        print(start_text)
-        
-        while True:
-            enter = input('')
-            if not enter:
-                break
+        # print starting text
+        if first_run == 0: 
+            print(start_text)
+            while True:
+                enter = input('')
+                if not enter:
+                    break
+            first_run += 1
 
         state = 2                                                   # set next state
         guess_count = 0                                             # initialize the guess count to 0 guesses, used for printing board
 
-        #correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
-        correct_code = '1024'
+        correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
 
         # new game prints
         print(new_game)
-        print(wins + ' ' + str(win_amount) + '\n')
-        print(losses + ' ' + str(loss_amount) + '\n')
+        print(wins + ' ' + str(win_amount))
+        print(losses + ' ' + str(loss_amount))
         print(empty_grid)
         
 
@@ -101,6 +102,9 @@ while True:
                 if n not in ['0', '1', '2', '3', '4', '5']:
                     false_guess += 1
                     True
+            for n in enter: 
+                if n in ['0', '1', '2', '3', '4', '5']:
+                    false_guess = 0
             if false_guess != 0 or len(enter) != 4: 
                 print('Invalid entry, try again')
             
@@ -162,24 +166,57 @@ while True:
     # state 5 - win
     if state == 5:
         if enter == correct_code:
-            pass
+            win_amount += 1
+            print('You win!\n')
+            again = input('Play again? Enter (y) for yes: ')
+            if again == ('y' or 'Y'):
+                # reinitialize all the relevant state vars and reset state to 1
+                state = 1
+                false_guess = 0
+                correctness = ''
+                prev_correctness = 0
+                correctness = ''
+                rep = 0
+                list_empty_grid = []
+                for let in empty_grid:
+                    list_empty_grid.append(let)
+            else:
+                print('Thanks for playing!\n')
+                print(' Total wins: ' + str(win_amount) + '\n' )
+                print(' Total losses: ' + str(loss_amount) + '\n' )
+                while True:
+                    exit_program = input('Press enter to exit... ')
+                    if exit_program == '':
+                        sys.exit()
+                    else:
+                        'Welcome to the backrooms...'
         else:
             state = 6
 
     # state 6 - lose
     if state == 6:
         if guess_count == 12 and enter != correct_code:
+            loss_amount += 1
             # loss conditions
-            print('You Lose!\n')
+            print('You lose!\n')
             again = input('Play again? Enter (y) for yes: ')
             if again == ('y' or 'Y'):
+                # reinitialize all the relevant state vars and reset state to 1
                 state = 1
+                false_guess = 0
+                correctness = ''
+                prev_correctness = 0
+                correctness = ''
+                rep = 0
+                list_empty_grid = []
+                for let in empty_grid:
+                    list_empty_grid.append(let)
             else:
                 print('Thanks for playing!\n')
                 print(' Total wins: ' + str(win_amount) + '\n' )
                 print(' Total losses: ' + str(loss_amount) + '\n' )
                 while True:
-                    exit_program = input('Press enter to exit')
+                    exit_program = input('Press enter to exit... ')
                     if exit_program == '':
                         sys.exit()
                     else:
