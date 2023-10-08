@@ -13,11 +13,13 @@ class L6206:
         @details    Objects of this class can be used to apply PWM to a given DC motor on one channel of the L6206 from ST Microelectronics.
     '''
 
-    def __init__ (self, PWM_tim, IN1_pin, IN2_pin):
+    def __init__ (self, PWM_tim, EN_pin, IN1_pin, IN2_pin):
         self.tim = PWM_tim
         self.PWM1 = self.tim.channel(1, mode=Timer.PWM)
         self.PWM2 = self.tim.channel(2, mode=Timer.PWM)
         self.EN = EN_pin
+        self.IN1 = IN1_pin
+        self.IN2 = IN2_pin
 
     def set_duty (self, duty):
 
@@ -35,9 +37,7 @@ class L6206:
         pass
     
     def enable (self):
-
         self.EN.high()
-        pass
         
 
 if __name__ == '__main__':
@@ -57,13 +57,22 @@ if __name__ == '__main__':
     # adjust the following to write a test program for the L6206 class
 
     # create a timer object to use for motor control
-    #tim_A = Timer(n, freq = 20_000)
+    tim_A = Timer(3, freq = 20_000)
+    tim_B = Timer(2, freq = 20_000)
+
+    # pin definitions
+    EN1 = Pin(Pin.cpu.A10, mode=Pin.OUT_PP)         # motA active high-enable
+    IN1 = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)          # motA control pin 1
+    IN2 = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)          # motA control pin 2
+    EN2 = Pin(Pin.cpu.B9, mode=Pin.OUT_PP)         # motB active high-enable
+    INB_1 = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)          # motB control pin 1
+    INB_2 = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)          # motB control pin 2
 
     # create an L6206 driver object
-    #mot_A = L6206(tim_A, Pin.cpu.xx, Pin.cpu.yy)
-    #mot_B = L6206(tim_A, Pin.cpu.xx, Pin.cpu.yy)
+    mot_A = L6206(tim_A, IN1, IN2)
+    mot_B = L6206(tim_B, INB_1, INB_2)
 
     # enable the L6206 driver
-    #mot_A.enable()
+    mot_A.enable()
 
-    #mot_A.set_duty(40)
+    mot_A.set_duty(40)
