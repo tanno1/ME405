@@ -34,11 +34,12 @@ class L6206:
 
             @param
         '''
-        pass
     
     def enable (self):
         self.EN.high()
-        
+    
+    def disable (self):
+        self.EN.low()
 
 if __name__ == '__main__':
     # uncomment and use with forward() to run one motor for testing
@@ -69,10 +70,10 @@ if __name__ == '__main__':
     INB_2 = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)          # motB control pin 2
 
     # create an L6206 driver object
-    mot_A = L6206(tim_A, IN1, IN2)
-    mot_B = L6206(tim_B, INB_1, INB_2)
+    mot_A = L6206(tim_A, EN1, IN1, IN2)
+    mot_B = L6206(tim_B, EN2, INB_1, INB_2)
 
     # enable the L6206 driver
-    mot_A.enable()
+    #mot_A.enable()
 
-    mot_A.set_duty(40)
+    #mot_A.set_duty(40)
