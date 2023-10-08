@@ -21,6 +21,7 @@ correctness = ''
 prev_correctness = 0
 rep = 0
 first_run = 0
+spoiled_mode = 0
 
 # print statements
 empty_grid = """
@@ -85,6 +86,17 @@ while True:
         guess_count = 0                                             # initialize the guess count to 0 guesses, used for printing board
 
         correct_code = ''.join(random.choices('012345', k = 4))     # generate the random code to be guessed
+
+        if first_run == 1: 
+            first_run += 1
+            print("Press 1 to play game in spoiled mode, otherwise press any key...")
+            while True:
+                spoiled = input('')
+                if spoiled == '1' :
+                    spoiled_mode = 1
+                    break
+                else:
+                    break
 
         # new game prints
         print(new_game)
@@ -156,6 +168,8 @@ while True:
             list_empty_grid.insert(index_to_insert, val)
         #list_empty_grid.insert(index_to_insert, '\n')
         new_grid_print = ''.join(list_empty_grid)
+        if spoiled_mode == 1:
+            print('Code to break: ' + str(correct_code))
         print(new_grid_print)
         guess_count += 1                                            # increment guess count after each print, first go needs to have 0!
         for val in correctness:
@@ -221,9 +235,6 @@ while True:
                         sys.exit()
                     else:
                         'Welcome to the backrooms...'
-
-
-
             pass
         else:
             state = 2
