@@ -19,6 +19,7 @@ class dog:
             @param dogAge - [ description of dogAge param ]
         '''
 
+        ## [ documentation for dogname ]
         # if we want to keep access to these class attributes, must store them by copying input param to attributes
         self.name = dogName
         self.weight = dogWeight
