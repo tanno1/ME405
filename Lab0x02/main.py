@@ -4,6 +4,9 @@
     @author                     noah tanner, kosimo tonn
     @date                       october, 2023
 '''
+# imports
+from pyb import Pin, Timer
+import time
 
 class Encoder:
     '''!@brief                  interface with quadrature encoders
@@ -45,19 +48,19 @@ class Encoder:
 
 if __name__ == "__main__":
 
-    # imports
-    from pyb import Pin, Timer
-
     # config variables
     ps = 0
-    ar = 10
-    ch_a_pin = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
-    ch_b_pin = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
+    ar = 65535
+    ch_a_pin = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)
+    ch_b_pin = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)
     
     # configure timer for encoder counter
-    tim_4 = pyb.Timer(4, period = ar, prescaler = ps)
-    tim_4.channel(1, pin=ch_a_pin, mode=pyb.Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
-    tim_4.channel(4, pin=ch_b_pin, mode=pyb.Timer.ENC_AB)
+    tim_2 = Timer(2, period = ar, prescaler = ps)
+    tim_2.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
+    tim_2.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
 
     # check the number of elapsed ticks with counter() method of timer obj
-    count = tim_4.counter()
+    while True:
+        count = tim_2.counter()
+        time.sleep_ms(1000)
+        print(count)
