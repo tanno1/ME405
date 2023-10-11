@@ -44,6 +44,10 @@ if __name__ == '__main__':
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
+    # uncomment to print to terminal to visually check data
+    #for x, y in zip(x_data, y_data):
+        #print(x, y)
+
     # display plot
     plt.show()
 
