@@ -51,11 +51,11 @@ if __name__ == "__main__":
     # config variables
     ps = 0
     ar = 65535
-    ch_a_pin = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)
-    ch_b_pin = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)
+    ch_a_pin = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
+    ch_b_pin = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
     
     # configure timer for encoder counter
-    tim_2 = Timer(2, period = ar, prescaler = ps)
+    tim_2 = Timer(4, period = ar, prescaler = ps)
     tim_2.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
     tim_2.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
 
