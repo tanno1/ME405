@@ -8,23 +8,42 @@
 from pyb import Pin, Timer
 import time
 
-class Encoder:
+class Encoder():
     '''!@brief                  interface with quadrature encoders
         @details
     '''
-
-    def __init(self):
+    def __init__(self, timer, cha, chb, ar, ps):
         '''!@brief              creates an encoder object
             @details
             @param
         '''
-        pass
+        self.timer = timer
+        self.cha = cha
+        self.chb = chb
+        self.ar = ar
+        self.ps = ps
+        self.delta = 0          # initialize delta as 0 for first pass
+        self.position = 0       # initialize position as 0 for first pass
 
     def update(self):
         '''!@brief              updates encoder position and delta
             @details
         '''
-        pass
+        current_count = self.timer.count()
+        self.delta = current_count - self.delta
+
+        # check for underflow
+        if self.delta > (self.ar / 2):
+            delta -= ( self.ar + 1 )
+        # check for overflow
+        elif self.delta < (- ( self.ar + 1 ) / 2):
+            delta += ( self.ar + 1 )
+
+        # add delta to position (total movement that does not reset for each rev)
+        self.position += delta
+
+        # update delta to check each time
+        prev_delta = delta
 
     def get_position(self):
         '''!@brief              gets the most recent encoder position
@@ -64,3 +83,4 @@ if __name__ == "__main__":
         count = tim_2.counter()
         time.sleep_ms(1000)
         print(count)
+        
