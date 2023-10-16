@@ -106,27 +106,32 @@ class Encoder:
         '''
         self.total_position = 0
         self.current_position = 0
+        self.prev_position = 0
         print("Total encoder position reset to 0")
 
 if __name__ == "__main__":
 
-    # config variables
+    # encoder config variables
     ps = 0
     ar = 65535
     ch_a_pin = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
     ch_b_pin = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
     
     # configure timer for encoder counter
-    tim_2 = Timer(4, period = ar, prescaler = ps)
-    cha = tim_2.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
-    chb = tim_2.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
+    tim_4 = Timer(4, period = ar, prescaler = ps)
+    cha = tim_4.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
+    chb = tim_4.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
 
     # make encoder instance
-    encoder_1 = Encoder(tim_2, cha, chb, ar, ps)
+    encoder_1 = Encoder(tim_4, cha, chb, ar, ps)
 
     # make collector instance, assign callback method
-    collector_1 = collector(tim_2, encoder_1)
-    #collector_1.tim_cb(tim_2)
+    collector_1 = collector(tim_4, encoder_1)
+
+    # initialize callbacks at 1 KHz to sample data quickly
+    while True:
+        collector_1.tim_cb(tim_4)
+        print(collector_1.time)
 
     
 
