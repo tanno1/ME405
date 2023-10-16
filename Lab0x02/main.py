@@ -5,6 +5,7 @@
     @date                       october, 2023
 '''
 # imports
+import motor_class_main
 from pyb import Pin, Timer
 from array import array
 import time
@@ -24,18 +25,22 @@ class collector:
         self.total_position = array( 'L', [0 for n in range(1000)]) 
         self.time           = array( 'L', [0 for n in range(1000)]) 
         self.delta          = array( 'L', [0 for n in range(1000)]) 
-
-        self.idx = 0
+        self.idx            = 0
     
-    def start(self):
-        # add motor, and duty cycle
+    def start(self, motor, duty_cycle):
+        # initialize timer callback
         self.tim.callback(self.tim_cb)
     
     def tim_cb(self, cb_src):
         '''!@brief              timer callback for encoder
             @details
         '''
-        self.time[self.idx] = self.encoder.update()
+        # add total position, time, and delta values to respective arrays
+        self.total_position[self.idx] = self.encoder.get_position()
+        self.time[self.idx]           = time.ticks_diff()
+        self.delta[self.idx]          = self.encoder.get_delta()
+        
+        # increment array index 
         self.idx += 1
 
 class Encoder:
@@ -89,22 +94,19 @@ class Encoder:
         # update previous position to current position
         self.prev_position = self.current_position
 
-        # return position value
-        return self.total_position
-
     def get_position(self):
         '''!@brief              gets the most recent encoder position
             @details
             @return
         '''
-        print("Curent Encoder Position: {}".format(self.current_position))      
+        return self.current_position
 
     def get_delta(self):
         '''!@brief              gets the most recent encoder delta
             @details
             @return
         '''
-        print("Current Encoder Delta: {}".format(self.current_delta))
+        return self.current_delta
 
     def zero(self):
         '''!@brief              resets the encoder position to zero
