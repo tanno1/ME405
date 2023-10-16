@@ -37,14 +37,15 @@ class collector:
         self.tim7           = Timer(7, freq = 1000)
 
         # initialize timer callback with timer ch 7 until we reach 1k index
-        while self.idx != 1000:
-            self.tim7.callback(self.tim_cb)
-        self.tim7.callback(None)
-
         # initialize motor w/ given duty cycle
         self.motor.enable()
         self.motor.set_duty(self.duty_cycle)
+        while self.idx != 1000:
+            self.tim7.callback(self.tim_cb)
 
+        # after step response, shut off motor and callback
+        self.tim7.callback(None)
+        self.motor.disable()
     
     def tim_cb(self, cb_src):
         '''!@brief              timer callback for encoder
