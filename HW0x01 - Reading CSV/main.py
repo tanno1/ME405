@@ -32,7 +32,7 @@ if __name__ == '__main__':
             if not row:
                 continue
             try:
-                x_data.append(float(row[0].split('#')[0].strip()))
+                x_data.append(float(row[0].split('#')[0].strip()))          # the .split() and .strip() methods I learned about from https://www.freecodecamp.org/news/the-string-strip-method-in-python-explained/
                 y_data.append(float(row[1].split('#')[0].strip()))
             except ( ValueError, IndexError ):
                 continue
