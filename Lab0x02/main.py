@@ -106,6 +106,7 @@ class Encoder:
         '''
         self.total_position = 0
         self.current_position = 0
+        print("Total encoder position reset to 0")
 
 if __name__ == "__main__":
 
