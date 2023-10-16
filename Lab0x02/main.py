@@ -6,9 +6,33 @@
 '''
 # imports
 from pyb import Pin, Timer
+from array import array
 import time
 
-class Encoder():
+class collector:
+    '''!@brief
+        @details
+    '''
+    
+    def __init__(self, tim, encoder):
+        '''!@brief              creates a collector object
+            @details
+            @param
+        '''
+        self.tim = tim
+        self.encoder = encoder
+        self.time = array( 'L', [0 for n in range(1000)]) 
+        self.tim.callback(self.tim_cb)
+        self.idx = 0
+    
+    def tim_cb(self, cb_src):
+        '''!@brief              timer callback for encoder
+            @details
+        '''
+        self.time[self.idx] = self.encoder.update()
+        self.idx += 1
+
+class Encoder:
     '''!@brief                  interface with quadrature encoders
         @details
     '''
@@ -17,33 +41,44 @@ class Encoder():
             @details
             @param
         '''
+        self.callback = None
         self.timer = timer
         self.cha = cha
         self.chb = chb
         self.ar = ar
         self.ps = ps
-        self.delta = 0          # initialize delta as 0 for first pass
-        self.position = 0       # initialize position as 0 for first pass
+        self.prev_delta = 0             # initialize previous delta
+        self.current_delta = 0          # initialize delta as 0 for first pass
+        self.position = 0               # initialize position as 0 for first pass
+
+        # to prevent MemoryException errors for repeat calculations:
+        self.under_check = ( self.ar / 2 )
+        self.over_check = ( -( self.ar + 1 )/2 )
+        self.ar_add_1 = self.ar + 1
 
     def update(self):
         '''!@brief              updates encoder position and delta
             @details
+            @param return
         '''
-        current_count = self.timer.count()
-        self.delta = current_count - self.delta
+        current_count = self.timer.counter()
+        self.current_delta = current_count - self.prev_delta
 
         # check for underflow
-        if self.delta > (self.ar / 2):
-            delta -= ( self.ar + 1 )
+        if self.current_delta > self.under_check:
+            self.current_delta -= self.ar_add_1
         # check for overflow
-        elif self.delta < (- ( self.ar + 1 ) / 2):
-            delta += ( self.ar + 1 )
+        elif self.current_delta < self.over_check:
+            self.current_delta += self.ar_add_1
 
         # add delta to position (total movement that does not reset for each rev)
-        self.position += delta
+        self.position += self.current_delta
 
         # update delta to check each time
-        prev_delta = delta
+        self.prev_delta = self.current_delta
+
+        # return position value
+        return self.position
 
     def get_position(self):
         '''!@brief              gets the most recent encoder position
@@ -75,12 +110,23 @@ if __name__ == "__main__":
     
     # configure timer for encoder counter
     tim_2 = Timer(4, period = ar, prescaler = ps)
-    tim_2.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
-    tim_2.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
+    cha = tim_2.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
+    chb = tim_2.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
+
+    # make encoder instance
+    encoder_1 = Encoder(tim_2, cha, chb, ar, ps)
+
+    # make collector instance, assign callback method
+    collector_1 = collector(tim_2, encoder_1)
+    #collector_1.tim_cb(tim_2)
+
+
 
     # check the number of elapsed ticks with counter() method of timer obj
-    while True:
-        count = tim_2.counter()
-        time.sleep_ms(1000)
-        print(count)
+    #while True:
+        #count = tim_2.counter()
+        #time.sleep_ms(1000)
+        #print(count)
+    
+
         
