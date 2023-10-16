@@ -46,6 +46,10 @@ class collector:
         # after step response, shut off motor and callback
         self.tim7.callback(None)
         self.motor.disable()
+        # reset idx so method can be called again
+        self.idx = 0
+        # reset all encoder variables to 0 for next call
+        self.encoder.zero()
     
     def tim_cb(self, cb_src):
         '''!@brief              timer callback for encoder
@@ -131,9 +135,11 @@ class Encoder:
         '''!@brief              resets the encoder position to zero
             @details
         '''
-        self.total_position = 0
-        self.current_position = 0
-        print("Total encoder position reset to 0")
+        self.prev_delta         = 0             # initialize previous delta
+        self.current_delta      = 0             # initialize delta as 0 for first pass
+        self.total_position     = 0             # initialize total position as 0 for first pass
+        self.prev_position      = 0             # initialize previous position as 0 for first pass
+        self.current_position   = 0             # initialize the current position as 0 for first pass
 
 if __name__ == "__main__":
     
