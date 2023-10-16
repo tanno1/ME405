@@ -49,7 +49,8 @@ class Encoder:
         self.ps = ps
         self.prev_delta = 0             # initialize previous delta
         self.current_delta = 0          # initialize delta as 0 for first pass
-        self.position = 0               # initialize position as 0 for first pass
+        self.position = 0               # initialize total position as 0 for first pass
+        self.prev_position = 0          # initialize previous position as 0 for first pass
 
         # to prevent MemoryException errors for repeat calculations:
         self.under_check = ( self.ar / 2 )
@@ -61,21 +62,25 @@ class Encoder:
             @details
             @param return
         '''
-        current_count = self.timer.counter()
-        self.current_delta = current_count - self.prev_delta
+        current_position = self.timer.counter()
+        self.current_delta = current_position - self.prev_position
 
         # check for underflow
         if self.current_delta > self.under_check:
             self.current_delta -= self.ar_add_1
+
         # check for overflow
         elif self.current_delta < self.over_check:
             self.current_delta += self.ar_add_1
 
-        # add delta to position (total movement that does not reset for each rev)
+        # add delta to total position (total movement that does not reset for each rev)
         self.position += self.current_delta
 
         # update delta to check each time
         self.prev_delta = self.current_delta
+
+        # update previous position to current position
+        self.prev_position = current_position
 
         # return position value
         return self.position
@@ -120,13 +125,6 @@ if __name__ == "__main__":
     collector_1 = collector(tim_2, encoder_1)
     #collector_1.tim_cb(tim_2)
 
-
-
-    # check the number of elapsed ticks with counter() method of timer obj
-    #while True:
-        #count = tim_2.counter()
-        #time.sleep_ms(1000)
-        #print(count)
     
 
         
