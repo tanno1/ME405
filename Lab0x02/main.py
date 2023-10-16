@@ -49,8 +49,9 @@ class Encoder:
         self.ps = ps
         self.prev_delta = 0             # initialize previous delta
         self.current_delta = 0          # initialize delta as 0 for first pass
-        self.position = 0               # initialize total position as 0 for first pass
+        self.total_position = 0         # initialize total position as 0 for first pass
         self.prev_position = 0          # initialize previous position as 0 for first pass
+        self.current_position = 0       # initialize the current position as 0 for first pass
 
         # to prevent MemoryException errors for repeat calculations:
         self.under_check = ( self.ar / 2 )
@@ -62,8 +63,8 @@ class Encoder:
             @details
             @param return
         '''
-        current_position = self.timer.counter()
-        self.current_delta = current_position - self.prev_position
+        self.current_position = self.timer.counter()
+        self.current_delta = self.current_position - self.prev_position
 
         # check for underflow
         if self.current_delta > self.under_check:
@@ -74,36 +75,37 @@ class Encoder:
             self.current_delta += self.ar_add_1
 
         # add delta to total position (total movement that does not reset for each rev)
-        self.position += self.current_delta
+        self.total_position += self.current_delta
 
         # update delta to check each time
         self.prev_delta = self.current_delta
 
         # update previous position to current position
-        self.prev_position = current_position
+        self.prev_position = self.current_position
 
         # return position value
-        return self.position
+        return self.total_position
 
     def get_position(self):
         '''!@brief              gets the most recent encoder position
             @details
             @return
         '''
-        pass
+        print("Curent Encoder Position: {}".format(self.current_position))      
 
     def get_delta(self):
         '''!@brief              gets the most recent encoder delta
             @details
             @return
         '''
-        pass
+        print("Current Encoder Delta: {}".format(self.current_delta))
 
     def zero(self):
         '''!@brief              resets the encoder position to zero
             @details
         '''
-        pass
+        self.total_position = 0
+        self.current_position = 0
 
 if __name__ == "__main__":
 
