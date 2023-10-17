@@ -37,6 +37,7 @@ class collector:
         self.tim.callback(self.tim_cb)
         if self.idx == 999:
             self.tim.callback(None)
+
     
     def tim_cb(self, tim):
         '''!@brief              timer callback for encoder
