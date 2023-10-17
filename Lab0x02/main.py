@@ -143,6 +143,7 @@ class Encoder:
 
 if __name__ == "__main__":
     
+    # encoder & motor 1 setup
     # encoder 1 configuration
 
     # variables
@@ -150,7 +151,7 @@ if __name__ == "__main__":
     ar = 65535
     ch_a_pin = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
     ch_b_pin = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
-        # timer
+    # timer
     tim_4 = Timer(4, period = ar, prescaler = ps)
     cha = tim_4.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
     chb = tim_4.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
@@ -172,6 +173,35 @@ if __name__ == "__main__":
 
     # make collector instance, assign callback method
     collector_1 = collector(tim_4, encoder_1)
+
+    # encoder & motor 2 setup
+    # encoder 2 configuration
+
+    # variables
+    ch_a_pin_m2 = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)
+    ch_b_pin_m2 = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)
+    # timer
+    tim_2 = Timer(2, period = ar, prescaler = ps)
+    cha_mot_2 = tim_2.channel(1, pin=ch_a_pin_m2, mode=Timer.ENC_AB)      # Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
+    chb_mot_2 = tim_2.channel(2, pin=ch_b_pin_m2, mode=Timer.ENC_AB)
+
+    # motor 2 configuration
+
+    # create a timer object to use for motor control
+    #mot_tim_A = Timer(3, freq = 20_000)
+    #mot_B pin definitions
+    EN2     = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)              # motB active high-enable
+    INB_1   = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)              # motB control pin 1
+    INB_2   = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)              # motB control pin 2
+
+    # make motor instance
+    mot_B = mot_class.L6206(tim_2, EN2, INB_1, INB_2)
+
+    # make encoder instance
+    encoder_2 = Encoder(tim_2, cha_mot_2, chb_mot_2, ar, ps)
+
+    # make collector instance, assign callback method
+    collector_2 = collector(tim_2, encoder_2)
 
 
     
