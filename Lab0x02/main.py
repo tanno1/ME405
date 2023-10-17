@@ -15,57 +15,45 @@ class collector:
         @details
     '''
     
-    def __init__(self, tim, encoder):
+    def __init__(self, tim, encoder, motor):
         '''!@brief              creates a collector object
             @details
             @param
         '''
         self.tim            = tim
+        self.motor          = motor
         self.encoder        = encoder
-        self.total_position = array( 'L', [0 for n in range(1000)]) 
+        self.position = array( 'L', [0 for n in range(1000)]) 
         self.time           = array( 'L', [0 for n in range(1000)]) 
         self.delta          = array( 'L', [0 for n in range(1000)]) 
         self.idx            = 0
         self.start_time     = 0
         self.end_time       = 0
     
-    def start(self, motor, duty_cycle):
-        self.motor          = motor
+    def start(self, duty_cycle):
         self.duty_cycle     = duty_cycle
-
-        # initialize timer 7 for callbacks
-        self.tim7           = Timer(7, freq = 1000)
-
-        # initialize timer callback with timer ch 7 until we reach 1k index
-        # initialize motor w/ given duty cycle
         self.motor.enable()
         self.motor.set_duty(self.duty_cycle)
-        while self.idx != 1000:
-            self.tim7.callback(self.tim_cb)
-
-        # after step response, shut off motor and callback
-        self.tim7.callback(None)
-        self.motor.disable()
-        # reset idx so method can be called again
-        self.idx = 0
-        # reset all encoder variables to 0 for next call
-        self.encoder.zero()
+        self.tim.callback(self.tim_cb)
+        if self.idx == 999:
+            self.tim.callback(None)
     
-    def tim_cb(self, cb_src):
+    def tim_cb(self, tim):
         '''!@brief              timer callback for encoder
             @details
         '''
         # add total position, time, and delta values to respective arrays
-
         self.start_time               = time.ticks_us()                     # record current start time 
         self.encoder.update()                                               # update encoder position
-        self.total_position[self.idx] = self.encoder.get_position()
+        self.position[self.idx]       = self.encoder.get_position()
         self.delta[self.idx]          = self.encoder.get_delta()
         self.end_time                 = time.ticks_us()                     # record end time
         self.time[self.idx]           = self.start_time - self.end_time     # calculate the elapsed time
-        
         # increment array index 
         self.idx += 1
+        if self.idx == 999:
+            self.tim.callback(None)
+            self.motor.disable()
 
 class Encoder:
     '''!@brief                  interface with quadrature encoders
@@ -143,15 +131,13 @@ class Encoder:
 
 if __name__ == "__main__":
     
-    # encoder & motor 1 setup
-    # encoder 1 configuration
+    ### encoder & motor 1 setup ###
 
-    # variables
+    # encoder 1 configuration 
     ps = 0
     ar = 65535
     ch_a_pin = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
     ch_b_pin = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
-    # timer
     tim_4 = Timer(4, period = ar, prescaler = ps)
     cha = tim_4.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
     chb = tim_4.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
@@ -164,44 +150,41 @@ if __name__ == "__main__":
     mot_EN1 = Pin(Pin.cpu.A10, mode=Pin.OUT_PP)             # motA active high-enable
     mot_IN1 = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)              # motA control pin 1
     mot_IN2 = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)              # motA control pin 2
-
-    # make motor instance
     mot_A = mot_class.L6206(mot_tim_A, mot_EN1, mot_IN1, mot_IN2)
 
     # make encoder instance
     encoder_1 = Encoder(tim_4, cha, chb, ar, ps)
-
     # make collector instance, assign callback method
-    collector_1 = collector(tim_4, encoder_1)
+    tim_6 = Timer(6, freq = 1000)
+    collector_1 = collector(tim_6, encoder_1, mot_A)
 
-    # encoder & motor 2 setup
+    ### encoder & motor 2 setup ###
+
     # encoder 2 configuration
-
-    # variables
-    ch_a_pin_m2 = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)
-    ch_b_pin_m2 = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)
+    ch_a_pin_m2 = Pin(Pin.cpu.C7, mode=Pin.OUT_PP)
+    ch_b_pin_m2 = Pin(Pin.cpu.C6, mode=Pin.OUT_PP)
     # timer
-    tim_2 = Timer(2, period = ar, prescaler = ps)
-    cha_mot_2 = tim_2.channel(1, pin=ch_a_pin_m2, mode=Timer.ENC_AB)      # Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
-    chb_mot_2 = tim_2.channel(2, pin=ch_b_pin_m2, mode=Timer.ENC_AB)
+    tim_8 = Timer(8, period = ar, prescaler = ps)
+    cha_mot_2 = tim_8.channel(1, pin=ch_a_pin_m2, mode=Timer.ENC_AB)      # Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
+    chb_mot_2 = tim_8.channel(2, pin=ch_b_pin_m2, mode=Timer.ENC_AB)
 
     # motor 2 configuration
 
     # create a timer object to use for motor control
-    #mot_tim_A = Timer(3, freq = 20_000)
+    mot_tim_B = Timer(5, freq = 20_000)
     #mot_B pin definitions
     EN2     = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)              # motB active high-enable
     INB_1   = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)              # motB control pin 1
     INB_2   = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)              # motB control pin 2
-
-    # make motor instance
-    mot_B = mot_class.L6206(tim_2, EN2, INB_1, INB_2)
+    mot_B = mot_class.L6206(mot_tim_B, EN2, INB_1, INB_2)
 
     # make encoder instance
-    encoder_2 = Encoder(tim_2, cha_mot_2, chb_mot_2, ar, ps)
-
+    encoder_2 = Encoder(tim_8, cha_mot_2, chb_mot_2, ar, ps)
     # make collector instance, assign callback method
-    collector_2 = collector(tim_2, encoder_2)
+    tim_7 = Timer(7, freq = 1000)
+    collector_2 = collector(tim_7, encoder_2, mot_B)
+
+
 
 
     
