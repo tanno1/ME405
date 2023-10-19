@@ -5,7 +5,7 @@
     @date                       october, 2023
 '''
 # imports
-import motor_class_main as mot_class
+import motor_class as mot_class
 from pyb import Pin, Timer
 from array import array
 import math
@@ -23,9 +23,9 @@ class collector:
         self.tim            = tim
         self.motor          = motor
         self.encoder        = encoder
-        self.position       = array( 'L', [0 for n in range(1000)])     # short data set
-        self.time           = array( 'L', [0 for n in range(1000)])     #
-        self.delta          = array( 'L', [0 for n in range(1000)])     #
+        self.position       = array( 'L', [0 for n in range(1000)])      # short data set
+        self.time           = array( 'L', [0 for n in range(1000)])      #
+        self.delta          = array( 'L', [0 for n in range(1000)])      #
         self.long_position  = array( 'L', [0 for n in range(30000)])     # long data set
         self.long_time      = array( 'L', [0 for n in range(30000)])     #
         self.long_delta     = array( 'L', [0 for n in range(30000)])     #

@@ -17,11 +17,17 @@ class closed_loop:
         '''!@brief              creates a closed loop object
             @param  encoder:    an encoder object for feedback from dc motor
             @type   encoder:    encoder_class
-            @param  vel_ref:    a reference velocity used in calculation of error
+            @param  vel_ref:    a reference velocity used in calculation of error [rad/s]
             @type   vel_ref:    integer 
 
             @return:            signed duty cycle, L, to be applied to the motor
             @rtype:             integer  
         '''
+        self.encoder    = encoder
+        self.vel_ref    = vel_ref
+        self.kp         = 100       # need actual value for kp determined from open loop test I believe?
+        self.l          = 0
 
+    def closed_loop(self):
+        self.l = vel_ref - 
 
