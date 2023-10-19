@@ -26,8 +26,14 @@ class closed_loop:
         self.encoder    = encoder
         self.vel_ref    = vel_ref
         self.kp         = 100       # need actual value for kp determined from open loop test I believe?
+        self.vel_err    = 0
         self.l          = 0
 
     def closed_loop(self):
-        self.l = vel_ref - 
+        self.vel_meas   = self.encoder.velocity['rad/s']
+        self.vel_err    = self.vel_ref - self.vel_meas
+        self.l          = self.vel_err * self.kp
+
+        return self.l
+        
 
