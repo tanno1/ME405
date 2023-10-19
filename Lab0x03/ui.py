@@ -22,35 +22,54 @@ while True:
 
     #Zero Encoders
     elif key == ('z'):
+        encoder.encoder_1.zero()
         print('Position of encoder 1 zero\'d') 
     elif key == ('Z'):
+        encoder.encoder_2.zero()
         print('Position of encoder 2 zero\'d')
 
     # print position
     elif key == ('p'):
-        print('Position of encoder 1: {}'.format())
+        print('Position of encoder 1: {}'.format(encoder.encoder_1.current_position))
     elif key == ('p'):
-        print('Position of encoder 2: {}'.format()) 
+        print('Position of encoder 2: {}'.format(encoder.encoder_2.current_position)) 
 
     # print Velocity     
     if key == ('v'):
-        print('Velocity of encoder 1: {}'.format())
+        print('Velocity of encoder 1: {} rad/s or {} rpm'.format(encoder.encoder_1.velocity['rad/s'], encoder.encoder_1.velocity['rpm']))
     if key == ('V'):
-        print('Velocity of encoder 2: {}'.format())  
+        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.encoder_2.velocity['rad/s'], encoder.encoder_2.velocity['rpm']))
       
     # enter a duty cycle   
     if key == ('m'):
-        duty_cycle_1 = input('Enter a duty cycle for motor 1: ')
+        while duty_cycle_1 not in range(-100, 101) or duty_cycle_1 not float:
+            duty_cycle_1 = input('Enter a duty cycle for motor 1: ')
+            print('Enter a valid integer from -100 to 100')
+        motor.mot_A.set_duty(duty_cycle_1)
+        print('Duty cycle for motor 1 set to {}'.format(duty_cycle_1))
+
     if key == ('M'):
-        duty_cycle_2 = input('Enter a duty cycle for motor 2: ')
+        while duty_cycle_2 not in range(-100, 101) or duty_cycle_2 not float:
+            duty_cycle_2 = input('Enter a duty cycle for motor 2: ')
+            print('Enter a valid integer from -100 to 100')
+        motor.mot_B.set_duty(duty_cycle_2)
+        print('Duty cycle for motor 2 set to {}'.format(duty_cycle_2))
         
     # collect speed and position for 30 seconds
     if key == ('g'):
-        # collect data functions
-        pass
+        encoder.encoder_1.start(duty_cycle_1, 2)
+        print('Collecting encoder 1 speed and position')
+        while encoder.encoder_1.idx != 29999:
+            time.sleep(1)
+            print('Collecting data...')
+
     if key == ('G'):
-        # collect data functions
-        pass
+        encoder.encoder_2.start(duty_cycle_2, 2)
+        print('Collecting encoder 2 speed and position')
+        while encoder.encoder_2.idx != 29999:
+            time.sleep(1)
+            print('Collecting data...')
+
         
     # Switch to Closed-Loop Mode    
     if key == ('C' or 'c'):
