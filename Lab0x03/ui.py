@@ -7,11 +7,36 @@
 
 # Imports
 import ui.py as ui, encoder_class.py as encoder, motor_class.py as motor
+import serial
+
+# setup vcp object
+ser = pyb.usb_vcp()
 
 # variables
 valid_commands = ['z', 'Z', 'p', 'P', 'v', 'V', 'm', 'M', 'g', 'G', 'c', 'C', 'k', 'K', 's', 'S', 'r', 'R', 'o', 'O']
 # set loop type [ 1 = open, 2 = closed ]
 loop_type = 1
+
+# open serial connection, MIGHT NEED TO CHANGE to COM[X]
+with (serial.serial('COM4', 115200) as ser):
+
+    # init state
+    state = 'S0_INIT'       # init state
+
+    # setup resets f(n)
+    def resets():
+        data_str    = ''
+        idx         = 0
+        ser.flush()
+
+    if state == 'S0_INIT':
+        resets()            # reset all relevant vars     
+        state = 'S1_START'  # set next state
+
+    if state == 'S1_START':
+        if ser.any()        
+
+
 
 #Main
 while True:
