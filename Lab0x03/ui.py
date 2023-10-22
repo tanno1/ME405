@@ -34,20 +34,20 @@ def uart_print():
         print(uart_mess.decode('utf-8'))
 
 if __name__ == '__main__':
-
+    pyb.repl_uart(None)
     state = 'S0_INIT'
 
     if state == 'S0_INIT':
         # initialize UART communication
         uart = pyb.UART(2, 112500)
-        # initialize vcp object to read characters
+        # initialize vcp object
         ser = pyb.USB_VCP()
         # print with uart over term 1
         state = 'S1_HUB'
 
     if state == 'S1_HUB':
-        if ser.any():
-            charIn = ser.read(1)
+        if uart.any():
+            charIn = uart.read(1)
             state = 'S2_CHRRDY'
     
     if state == 'S2_CHRRDY':
