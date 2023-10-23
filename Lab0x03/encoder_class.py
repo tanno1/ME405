@@ -1,5 +1,5 @@
-'''!@file                       main.py
-    @brief                      main file for lab0x02 in me405
+'''!@file                       encoder_class.py
+    @brief                      encoder/colelctor class, originally from lab0x02
     @details                    cal poly, san luis obispo me405 lab project
     @author                     noah tanner, kosimo tonn
     @date                       october, 2023
@@ -85,11 +85,14 @@ class Encoder:
         self.chb = chb
         self.ar = ar
         self.ps = ps
-        self.current_delta = 0                  # initialize delta as 0 for first pass
-        self.total_position = 0                 # initialize total position as 0 for first pass
-        self.prev_position = 0                  # initialize previous position as 0 for first pass
-        self.current_position = 0               # initialize the current position as 0 for first pass
-        self.velocity = {'rad/s':0, 'rpm':0}    # initialize velocity as 0 
+        self.current_delta          = 0               # initialize delta as 0 for first pass
+        self.total_position         = 0               # initialize total position as 0 for first pass
+        self.prev_position          = 0               # initialize previous position as 0 for first pass
+        self.current_position       = 0               # initialize the current position as 0 for first pass
+        self.velocity = {
+                            'rad/s' :0, 
+                            'rpm'   :0
+                                        }             # initialize velocity as 0 
 
         # to prevent MemoryException errors for repeat calculations:
         self.under_check = ((self.ar+1)/2)
@@ -188,10 +191,3 @@ if __name__ == "__main__":
     # make collector instance, assign callback method
     tim_7 = Timer(7, freq = 1000)
     collector_2 = collector(tim_7, encoder_2, mot_B)
-
-
-
-
-    
-
-        
