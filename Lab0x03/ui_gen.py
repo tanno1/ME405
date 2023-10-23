@@ -1,16 +1,15 @@
-'''!@file            ui_gen.py
+'''
+    @file            ui_gen.py
     @brief           generator function file built from standalone ui file
+    @author          noah tanner
+    @date            october 22nd, 2023
 '''
 
 # imports
-import encoder_class as encoder, motor_class as motor
+import encoder_class as encoder
+import motor_class as motor
 import pyb
 
-S0_INIT     = 0
-S1_HUB      = 1
-S2_CHRRDY   = 2
-
-state = 0
 valid_commands = ['z', 'Z', 'p', 'P', 'v', 'V', 'm', 'M', 'g', 'G', 'c', 'C', 'k', 'K', 's', 'S', 'r', 'R', 'o', 'O']
 loop_type = 1
 done = 0
@@ -32,15 +31,15 @@ def choose_cmnd(command):
     elif command == ('p'):
         pos = encoder.encoder_1.get_position()
         print("Position of en encoder 1: {}\r\n".format(pos))
-    elif command == ('p'):
+    elif command == ('P'):
         pos = encoder.encoder_2.get_position()
         print("Position of en encoder 2: {}\r\n".format(pos))
     
-    # print position
-    elif command == ('p'):
+    # print delr
+    elif command == ('d'):
         pos = encoder.encoder_1.get_position()
         print("Position of en encoder 1: {}\r\n".format(pos))
-    elif command == ('p'):
+    elif command == ('D'):
         pos = encoder.encoder_2.get_position()
         print("Position of en encoder 2: {}\r\n".format(pos))
 
@@ -70,7 +69,9 @@ def choose_cmnd(command):
     # Switch to Closed-Loop Mode    
     elif command == ('c'):
         loop_type = 2
-    
+
+    elif command == ('C'):
+        loop_type = 2
     # skip these commands if loop is open
     elif loop_type == 2:  
         # choose closed-loop gains
@@ -107,39 +108,41 @@ def choose_cmnd(command):
 def ui_gen():
     # initial variable configuration
     IS_FLAGS = {
-        "DUTY_FLG1" : False,
-        "DUTY_FLG2" : False,
-        "DATA_FLG1" : False,
-        "DATA_FLG2" : False,
-        "CL_FLG1"   : False,
-        "CL_FLG2"   : False,
-        "K_FLG1"    : False,
-        "K_FLG2"    : False,
-        "VEL_FLG1"  : False,
-        "VEL_FLG2"  : False,
-        "VALUE"     : 0,
-        "VAL_DONE"  : False
+        "DUTY_FLG1"     : False,                    # ol  
+        "DUTY_FLG2"     : False,                    #
+        "OLDATA_FLG1"   : False,                    #
+        "OLDATA_FLG2"   : False,                    #
+        "CL_FLG"        : False,                    # switch ol / cl
+        "STEP_FLG1"     : False,                    # cl
+        "STEP_FLG2"     : False,                    #
+        "K_FLG1"        : False,                    #
+        "K_FLG2"        : False,                    #
+        "VEL_FLG1"      : False,                    #
+        "VEL_FLG2"      : False,                    #
+        "VAL_DONE"      : False,                    #
+        "VALUE"         : 0,                        #
+
     }
     takes_input = ['DUTY_FLG1', 'DUTY_FLG2', 'K_FLG1', 'K_FLG2', 'VEL_FLG1', 'VEL_FLG2']
-    state = 0
+    state = 'S0_INIT'
 
-    while(True):
+    while True:
 
-        if state == S0_INIT:
+        if state == 'S0_INIT':
             uart = pyb.UART(2, 112500)
             vcp = pyb.USB_VCP()
             print("Awaiting the next command...")
             state = 'S1_HUB'
 
-        elif state == S1_HUB:
+        elif state == 'S1_HUB':
             if vcp.any():                                           
                 command = vcp.read(1)
                 choose_cmnd(command.decode('utf-8'))
                 if any(IS_FLAGS[key] == 1 for key in takes_input):
                     state = 'S2_CHRRDY'
             
-        elif state == S2_CHRRDY:    
-            passreturned_value = ''                                     # reset the returned value string
+        elif state == 'S2_CHRRDY':    
+            returned_value = ''                                     # reset the returned value string
             while not done:
                 if vcp.any():
                     valIn = vcp.read(1).decode()                    # read current serial index value
@@ -161,3 +164,4 @@ def ui_gen():
             state = 'S1_HUB'                                        # set next state back to hub
             IS_FLAGS['VAL_DONE'] = True                             # set value done flag, picked up by main
             done = False                                            # reset done flag
+        yield(state)
