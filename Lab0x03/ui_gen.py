@@ -34,27 +34,27 @@ IS_FLAGS = {
 def choose_cmnd(command):
     #Zero Encoders
     if command == ('z'):
-        print("Encoder 1 zero'd\r\n")
+        print("Encoder 1 zero'd")
         encoder.enc_1.zero()
     elif command == ('Z'):
-        print("Encoder 2 zero'd\r\n")
+        print("Encoder 2 zero'd")
         encoder.enc_2.zero()
 
     # print position
     elif command == ('p'):
         pos = encoder.enc_1.get_position()
-        print("Position of en encoder 1: {}\r\n".format(pos))
+        print("Position of encoder 1: {}".format(pos))
     elif command == ('P'):
         pos = encoder.enc_2.get_position()
-        print("Position of en encoder 2: {}\r\n".format(pos))
+        print("Position of encoder 2: {}".format(pos))
     
     # print delta
     elif command == ('d'):
         delta = encoder.enc_1.get_delta()
-        print("Position of en encoder 1: {}\r\n".format(delta))
+        print("Delta of en encoder 1: {}".format(delta))
     elif command == ('D'):
         delta = encoder.enc_2.get_delta()
-        print("Position of en encoder 2: {}\r\n".format(delta))
+        print("Delta of en encoder 2: {}".format(delta))
 
     # print Velocity     
     elif command == ('v'):
@@ -86,6 +86,7 @@ def choose_cmnd(command):
             
     # skip these commands if loop is open
     elif IS_FLAGS['CL_FLG'] == True:  
+        print('UI: in CL section')
         # choose closed-loop gains
         if command == ('k'):
             print('Enter a closed-loop gain value for motor 1')
@@ -130,7 +131,7 @@ def ui_gen():
             state = 'S1_HUB'
 
         elif state == 'S1_HUB':
-            print("UI: in state 1")
+            #print("UI: in state 1")
             if vcp.any():                                           
                 command = vcp.read(1)
                 choose_cmnd(command.decode('utf-8'))
@@ -161,6 +162,8 @@ def ui_gen():
 
             state = 'S1_HUB'                                        # set next state back to hub
             IS_FLAGS['VAL_DONE'] = True                             # set value done flag, picked up by main
+            IS_FLAGS['VALUE'] = returned_value                      # set value
+            print("value: {}".format(IS_FLAGS['VALUE']))
             done = False                                            # reset done flag
         
         yield(state)

@@ -7,6 +7,7 @@
 # imports
 from pyb import Pin, Timer
 from array import array
+import motor_class as motor
 import math
 
 class collector:
@@ -121,8 +122,6 @@ class Encoder:
         self.velocity['rad/s']  = self.current_delta * 24.54
         self.velocity['rpm']    = self.velocity['rad/s'] / (2*math.pi)
 
-        return self.velocity
-
     def get_position(self):
         return self.current_position
 
@@ -135,3 +134,27 @@ class Encoder:
         self.total_position     = 0             # initialize total position as 0 for first pass
         self.prev_position      = 0             # initialize previous position as 0 for first pass
         self.current_position   = 0             # initialize the current position as 0 for first pass
+
+# encoder mot_a
+ps          = 0
+ar          = 1000
+cha_pin_1   = Pin(Pin.cpu.C7, mode=Pin.OUT_PP)                      # encoder 1, channel a pin
+chb_pin_1   = Pin(Pin.cpu.C6, mode=Pin.OUT_PP)                      # encoder 1, channel b pin
+tim_a_8     = Timer(8, period = ar, prescaler = ps)                 # encoder 1 timer
+cha_1       = tim_a_8.channel(1, pin=cha_pin_1, mode=Timer.ENC_AB)  
+chb_1       = tim_a_8.channel(2, pin=chb_pin_1, mode=Timer.ENC_AB)  
+enc_1       = Encoder(tim_a_8, cha_1, chb_1, ar, ps)                # encoder 1 instance
+# collector mot_a
+tim_6       = Timer(6, freq = 1000)                                 # timer for datat collection   
+collector_1 = collector(tim_6, enc_1, motor.mot_A)                  # collector instance
+
+# encoder mot_b
+cha_pin_2   = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)                      # encoder 1, channel a pin
+chb_pin_2   = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)                      # encoder 1, channel b pin
+tim_a_4     = Timer(4, period = ar, prescaler = ps)                 # encoder 1 timer
+cha_2       = tim_a_4.channel(1, pin=cha_pin_2, mode=Timer.ENC_AB)  
+chb_2       = tim_a_4.channel(2, pin=chb_pin_2, mode=Timer.ENC_AB)  
+enc_2       = Encoder(tim_a_8, cha_2, chb_2, ar, ps)                # encoder 1 instance
+# collector mot_b
+tim_7       = Timer(7, freq = 1000)                                 # timer for datat collection   
+collector_2 = collector(tim_7, enc_2, motor.mot_B)                  # collector instance 

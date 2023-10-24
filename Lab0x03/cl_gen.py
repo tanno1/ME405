@@ -41,7 +41,7 @@ class motor_generator_class:
         while True:
 
             if state == 'S0_INIT':
-                print('Cl: state 0')
+                #print('Cl: state 0')
                 DATA_FLGS = {
                     OL_DONE:    False,
                     CL_DONE:    False,
@@ -49,7 +49,7 @@ class motor_generator_class:
                 state = 'S1_HUB'
             
             if state == 'S1_HUB':
-                print('Cl: state 1')
+                #print('Cl: state 1')
                 if self.flags['CL_FLG'] == False:
                     state = 'S2_OL'
                 elif self.flags['CL_FLG'] == True:
@@ -59,27 +59,47 @@ class motor_generator_class:
             
             if state =='S2_OL':
                 if self.flags['CL_FLG'] == False:
-                    print('Cl: state 2')
+                    # update encoders at start of each iteration
+                    self.encoder_1.update()
+                    self.encoder_2.update()
+                    # update encoder velocities at start of each iteration
+                    self.encoder_1.vel_calc()
+                    self.encoder_2.vel_calc()
+                    #print('Cl: state 2')
                     if self.flags['DUTY_FLG1'] and self.flags['VAL_DONE']:
+                        print('yo we made it')
+                        print(self.driver_1)
                         self.duty_1 = self.flags['VALUE']
                         self.driver_1.set_duty(self.duty_1)
                         self.driver_1.enable()
+                        self.flags['DUTY_FLG1'] = False                         # reset flg
+                        self.flags['VAL_DONE'] = False                          # reset flg
                     if self.flags['DUTY_FLG2'] and self.flags['VAL_DONE']:
                         self.duty_2 = self.flags['VALUE']
                         self.driver_2.set_duty(self.duty_2)
                         self.driver_2.enable()
+                        self.flags['DUTY_FLG2'] = False                         # reset flg
+                        self.flags['VAL_DONE'] = False                          # reset flg
                     if self.flags['OLDATA_FLG1']:
                         self.collector_1.start(self.duty_1, 2)
+                        self.flags['OLDATA_FLG1'] = False                       # reset flg
                     if self.flags['OLDATA_FLG2']:
                         self.collector_2.start(self.duty_2, 2)
+                        self.flags['OLDATA_FLG2'] = False                       # reset flg
                 elif self.flags['CL_FLG'] == True:
                     state = 'S3_CL'
                 else:
                     continue
 
             if state == 'S3_CL':
-                closed_loop_mot_a = cl.closed_loop(encoder.enc_1)
-                closed_loop_mot_b = cl.closed_loop(encoder.enc_2)
+                closed_loop_mot_a = cl.closed_loop(self.encoder_1)
+                closed_loop_mot_b = cl.closed_loop(self.encoder_2)
+                # update encoders at start of each iteration
+                self.encoder_1.update()
+                self.encoder_2.update()
+                # update encoder velocities at start of each iteration
+                self.encoder_1.vel_calc()
+                self.encoder_2.vel_calc()
                 if self.flags['CL_FLG'] == True:
                     print('Cl: state 3')
                     if self.flags['K_FLG1'] and self.flags['VAL_DONE']:

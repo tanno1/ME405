@@ -6,8 +6,6 @@
 # imports
 from pyb import Pin, Timer
 
-# class definitions
-
 class L6206:
     '''!@brief      A driver class for one channel of the L2606
         @details    Objects of this class can be used to apply PWM to a given DC motor on one channel of the L6206 from ST Microelectronics.
@@ -39,3 +37,17 @@ class L6206:
     
     def disable (self):
         self.EN.low()
+
+# motor a
+tim_A       = Timer(3, freq = 20_000)                               # timer3 for motor A
+EN_a        = Pin(Pin.cpu.A10, mode=Pin.OUT_PP)                     # motA active high-enable
+IN1_a       = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)                      # motA control pin 1
+IN2_a       = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)                      # motA control pin 2
+mot_A       = L6206(tim_A, EN_a, IN1_a, IN2_a)                      # initialize motor A object
+
+# motor b
+tim_B       = Timer(2, freq = 20_000)                               # timer2 for motor B
+EN_b        = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)                      # motB active high-enable
+IN1_b       = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)                      # motB control pin 1
+IN2_b       = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)                      # motB control pin 2
+mot_B       = L6206(tim_B, EN_b, IN1_b, IN2_b)                      # initialize motor B object

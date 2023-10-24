@@ -37,4 +37,3 @@ class closed_loop:
 
         return self.l
         
-
