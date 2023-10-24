@@ -11,43 +11,56 @@ import motor_class as motor
 import pyb
 
 valid_commands = ['z', 'Z', 'p', 'P', 'v', 'V', 'm', 'M', 'g', 'G', 'c', 'C', 'k', 'K', 's', 'S', 'r', 'R', 'o', 'O']
-loop_type = 1
-done = 0
+done = False
+
+# flags setup
+IS_FLAGS = {
+        "DUTY_FLG1"     : False,                    # ol  
+        "DUTY_FLG2"     : False,                    #
+        "OLDATA_FLG1"   : False,                    #
+        "OLDATA_FLG2"   : False,                    #
+        "CL_FLG"        : False,                    # switch ol / cl
+        "STEP_FLG1"     : False,                    # cl
+        "STEP_FLG2"     : False,                    #
+        "K_FLG1"        : False,                    #
+        "K_FLG2"        : False,                    #
+        "VEL_FLG1"      : False,                    #
+        "VEL_FLG2"      : False,                    #
+        "VAL_DONE"      : False,                    #
+        "VALUE"         : 0,                        #
+    }
 
 # f(n) to choose what command to be executed
 def choose_cmnd(command):
-    # allow usage of loop type
-    global loop_type
-
     #Zero Encoders
     if command == ('z'):
         print("Encoder 1 zero'd\r\n")
-        encoder.encoder_1.zero()
+        encoder.enc_1.zero()
     elif command == ('Z'):
         print("Encoder 2 zero'd\r\n")
-        encoder.encoder_2.zero()
+        encoder.enc_2.zero()
 
     # print position
     elif command == ('p'):
-        pos = encoder.encoder_1.get_position()
+        pos = encoder.enc_1.get_position()
         print("Position of en encoder 1: {}\r\n".format(pos))
     elif command == ('P'):
-        pos = encoder.encoder_2.get_position()
+        pos = encoder.enc_2.get_position()
         print("Position of en encoder 2: {}\r\n".format(pos))
     
-    # print delr
+    # print delta
     elif command == ('d'):
-        pos = encoder.encoder_1.get_position()
-        print("Position of en encoder 1: {}\r\n".format(pos))
+        delta = encoder.enc_1.get_delta()
+        print("Position of en encoder 1: {}\r\n".format(delta))
     elif command == ('D'):
-        pos = encoder.encoder_2.get_position()
-        print("Position of en encoder 2: {}\r\n".format(pos))
+        delta = encoder.enc_2.get_delta()
+        print("Position of en encoder 2: {}\r\n".format(delta))
 
     # print Velocity     
     elif command == ('v'):
-        print('Velocity of encoder 1: {} rad/s or {} rpm'.format(encoder.encoder_1.velocity['rad/s'], encoder.encoder_1.velocity['rpm']))
+        print('Velocity of encoder 1: {} rad/s or {} rpm'.format(encoder.enc_1.velocity['rad/s'], encoder.enc_1.velocity['rpm']))
     elif command == ('V'):
-        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.encoder_2.velocity['rad/s'], encoder.encoder_2.velocity['rpm']))
+        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.enc_2.velocity['rad/s'], encoder.enc_2.velocity['rpm']))
 
     # enter a duty cycle   
     elif command == ('m'):
@@ -62,18 +75,17 @@ def choose_cmnd(command):
     # collect speed and position for 30 seconds
     elif command == ('g'):
         pass
-
     elif command == ('G'):
         pass
 
     # Switch to Closed-Loop Mode    
     elif command == ('c'):
-        loop_type = 2
-
+        IS_FLAGS['CL_FLG'] = True
     elif command == ('C'):
-        loop_type = 2
+        IS_FLAGS['CL_FLG'] = True
+            
     # skip these commands if loop is open
-    elif loop_type == 2:  
+    elif IS_FLAGS['CL_FLG'] == True:  
         # choose closed-loop gains
         if command == ('k'):
             print('Enter a closed-loop gain value for motor 1')
@@ -100,48 +112,34 @@ def choose_cmnd(command):
 
         # set open loop again
         elif command == 'o':
-            loop_type = 1
+            IS_FLAGS['CL_FLG'] = False
         elif command == 'O':
-            loop_type = 1
+            IS_FLAGS['CL_FLG'] = False
 
 
 def ui_gen():
-    # initial variable configuration
-    IS_FLAGS = {
-        "DUTY_FLG1"     : False,                    # ol  
-        "DUTY_FLG2"     : False,                    #
-        "OLDATA_FLG1"   : False,                    #
-        "OLDATA_FLG2"   : False,                    #
-        "CL_FLG"        : False,                    # switch ol / cl
-        "STEP_FLG1"     : False,                    # cl
-        "STEP_FLG2"     : False,                    #
-        "K_FLG1"        : False,                    #
-        "K_FLG2"        : False,                    #
-        "VEL_FLG1"      : False,                    #
-        "VEL_FLG2"      : False,                    #
-        "VAL_DONE"      : False,                    #
-        "VALUE"         : 0,                        #
-
-    }
     takes_input = ['DUTY_FLG1', 'DUTY_FLG2', 'K_FLG1', 'K_FLG2', 'VEL_FLG1', 'VEL_FLG2']
     state = 'S0_INIT'
-
+    returned_value = ''
+    
     while True:
 
         if state == 'S0_INIT':
-            uart = pyb.UART(2, 112500)
             vcp = pyb.USB_VCP()
             print("Awaiting the next command...")
             state = 'S1_HUB'
 
         elif state == 'S1_HUB':
+            print("UI: in state 1")
             if vcp.any():                                           
                 command = vcp.read(1)
                 choose_cmnd(command.decode('utf-8'))
                 if any(IS_FLAGS[key] == 1 for key in takes_input):
                     state = 'S2_CHRRDY'
             
-        elif state == 'S2_CHRRDY':    
+        elif state == 'S2_CHRRDY':  
+            print("UI: in state 2")
+            done = False
             returned_value = ''                                     # reset the returned value string
             while not done:
                 if vcp.any():
@@ -164,4 +162,5 @@ def ui_gen():
             state = 'S1_HUB'                                        # set next state back to hub
             IS_FLAGS['VAL_DONE'] = True                             # set value done flag, picked up by main
             done = False                                            # reset done flag
+        
         yield(state)

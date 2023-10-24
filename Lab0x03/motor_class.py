@@ -22,7 +22,6 @@ class L6206:
     def set_duty (self, duty):
         '''!@brief      set the PWM duty cycle for the DC motor
             @details
-
             @param
         '''
         if duty >= 0:
@@ -40,29 +39,3 @@ class L6206:
     
     def disable (self):
         self.EN.low()
-
-if __name__ == '__main__':
-
-    # set forward
-    def forward(EN1, IN1, IN2):
-        EN1.high()
-        IN1.high()
-        IN2.low()
-
-    # create a timer object to use for motor control
-    tim_A = Timer(3, freq = 20_000)
-    tim_B = Timer(2, freq = 20_000)
-
-    #mot_A pin definitions
-    EN1 = Pin(Pin.cpu.A10, mode=Pin.OUT_PP)             # motA active high-enable
-    IN1 = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)              # motA control pin 1
-    IN2 = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)              # motA control pin 2
-    
-    #mot_B pin definitions
-    EN2 = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)              # motB active high-enable
-    INB_1 = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)            # motB control pin 1
-    INB_2 = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)            # motB control pin 2
-
-    # create an L6206 driver object
-    mot_A = L6206(tim_A, EN1, IN1, IN2)
-    mot_B = L6206(tim_B, EN2, INB_1, INB_2)

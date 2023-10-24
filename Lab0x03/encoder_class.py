@@ -5,7 +5,6 @@
     @date                       october, 2023
 '''
 # imports
-import motor_class as mot_class
 from pyb import Pin, Timer
 from array import array
 import math
@@ -14,7 +13,7 @@ class collector:
     '''!@brief
         @details
     '''
-    
+
     def __init__(self, tim, encoder, motor):
         '''!@brief              creates a collector object
             @details
@@ -26,9 +25,9 @@ class collector:
         self.position       = array( 'L', [0 for n in range(1000)])      # short data set
         self.time           = array( 'L', [0 for n in range(1000)])      #
         self.delta          = array( 'L', [0 for n in range(1000)])      #
-        self.long_position  = array( 'L', [0 for n in range(30000)])     # long data set
-        self.long_time      = array( 'L', [0 for n in range(30000)])     #
-        self.long_delta     = array( 'L', [0 for n in range(30000)])     #
+        self.long_position  = array( 'L', [0 for n in range(1)])     # long data set
+        self.long_time      = array( 'L', [0 for n in range(1)])     #
+        self.long_delta     = array( 'L', [0 for n in range(1)])     #
         self.idx            = 0
         self.start_time     = 0
         self.end_time       = 0
@@ -136,58 +135,3 @@ class Encoder:
         self.total_position     = 0             # initialize total position as 0 for first pass
         self.prev_position      = 0             # initialize previous position as 0 for first pass
         self.current_position   = 0             # initialize the current position as 0 for first pass
-
-if __name__ == "__main__":
-    
-    ### encoder & motor 1 setup ###
-
-    # encoder 1 configuration 
-    ps = 0
-    ar = 1000
-    ch_a_pin = Pin(Pin.cpu.C7, mode=Pin.OUT_PP)
-    ch_b_pin = Pin(Pin.cpu.C6, mode=Pin.OUT_PP)
-    tim_8 = Timer(8, period = ar, prescaler = ps)
-    cha = tim_8.channel(1, pin=ch_a_pin, mode=Timer.ENC_AB) #Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
-    chb = tim_8.channel(2, pin=ch_b_pin, mode=Timer.ENC_AB)
-
-    # motor 1 configuration
-
-    # create a timer object to use for motor control
-    mot_tim_A = Timer(3, freq = 20_000)
-    # mot_A pin definitions
-    mot_EN1 = Pin(Pin.cpu.A10, mode=Pin.OUT_PP)             # motA active high-enable
-    mot_IN1 = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)              # motA control pin 1
-    mot_IN2 = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)              # motA control pin 2
-    mot_A = mot_class.L6206(mot_tim_A, mot_EN1, mot_IN1, mot_IN2)
-
-    # make encoder instance
-    encoder_1 = Encoder(tim_8, cha, chb, ar, ps)
-    # make collector instance, assign callback method
-    tim_6 = Timer(6, freq = 1000)
-    collector_1 = collector(tim_6, encoder_1, mot_A)
-
-    ### encoder & motor 2 setup ###
-
-    # encoder 2 configuration
-    ch_a_pin_m2 = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
-    ch_b_pin_m2 = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
-    # timer
-    tim_4 = Timer(4, period = ar, prescaler = ps)
-    cha_mot_2 = tim_4.channel(1, pin=ch_a_pin_m2, mode=Timer.ENC_AB)      # Timer.ENC_AB configures timer in encoder mode, counter changes when ch1 OR ch2 changes
-    chb_mot_2 = tim_4.channel(2, pin=ch_b_pin_m2, mode=Timer.ENC_AB)
-
-    # motor 2 configuration
-
-    # create a timer object to use for motor control
-    mot_tim_B = Timer(5, freq = 20_000)
-    #mot_B pin definitions
-    EN2     = Pin(Pin.cpu.C1, mode=Pin.OUT_PP)              # motB active high-enable
-    INB_1   = Pin(Pin.cpu.A0, mode=Pin.OUT_PP)              # motB control pin 1
-    INB_2   = Pin(Pin.cpu.A1, mode=Pin.OUT_PP)              # motB control pin 2
-    mot_B = mot_class.L6206(mot_tim_B, EN2, INB_1, INB_2)
-
-    # make encoder instance
-    encoder_2 = Encoder(tim_4, cha_mot_2, chb_mot_2, ar, ps)
-    # make collector instance, assign callback method
-    tim_7 = Timer(7, freq = 1000)
-    collector_2 = collector(tim_7, encoder_2, mot_B)
