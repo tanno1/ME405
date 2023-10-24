@@ -106,11 +106,9 @@ def choose_cmnd(command):
             
         # trigger step response and send data to be plott'd
         elif command == ('r'):
-            # step response f(n) mot 1
-            pass
+            IS_FLAGS['STEP_FLG1'] = True
         elif command == ('R'):
-            # step response f(n) mot 2
-            pass
+            IS_FLAGS['STEP_FLG2'] = True
 
         # set open loop again
         elif command == 'o':
@@ -162,6 +160,7 @@ def ui_gen():
                         if idx != 2:                                
                             returned_value = returned_value[:-1]            
                     elif valIn == '\n' or valIn == '\r':            # check if enter or carridge return 
+                        print('\r\n')
                         try:
                             returned_value = int(returned_value)
                         except ValueError:
@@ -171,7 +170,6 @@ def ui_gen():
             state = 'S1_HUB'                                        # set next state back to hub
             IS_FLAGS['VAL_DONE'] = True                             # set value done flag, picked up by main
             IS_FLAGS['VALUE'] = returned_value                      # set value
-            print("value: {}".format(IS_FLAGS['VALUE']))
             done = False                                            # reset done flag
         
         yield(state)
