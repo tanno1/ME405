@@ -26,9 +26,9 @@ class collector:
         self.position       = array( 'L', [0 for n in range(1000)])      # short data set
         self.time           = array( 'L', [0 for n in range(1000)])      #
         self.delta          = array( 'L', [0 for n in range(1000)])      #
-        self.long_position  = array( 'L', [0 for n in range(1)])     # long data set
-        self.long_time      = array( 'L', [0 for n in range(1)])     #
-        self.long_delta     = array( 'L', [0 for n in range(1)])     #
+        self.long_position  = array( 'L', [0 for n in range(1)])         # long data set
+        self.long_time      = array( 'L', [0 for n in range(1)])         #
+        self.long_delta     = array( 'L', [0 for n in range(1)])         #
         self.idx            = 0
         self.start_time     = 0
         self.end_time       = 0
@@ -37,6 +37,7 @@ class collector:
     def start(self, duty_cycle, type):
         self.duty_cycle     = duty_cycle
         self.type           = type
+        self.encoder.zero()
         self.motor.enable()
         self.motor.set_duty(self.duty_cycle)
         self.tim.callback(self.tim_cb)
@@ -55,12 +56,9 @@ class collector:
             self.delta[self.idx]          = self.encoder.current_delta
             self.time[self.idx]           = self.idx
         elif self.type == 2:
-            self.long_position[self.idx]  = self.encoder.total_position
-            self.long_delta[self.idx]     = self.encoder.current_delta
-            self.long_time[self.idx]      = self.idx
-        else:
-            print('Invalid recording type, try again')
-            self.type == 998
+            self.long_position[0]         = self.encoder.total_position
+            self.long_delta[0]            = self.encoder.current_delta
+            self.long_time[0]             = self.idx
         self.idx += 1
         if (self.idx == 999 and self.type == 1) or (self.idx == 29999 and self.type == 2):
             self.tim.callback(None)
@@ -145,7 +143,7 @@ cha_1       = tim_a_8.channel(1, pin=cha_pin_1, mode=Timer.ENC_AB)
 chb_1       = tim_a_8.channel(2, pin=chb_pin_1, mode=Timer.ENC_AB)  
 enc_1       = Encoder(tim_a_8, cha_1, chb_1, ar, ps)                # encoder 1 instance
 # collector mot_a
-tim_6       = Timer(6, freq = 1000)                                 # timer for datat collection   
+tim_6       = Timer(6, freq = 1000)                                 # timer for data collection   
 collector_1 = collector(tim_6, enc_1, motor.mot_A)                  # collector instance
 
 # encoder mot_b

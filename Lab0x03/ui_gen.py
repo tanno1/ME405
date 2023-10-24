@@ -74,9 +74,9 @@ def choose_cmnd(command):
 
     # collect speed and position for 30 seconds
     elif command == ('g'):
-        pass
+        IS_FLAGS['OLDATA_FLG1'] = True
     elif command == ('G'):
-        pass
+        IS_FLAGS['OLDATA_FLG2'] = True
 
     # Switch to Closed-Loop Mode    
     elif command == ('c'):
