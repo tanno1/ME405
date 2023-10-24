@@ -26,41 +26,35 @@ class collector:
         self.position       = array( 'L', [0 for n in range(1000)])      # short data set
         self.time           = array( 'L', [0 for n in range(1000)])      #
         self.delta          = array( 'L', [0 for n in range(1000)])      #
-        self.long_position  = array( 'L', [0 for n in range(1)])         # long data set
-        self.long_time      = array( 'L', [0 for n in range(1)])         #
-        self.long_delta     = array( 'L', [0 for n in range(1)])         #
+        self.long_position  = 0
+        self.long_time      = 0
+        self.long_delta     = 0
         self.idx            = 0
         self.start_time     = 0
         self.end_time       = 0
         self.type           = 0
+        self.old_pos        = 0
     
-    def start(self, duty_cycle, type):
+    def start(self, duty_cycle):
         self.duty_cycle     = duty_cycle
         self.type           = type
         self.encoder.zero()
         self.motor.enable()
         self.motor.set_duty(self.duty_cycle)
         self.tim.callback(self.tim_cb)
-        if (self.idx == 999 and self.type == 1) or (self.idx == 29999 and self.type == 2):
+        if self.idx == 29999:
             self.tim.callback(None)
     
     def tim_cb(self, tim):
         '''!@brief              timer callback for encoder
             @details
         '''
-        # add total position, time, and delta values to respective arrays
-        self.encoder.update()                                               # update encoder position
-        # differentiate between short and long response recording
-        if self.type == 1:
-            self.position[self.idx]       = self.encoder.total_position
-            self.delta[self.idx]          = self.encoder.current_delta
-            self.time[self.idx]           = self.idx
-        elif self.type == 2:
-            self.long_position[0]         = self.encoder.get_position()
-            self.long_delta[0]            = self.encoder.get_delta()
-            self.long_time[0]             = self.idx
+        self.encoder.update()
+        self.long_position             = self.encoder.total_position
+        self.long_time                 = self.idx
+        #self.long_delta                = self.current_delta
         self.idx += 1
-        if (self.idx == 999 and self.type == 1) or (self.idx == 29999 and self.type == 2):
+        if self.idx == 29999 and self.type == 2:
             self.tim.callback(None)
             self.motor.disable()
 
@@ -100,18 +94,14 @@ class Encoder:
     def update(self):
         self.current_position = self.timer.counter()
         self.current_delta = self.current_position - self.prev_position
-
         # check for underflow
         if self.current_delta > self.under_check:
             self.current_delta -= self.ar_add_1
-
         # check for overflow
         elif self.current_delta < self.over_check:
             self.current_delta += self.ar_add_1
-
         # add delta to total position (total movement that does not reset for each rev)
         self.total_position += self.current_delta
-
         # update previous position to current position
         self.prev_position = self.current_position
 

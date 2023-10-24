@@ -82,19 +82,16 @@ class motor_generator_class:
                         self.flags['DUTY_FLG2'] = False                         # reset flg
                         self.flags['VAL_DONE'] = False                          # reset flg
                     if self.flags['OLDATA_FLG1']:
-                        print('OL data colletion started for motor 1')
-                        self.collector_1.start(self.duty_1, 2)
-                        print('OL data colletion started for motor 1')
-                        print("position\tTime\tDelta")
+                        print('OL data collection started for motor 1')
+                        exporter = export.UART_connection()
+                        self.collector_1.start(self.duty_1)
                         while self.collector_1.idx != 29999:
-                            print(f"{self.collector_1.long_position[0]}\t{self.collector_1.long_time[0]}\t{self.collector_1.long_delta[0]}")
-                            export.UART_connection().run({self.collector_1.long_position[0]} +","+ {self.collector_1.long_time[0]} +","+ {self.collector_1.long_delta[0]})
-                            #if idx =29999, deinit?
+                            exporter.run(f"{self.collector_1.long_position}\t{self.collector_1.long_time}\t{self.collector_1.long_delta}\r\n")
                         print('OL data colletion finished for motor 1')
                         self.flags['OLDATA_FLG1'] = False                       # reset flg
                     if self.flags['OLDATA_FLG2']:
                         print('OL data colletion started for motor 2')
-                        self.collector_2.start(self.duty_2, 2)
+                        self.collector_2.start(self.duty_2)
                         print('OL data colletion finished for motor 2')
                         self.flags['OLDATA_FLG2'] = False                       # reset flg
                 elif self.flags['CL_FLG'] == True:

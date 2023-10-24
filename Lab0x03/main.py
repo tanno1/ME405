@@ -7,6 +7,7 @@
 
 # imports
 import cotask
+import pyb
 from pyb import Pin, Timer, UART
 import motor_class as motor
 import encoder_class as encoder
@@ -26,6 +27,7 @@ if __name__ == '__main__':
     cotask.task_list.append(ui_task)
 
     ser = UART(2,115200)
+    pyb.repl_uart(None)
 
     print('Program starting...')
 

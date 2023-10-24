@@ -22,4 +22,3 @@ class UART_connection:
     def off(self):
         #Shuts Off UART Connection
         self.uart.deinit()
-
