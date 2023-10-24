@@ -9,6 +9,7 @@
 import closed_loop as cl
 import encoder_class as encoder
 import motor_class as motor
+import export
 
 # set done flags to be initialized
 OL_DONE = 0
@@ -87,6 +88,8 @@ class motor_generator_class:
                         print("position\tTime\tDelta")
                         while self.collector_1.idx != 29999:
                             print(f"{self.collector_1.long_position[0]}\t{self.collector_1.long_time[0]}\t{self.collector_1.long_delta[0]}")
+                            export.UART_connection().run({self.collector_1.long_position[0]} +","+ {self.collector_1.long_time[0]} +","+ {self.collector_1.long_delta[0]})
+                            #if idx =29999, deinit?
                         print('OL data colletion finished for motor 1')
                         self.flags['OLDATA_FLG1'] = False                       # reset flg
                     if self.flags['OLDATA_FLG2']:
