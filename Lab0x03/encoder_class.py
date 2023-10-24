@@ -56,8 +56,8 @@ class collector:
             self.delta[self.idx]          = self.encoder.current_delta
             self.time[self.idx]           = self.idx
         elif self.type == 2:
-            self.long_position[0]         = self.encoder.total_position
-            self.long_delta[0]            = self.encoder.current_delta
+            self.long_position[0]         = self.encoder.get_position()
+            self.long_delta[0]            = self.encoder.get_delta()
             self.long_time[0]             = self.idx
         self.idx += 1
         if (self.idx == 999 and self.type == 1) or (self.idx == 29999 and self.type == 2):
