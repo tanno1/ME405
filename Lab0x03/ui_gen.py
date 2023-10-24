@@ -88,7 +88,6 @@ def choose_cmnd(command):
             
     # skip these commands if loop is open
     elif IS_FLAGS['CL_FLG'] == True:  
-        print('UI: in CL section')
         # choose closed-loop gains
         if command == ('k'):
             print('Enter a closed-loop gain value for motor 1')
@@ -116,8 +115,10 @@ def choose_cmnd(command):
         # set open loop again
         elif command == 'o':
             IS_FLAGS['CL_FLG'] = False
+            print("Changed to open loop mode")
         elif command == 'O':
             IS_FLAGS['CL_FLG'] = False
+            print("Changed to open loop mode")
 
 
 def ui_gen():
@@ -141,7 +142,6 @@ def ui_gen():
                     state = 'S2_CHRRDY'
             
         elif state == 'S2_CHRRDY':  
-            print("UI: in state 2")
             done = False
             returned_value = ''                                     # reset the returned value string
             while not done:
