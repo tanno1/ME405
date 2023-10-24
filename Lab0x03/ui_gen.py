@@ -148,16 +148,22 @@ def ui_gen():
                     print(valIn, end='')
                     idx = 1                                         # set str index to 1
                     if valIn.isdigit():                             # check if digit
-                        returned_value += valIn                     #
+                        returned_value += valIn                     
                         idx += 1
+                    elif valIn == '.':
+                        if idx == 1:
+                            returned_value += valIn
                     elif valIn == '-':                              # check if minus
-                        if idx == 2:                                # 
-                            returned_value += valIn                 #
+                        if idx == 1:                                 
+                            returned_value += valIn                 
                     elif valIn == 'X7F':                            # check if backspace
-                        if idx != 2:                                #
-                            returned_value = returned_value[:-1]    #        
-                    elif valIn == '\n' or valIn == '\r':            # check if enter or carridge return  
-                        returned_value = int(returned_value)        #
+                        if idx != 2:                                
+                            returned_value = returned_value[:-1]            
+                    elif valIn == '\n' or valIn == '\r':            # check if enter or carridge return 
+                        try:
+                            returned_value = int(returned_value)
+                        except ValueError:
+                            returned_value = float(returned_value)        
                         done = True                                 # complete the state
 
             state = 'S1_HUB'                                        # set next state back to hub

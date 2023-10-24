@@ -109,16 +109,20 @@ class motor_generator_class:
                 self.encoder_1.vel_calc()
                 self.encoder_2.vel_calc()
                 if self.flags['CL_FLG'] == True:
-                    print('Cl: state 3')
                     if self.flags['K_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.kp = self.flags['VALUE']
                         new_duty = closed_loop_mot_a.closed_loop()
+                        print('Motor 1 K set to: {}'.format(self.flags['VALUE']))
                     elif self.flags['K_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.kp = self.flags['VALUE']
+                        new_duty = closed_loop_mot_b.closed_loop()
+                        print('Motor 2 K set to: {}'.format(self.flags['VALUE']))
                     elif self.flags['VEL_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.vel = self.flags['VALUE']
+                        print('Motor 1 V_ref set to: {}'.format(self.flags['VALUE']))
                     elif self.flags['VEL_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.vel = self.flags['VALUE']
+                        print('Motor 2 V_ref set to: {}'.format(self.flags['VALUE']))
                     elif self.flags['STEP_FLG1']:
                         pass
                     elif self.flags['STEP_FLG2']:
