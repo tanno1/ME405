@@ -52,7 +52,7 @@ class collector:
         self.encoder.update()
         self.long_position             = self.encoder.total_position
         self.long_time                 = self.idx
-        #self.long_delta                = self.current_delta
+        self.long_delta                = self.encoder.current_delta
         self.idx += 1
         if self.idx == 29999 and self.type == 2:
             self.tim.callback(None)

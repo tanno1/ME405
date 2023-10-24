@@ -113,16 +113,20 @@ class motor_generator_class:
                         closed_loop_mot_a.kp = self.flags['VALUE']
                         new_duty = closed_loop_mot_a.closed_loop()
                         print('Motor 1 K set to: {}'.format(self.flags['VALUE']))
+                        self.flags['K_FLG1'] = False
                     elif self.flags['K_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.kp = self.flags['VALUE']
                         new_duty = closed_loop_mot_b.closed_loop()
                         print('Motor 2 K set to: {}'.format(self.flags['VALUE']))
+                        self.flags['K_FLG2'] = False
                     elif self.flags['VEL_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.vel = self.flags['VALUE']
                         print('Motor 1 V_ref set to: {}'.format(self.flags['VALUE']))
+                        self.flags['VEL_FLG1'] = False
                     elif self.flags['VEL_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.vel = self.flags['VALUE']
                         print('Motor 2 V_ref set to: {}'.format(self.flags['VALUE']))
+                        self.flags['VEL_FLG2'] = False
                     elif self.flags['STEP_FLG1']:
                         pass
                     elif self.flags['STEP_FLG2']:

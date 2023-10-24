@@ -81,8 +81,10 @@ def choose_cmnd(command):
     # Switch to Closed-Loop Mode    
     elif command == ('c'):
         IS_FLAGS['CL_FLG'] = True
+        print('Changed to close loop mode')
     elif command == ('C'):
         IS_FLAGS['CL_FLG'] = True
+        print('Changed to close loop mode')
             
     # skip these commands if loop is open
     elif IS_FLAGS['CL_FLG'] == True:  
