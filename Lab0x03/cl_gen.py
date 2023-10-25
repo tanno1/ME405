@@ -88,7 +88,7 @@ class motor_generator_class:
                         self.driver_1.disable()
                         time.sleep_ms(2000)
                         self.collector_1.start(self.duty_1)
-                        while self.collector_1.idx != 29999:
+                        while self.collector_1.idx <= 29999:
                             exporter.run(f"{self.collector_1.long_position}\t{self.collector_1.long_time}\t{self.collector_1.long_delta}\r\n")
                         print('OL data colletion finished for motor 1')
                         self.driver_1.disable()
