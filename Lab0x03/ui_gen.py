@@ -142,31 +142,44 @@ def ui_gen():
         elif state == 'S2_CHRRDY':  
             done = False
             returned_value = ''                                     # reset the returned value string
+            prev = ''
+            idx = 1 
             while not done:
                 if vcp.any():
                     valIn = vcp.read(1).decode()                    # read current serial index value
-                    print(valIn, end='')
-                    idx = 1                                         # set str index to 1
+                    if prev != 'bs':
+                        print(valIn, end='')
+
                     if valIn.isdigit():                             # check if digit
                         returned_value += valIn                     
                         idx += 1
+                        prev = ''
                     elif valIn == '.':
                         if idx == 1:
                             returned_value += valIn
+                        prev = ''
                     elif valIn == '-':                              # check if minus
                         if idx == 1:                                 
-                            returned_value += valIn                 
-                    elif valIn == 'X7F':                            # check if backspace
+                            returned_value += valIn
+                        prev = ''                 
+                    elif valIn == '\x7F':                            # check if backspace
                         if idx != 2:                                
-                            returned_value = returned_value[:-1]            
+                            returned_value = returned_value[:-1]
+                            print('\r' + returned_value, end = '')
+                            prev = 'bs'            
                     elif valIn == '\n' or valIn == '\r':            # check if enter or carridge return 
                         print('\r\n')
-                        try:
-                            returned_value = int(returned_value)
-                        except ValueError:
-                            returned_value = float(returned_value)        
-                        done = True                                 # complete the state
-
+                        if idx != 1:
+                            try:
+                                returned_value = int(returned_value)
+                            except ValueError:
+                                returned_value = float(returned_value)
+                            done = True                                 # complete the state
+                        else:
+                            print('No value entered, try again')
+                        prev = ''
+            prev = ''
+            idx = 1
             state = 'S1_HUB'                                        # set next state back to hub
             IS_FLAGS['VAL_DONE'] = True                             # set value done flag, picked up by main
             IS_FLAGS['VALUE'] = returned_value                      # set value

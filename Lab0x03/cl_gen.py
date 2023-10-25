@@ -91,6 +91,7 @@ class motor_generator_class:
                         while self.collector_1.idx != 29999:
                             exporter.run(f"{self.collector_1.long_position}\t{self.collector_1.long_time}\t{self.collector_1.long_delta}\r\n")
                         print('OL data colletion finished for motor 1')
+                        self.driver_1.disable()
                         self.flags['OLDATA_FLG1'] = False                       # reset flg
                     
                     elif self.flags['OLDATA_FLG2']:
@@ -99,9 +100,10 @@ class motor_generator_class:
                         self.driver_2.disable()
                         time.sleep_ms(2000)
                         self.collector_2.start(self.duty_1)
-                        while self.collector_2.idx != 29999:
+                        while self.collector_2.idx <= 29999:
                             exporter.run(f"{self.collector_2.long_position}\t{self.collector_2.long_time}\t{self.collector_2.long_delta}\r\n")
                         print('OL data colletion finished for motor 2')
+                        self.driver_2.disable()
                         self.flags['OLDATA_FLG1'] = False                       # reset flg
                 
                 elif self.flags['CL_FLG'] == True:
