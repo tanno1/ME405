@@ -39,6 +39,8 @@ class motor_generator_class:
 
     def run_gen(self):
         state = 'S0_INIT'
+        closed_loop_mot_a = cl.closed_loop(self.encoder_1)                      # closed loop a instance
+        closed_loop_mot_b = cl.closed_loop(self.encoder_2)                      # closed loop b instance
 
         while True:
 
@@ -112,37 +114,27 @@ class motor_generator_class:
                     continue
 
             if state == 'S3_CL':
-                closed_loop_mot_a = cl.closed_loop(self.encoder_1)
-                closed_loop_mot_b = cl.closed_loop(self.encoder_2)
-                # update encoders at start of each iteration
-                self.encoder_1.update()
-                self.encoder_2.update()
-                # update encoder velocities at start of each iteration
-                self.encoder_1.vel_calc()
-                self.encoder_2.vel_calc()
                 if self.flags['CL_FLG'] == True:
                     if self.flags['K_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.kp = self.flags['VALUE']
-                        new_duty = closed_loop_mot_a.closed_loop()
                         print('Motor 1 K set to: {}'.format(self.flags['VALUE']))
                         self.flags['K_FLG1'] = False                                        # reset flg        
                         self.flags['VAL_DONE'] = False                                      # reset flg
                     
                     elif self.flags['K_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.kp = self.flags['VALUE']
-                        new_duty = closed_loop_mot_b.closed_loop()
                         print('Motor 2 K set to: {}'.format(self.flags['VALUE']))
                         self.flags['K_FLG2'] = False                                        # reset flg
                         self.flags['VAL_DONE'] = False                                      # reset flg
                     
                     elif self.flags['VEL_FLG1'] and self.flags['VAL_DONE']:
-                        closed_loop_mot_a.vel = self.flags['VALUE']
+                        closed_loop_mot_a.vel_ref = self.flags['VALUE']
                         print('Motor 1 V_ref set to: {}'.format(self.flags['VALUE']))
                         self.flags['VEL_FLG1'] = False                                      # reset flg
                         self.flags['VAL_DONE'] = False                                      # reset flg
                     
                     elif self.flags['VEL_FLG2'] and self.flags['VAL_DONE']:
-                        closed_loop_mot_b.vel = self.flags['VALUE']
+                        closed_loop_mot_b.vel_ref = self.flags['VALUE']
                         print('Motor 2 V_ref set to: {}'.format(self.flags['VALUE']))
                         self.flags['VEL_FLG2'] = False                                      # reset flg
                         self.flags['VAL_DONE'] = False                                      # reset flg
@@ -155,13 +147,15 @@ class motor_generator_class:
                         print('Driver 1 zero\'d')
                         self.encoder_1.zero()
                         time.sleep_ms(2000)
-                        print('CL data collection started for motor 1')
+                        print('CL data collection started for motor 1 with Vref: {} and Kp: {}'.format(closed_loop_mot_a.vel_ref, closed_loop_mot_a.kp))
                         self.collector_1.start(self.duty_1)
-                        while self.collector_1.idx != 29999:
+                        for i in range(30000):
+                            self.encoder_1.update()
+                            self.encoder_1.vel_calc()
                             exporter.run(f"{self.collector_1.long_position}\t{self.collector_1.long_time}\t{self.collector_1.long_delta}\r\n")
                             new_duty = closed_loop_mot_a.closed_loop()
-                            print(new_duty)
                             self.driver_1.set_duty(new_duty)
+                        self.flags['STEP_FLG1'] = False                 # reset flag
                     elif self.flags['STEP_FLG2']:
                         pass
                 elif self.flags['CL_FLG'] == False:
