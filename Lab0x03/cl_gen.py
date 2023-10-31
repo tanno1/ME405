@@ -88,6 +88,7 @@ class motor_generator_class:
                         print('OL data collection started for motor 1')
                         exporter = export.UART_connection()
                         self.driver_1.disable()
+                        self.encoder_1.zero()
                         time.sleep_ms(2000)
                         self.collector_1.start(self.duty_1)
                         while self.collector_1.idx <= 29999:
@@ -100,6 +101,7 @@ class motor_generator_class:
                         print('OL data collection started for motor 2')
                         exporter_2 = export.UART_connection()
                         self.driver_2.disable()
+                        self.encoder_2.zero()
                         time.sleep_ms(2000)
                         self.collector_2.start(self.duty_2)
                         while self.collector_2.idx <= 29999:
