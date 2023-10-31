@@ -143,38 +143,37 @@ def ui_gen():
             done = False
             returned_value = ''                                     # reset the returned value string
             prev = ''
-            idx = 1 
+            idx = 0 
             while not done:
                 if vcp.any():
-                    valIn = vcp.read(1).decode()                    # read current serial index value
-                    if prev != 'bs':
+                    valIn = vcp.read(1).decode()                        # read current serial index value
+                    if prev != 'bs' or ( prev == 'bs' and idx == 0 ):
                         print(valIn, end='')
-
-                    if valIn.isdigit():                             # check if digit
+                    if valIn.isdigit():                                 # check if digit
                         returned_value += valIn                     
                         idx += 1
                         prev = ''
                     elif valIn == '.':
-                        if idx == 1:
+                        if idx == 0:
                             returned_value += valIn
                         prev = ''
-                    elif valIn == '-':                              # check if minus
-                        if idx == 1:                                 
+                    elif valIn == '-':                                  # check if minus
+                        if idx == 0:                                 
                             returned_value += valIn
                         prev = ''                 
-                    elif valIn == '\x7F':                            # check if backspace
-                        if idx != 2:                                
-                            returned_value = returned_value[:-1]
-                            print('\r' + returned_value, end = '')
-                            prev = 'bs'            
-                    elif valIn == '\n' or valIn == '\r':            # check if enter or carridge return 
-                        print('\r\n')
-                        if idx != 1:
+                    elif valIn == '\x7F' and idx != 0:                  # check if backspace                             
+                        returned_value = returned_value[:-1]
+                        print('\r' + " " * 40 + '\r' + returned_value, end = '')
+                        prev = 'bs' 
+                        idx -= 1           
+                    elif valIn == '\n' or valIn == '\r':                # check if enter or carridge return 
+                        if idx != 0:
                             try:
                                 returned_value = int(returned_value)
                             except ValueError:
                                 returned_value = float(returned_value)
                             done = True                                 # complete the state
+                            print('\r\n')
                         else:
                             print('No value entered, try again')
                         prev = ''

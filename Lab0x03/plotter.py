@@ -12,7 +12,7 @@ pos_values = []
 time_values = []
 delta_values = []
 
-header1 = "Time (s)"
+header1 = "Time (ms)"
 header2 = "Encoder Position (Ticks)"
 header3 = "Velocity (RPM)"
 

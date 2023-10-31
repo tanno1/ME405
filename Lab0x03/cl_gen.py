@@ -101,12 +101,12 @@ class motor_generator_class:
                         exporter = export.UART_connection()
                         self.driver_2.disable()
                         time.sleep_ms(2000)
-                        self.collector_2.start(self.duty_1)
+                        self.collector_2.start(self.duty_2)
                         while self.collector_2.idx <= 29999:
                             exporter.run(f"{self.collector_2.long_position}\t{self.collector_2.long_time}\t{self.collector_2.long_delta}\r\n")
                         print('OL data colletion finished for motor 2')
                         self.driver_2.disable()
-                        self.flags['OLDATA_FLG1'] = False                       # reset flg
+                        self.flags['OLDATA_FLG2'] = False                       # reset flg
                 
                 elif self.flags['CL_FLG'] == True:
                     state = 'S3_CL'
