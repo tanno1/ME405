@@ -8,36 +8,16 @@ Created on Fri Oct 20 12:56:15 2023
 from matplotlib import pyplot
 import serial
 
-t_values = []
-x_values = []
-v_values = []
+pos_values = []
+time_values = []
+delta_values = []
 
 header1 = "Time (s)"
 header2 = "Encoder Position (Ticks)"
 header3 = "Velocity (RPM)"
 
-data = serial.Serial('COM3', baudrate= 115600)
-
-try:
-    while True:
-        line = data.readline().decode().strip().split(',')
-        
-        try:
-            t = float(data[0])
-            x = float(data[1])
-            v = float(data[1])
-            t_values.append(t)
-            x_values.append(x)
-            v_values.append(v)
-            
-        except ValueError:
-            continue
-        
-except KeyboardInterrupt:
-    pass
-
 def PosPlot():
-    pyplot.plot(t_values, x_values)
+    pyplot.plot(time_values, pos_values)
     pyplot.xlabel(header1)
     pyplot.ylabel(header2)
     pyplot.title(header2 +" Vs. "+ header1)
@@ -45,9 +25,41 @@ def PosPlot():
     pyplot.show()
     
 def VeloPlot():
-    pyplot.plot(t_values, v_values)
+    pyplot.plot(time_values, delta_values)
     pyplot.xlabel(header1)
     pyplot.ylabel(header3)
     pyplot.title(header3 +" Vs. "+ header1)
     pyplot.grid(True)
     pyplot.show()
+
+data = serial.Serial('/dev/cu.usbmodem142303', baudrate= 115600)
+
+while True:
+    try:
+        line = data.readline().decode('utf-8', errors = 'replace').strip().split(',')
+        split = str(line[0])
+        split = split.split('\t')
+        print(split)
+        try: 
+            pos = float(split[0])
+            time = float(split[1])
+            delta = float(split[2])
+            pos_values.append(pos)
+            time_values.append(time)
+            delta_values.append(delta)
+        except IndexError:
+            print('Unicode Decode Error caused Indexing error, data point skipped')
+            continue
+    
+    except UnicodeDecodeError:
+        print('Unicode Decode Error')
+        continue
+
+    except ValueError:
+        print('Value')
+        continue
+
+    except KeyboardInterrupt:            # exit collection
+        print('Keyboard interrupt')
+        PosPlot()                        # plot pos vs t
+        VeloPlot()                       # plot vel vs t

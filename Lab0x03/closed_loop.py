@@ -32,13 +32,9 @@ class closed_loop:
         self.l          = 0
 
     def closed_loop(self):
-        # print('velocity: {}'.format(self.encoder.velocity['rad/s']))
         self.vel_meas   = self.encoder.velocity['rad/s']
-        # print('vel meas: {}'.format(self.vel_meas))
         self.vel_err    = self.vel_ref - self.vel_meas
-        # print('vel err: {}'.format(self.vel_err))
         self.l          = self.vel_err * self.kp
-        print('new duty: {}'.format(self.l))
 
         return self.l
         
