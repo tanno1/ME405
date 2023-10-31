@@ -34,26 +34,29 @@ IS_FLAGS = {
 def choose_cmnd(command):
     #Zero Encoders
     if command == ('z'):
-        print("Encoder 1 zero'd")
-        encoder.enc_1.zero()
+        encoder.enc_1.total_position = 0
+        print("Encoder 1 total position set to {}".format(encoder.enc_1.total_position))
+        encoder.enc_1.update()
     elif command == ('Z'):
         print("Encoder 2 zero'd")
-        encoder.enc_2.zero()
+        encoder.enc_2.total_position = 0
+        print("Encoder 2 total position set to {}".format(encoder.enc_2.total_position))
+        encoder.enc_2.update()
 
     # print position
     elif command == ('p'):
-        pos = encoder.enc_1.get_position()
+        pos = encoder.enc_1.total_position
         print("Position of encoder 1: {}".format(pos))
     elif command == ('P'):
-        pos = encoder.enc_2.get_position()
+        pos = encoder.enc_2.total_position
         print("Position of encoder 2: {}".format(pos))
     
     # print delta
     elif command == ('d'):
-        delta = encoder.enc_1.get_delta()
+        delta = encoder.enc_1.current_delta
         print("Delta of en encoder 1: {}".format(delta))
     elif command == ('D'):
-        delta = encoder.enc_2.get_delta()
+        delta = encoder.enc_2.current_delta
         print("Delta of en encoder 2: {}".format(delta))
 
     # print Velocity     

@@ -111,6 +111,7 @@ class Encoder:
         self.velocity['rpm']    = self.velocity['rad/s'] / (2*math.pi)
 
     def get_position(self):
+        self.update()
         return self.current_position
 
     def get_delta(self):
@@ -142,7 +143,7 @@ chb_pin_2   = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)                      # encoder 1,
 tim_a_4     = Timer(4, period = ar, prescaler = ps)                 # encoder 1 timer
 cha_2       = tim_a_4.channel(1, pin=cha_pin_2, mode=Timer.ENC_AB)  
 chb_2       = tim_a_4.channel(2, pin=chb_pin_2, mode=Timer.ENC_AB)  
-enc_2       = Encoder(tim_a_8, cha_2, chb_2, ar, ps)                # encoder 1 instance
+enc_2       = Encoder(tim_a_4, cha_2, chb_2, ar, ps)                # encoder 1 instance
 # collector mot_b
 tim_7       = Timer(7, freq = 1000)                                 # timer for datat collection   
 collector_2 = collector(tim_7, enc_2, motor.mot_B)                  # collector instance 
