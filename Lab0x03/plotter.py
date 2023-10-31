@@ -32,11 +32,6 @@ def VeloPlot():
     pyplot.grid(True)
     pyplot.show()
 
-def reset():
-    pos_values = []
-    time_values = []
-    delta_values = []
-
 data = serial.Serial('/dev/cu.usbmodem142303', baudrate= 115600)
 
 while True:
@@ -68,4 +63,3 @@ while True:
         print('Keyboard interrupt')
         PosPlot()                        # plot pos vs t
         VeloPlot()                       # plot vel vs t
-        reset()
