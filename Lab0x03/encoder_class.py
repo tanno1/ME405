@@ -87,7 +87,7 @@ class Encoder:
                                         }             # initialize velocity as 0 
 
         # to prevent MemoryException errors for repeat calculations:
-        self.under_check = ((self.ar+1)/2)
+        self.under_check = ((self.ar)/2)
         self.over_check = (-1*( self.ar + 1 ))/2
         self.ar_add_1 = self.ar + 1
 
@@ -108,7 +108,7 @@ class Encoder:
     def vel_calc(self):
         # dictionary of velocity values in diff units
         self.velocity['rad/s']  = self.current_delta * 24.54
-        self.velocity['rpm']    = self.velocity['rad/s'] / (2*math.pi)
+        self.velocity['rpm']    = self.velocity['rad/s'] * 60)/ (2*math.pi)
 
     def get_position(self):
         self.update()

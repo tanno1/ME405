@@ -8,6 +8,7 @@
 # imports
 import encoder_class as encoder
 import motor_class as motor
+import time
 
 class closed_loop:
     '''!@brief                  closed loop controls implementation class
@@ -35,6 +36,12 @@ class closed_loop:
         self.vel_meas   = self.encoder.velocity['rad/s']
         self.vel_err    = self.vel_ref - self.vel_meas
         self.l          = self.vel_err * self.kp
+        # if self.l > 100:                                    # NEW
+        #     self.l = 100                                    
+        # elif self.l < 0:                                    
+        #     self.l = 0
 
+        time.sleep_ms(10)
         return self.l
+
         

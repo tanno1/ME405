@@ -36,12 +36,11 @@ def choose_cmnd(command):
     if command == ('z'):
         encoder.enc_1.total_position = 0
         print("Encoder 1 total position set to {}".format(encoder.enc_1.total_position))
-        encoder.enc_1.update()
+
     elif command == ('Z'):
         print("Encoder 2 zero'd")
         encoder.enc_2.total_position = 0
         print("Encoder 2 total position set to {}".format(encoder.enc_2.total_position))
-        encoder.enc_2.update()
 
     # print position
     elif command == ('p'):
@@ -101,10 +100,10 @@ def choose_cmnd(command):
             
         # choose velocity set point 
         elif command == ('s'):
-            print('Enter a velocity value for motor 1')
+            print('Enter a velocity value for motor 1 in [rad/s]')
             IS_FLAGS['VEL_FLG1'] = True
         elif command == ('S'):
-            print('Enter a velocity value for motor 2')
+            print('Enter a velocity value for motor 2 in [rad/s]')
             IS_FLAGS['VEL_FLG2'] = True
             
         # trigger step response and send data to be plott'd
