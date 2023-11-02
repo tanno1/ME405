@@ -78,10 +78,10 @@ class Encoder:
         self.chb = chb
         self.ar = ar
         self.ps = ps
-        self.current_delta          = 0               # initialize delta as 0 for first pass
-        self.total_position         = 0               # initialize total position as 0 for first pass
-        self.prev_position          = 0               # initialize previous position as 0 for first pass
-        self.current_position       = 0               # initialize the current position as 0 for first pass
+        self.current_delta          = 0                 # initialize delta as 0 for first pass
+        self.total_position         = 0                 # initialize total position as 0 for first pass
+        self.prev_position          = 0                 # initialize previous position as 0 for first pass
+        self.current_position       = 0                 # initialize the current position as 0 for first pass
         self.velocity = {
                             'rad/s' :0, 
                             'rpm'   :0
@@ -93,7 +93,6 @@ class Encoder:
         self.ar_add_1 = self.ar + 1
 
     def update(self):
-        self.start_time = utime.ticks_us()
         self.current_position = self.timer.counter()
         self.current_delta = self.current_position - self.prev_position
         # check for underflow
@@ -106,13 +105,11 @@ class Encoder:
         self.total_position += self.current_delta
         # update previous position to current position
         self.prev_position = self.current_position
-        self.end_time = utime.ticks_us()
-        self.delta_time = self.end_time - self.start_time
 
     def vel_calc(self):
         # dictionary of velocity values in diff units
-        self.velocity['rad/s']  = (self.current_delta * .3834) / self.delta_time
-        self.velocity['rpm']    = self.velocity['rad/s'] * 9.54
+        self.velocity['rad/s']  = (self.current_delta * .3834)
+        self.velocity['rpm']    = self.velocity['rad/s'] * 3.66
 
     def get_position(self):
         self.update()
