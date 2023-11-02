@@ -119,25 +119,25 @@ class motor_generator_class:
                 if self.flags['CL_FLG'] == True:
                     if self.flags['K_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.kp = self.flags['VALUE']
-                        print('Motor 1 K set to: {}'.format(self.flags['VALUE']))
+                        print('Motor 1 Kp set to: {}'.format(self.flags['VALUE']))
                         self.flags['K_FLG1'] = False                                        # reset flg        
                         self.flags['VAL_DONE'] = False                                      # reset flg
                     
                     elif self.flags['K_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.kp = self.flags['VALUE']
-                        print('Motor 2 K set to: {}'.format(self.flags['VALUE']))
+                        print('Motor 2 Kp set to: {}'.format(self.flags['VALUE']))
                         self.flags['K_FLG2'] = False                                        # reset flg
                         self.flags['VAL_DONE'] = False                                      # reset flg
                     
                     elif self.flags['VEL_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.vel_ref = self.flags['VALUE']
-                        print('Motor 1 V_ref set to: {}'.format(self.flags['VALUE']))
+                        print('Motor 1 V_ref set to: {} rpm'.format(self.flags['VALUE']))
                         self.flags['VEL_FLG1'] = False                                      # reset flg
                         self.flags['VAL_DONE'] = False                                      # reset flg
                     
                     elif self.flags['VEL_FLG2'] and self.flags['VAL_DONE']:
                         closed_loop_mot_b.vel_ref = self.flags['VALUE']
-                        print('Motor 2 V_ref set to: {}'.format(self.flags['VALUE']))
+                        print('Motor 2 V_ref set to: {} rpm'.format(self.flags['VALUE']))
                         self.flags['VEL_FLG2'] = False                                      # reset flg
                         self.flags['VAL_DONE'] = False                                      # reset flg
 
@@ -158,10 +158,28 @@ class motor_generator_class:
                             new_duty = closed_loop_mot_a.closed_loop()
                             self.driver_1.set_duty(new_duty)
                         self.flags['STEP_FLG1'] = False                 # reset flag
+                    
                     elif self.flags['STEP_FLG2']:
-                        pass
+                        print('Exporter setup...')
+                        exporter = export.UART_connection()
+                        print('Driver 2 disabled...')
+                        self.driver_2.disable()
+                        print('Driver 2 zero\'d')
+                        self.encoder_2.zero()
+                        time.sleep_ms(2000)
+                        print('CL data collection started for motor 1 with Vref: {} and Kp: {}'.format(closed_loop_mot_b.vel_ref, closed_loop_mot_b.kp))
+                        self.collector_2.start(self.duty_2)
+                        for i in range(30000):
+                            self.encoder_2.update()
+                            self.encoder_2.vel_calc()
+                            exporter.run(f"{self.collector_2.long_position}\t{self.collector_2.long_time}\t{self.collector_2.long_delta}\r\n")
+                            new_duty = closed_loop_mot_b.closed_loop()
+                            self.driver_2.set_duty(new_duty)
+                        self.flags['STEP_FLG2'] = False                 # reset flag
+                
                 elif self.flags['CL_FLG'] == False:
                     state = 'S1_HUB'
+                
                 else:
                     continue
 

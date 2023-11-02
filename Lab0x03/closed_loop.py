@@ -33,15 +33,16 @@ class closed_loop:
         self.l          = 0
 
     def closed_loop(self):
-        self.vel_meas   = self.encoder.velocity['rad/s']
+        self.vel_meas   = self.encoder.velocity['rpm']
         self.vel_err    = self.vel_ref - self.vel_meas
         self.l          = self.vel_err * self.kp
-        # if self.l > 100:                                    # NEW
-        #     self.l = 100                                    
-        # elif self.l < 0:                                    
-        #     self.l = 0
+        if self.l > 100:                                    # NEW
+            self.l = 100                                    
+        elif self.l < 0:                                    
+            self.l = 0
 
-        time.sleep_ms(10)
+        #print('Vmeas: {}\t Verr: {}\t L: {}'.format(self.vel_meas, self.vel_err, self.l))
+        
         return self.l
 
         

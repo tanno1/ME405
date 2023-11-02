@@ -28,7 +28,7 @@ class L6206:
         elif duty <= 0:
             self.PWM1.pulse_width_percent(0)
             self.PWM2.pulse_width_percent(-1*duty)
-        elif duty == 0:
+        else:
             self.PWM1.pulse_width_percent(0)
             self.PWM2.pulse_width_percent(0)
     

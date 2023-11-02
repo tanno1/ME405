@@ -20,8 +20,8 @@ if __name__ == '__main__':
     motor_controller_task   = cl.motor_generator_class(encoder.enc_1, encoder.enc_2, motor.mot_A, motor.mot_B, encoder.collector_1, encoder.collector_2, ui.IS_FLAGS)
 
     # create task objects
-    cl_task      = cotask.Task( motor_controller_task.run_gen, "cl task", priority = 1, period = 40 )
-    ui_task      = cotask.Task( ui.ui_gen, "ui task", priority = 2, period = 40 )
+    cl_task      = cotask.Task( motor_controller_task.run_gen, "cl task", priority = 1, period = 4, profile=True, trace=False )
+    ui_task      = cotask.Task( ui.ui_gen, "ui task", priority = 2, period = 4, profile=True, trace=False )
     #export_task     = cotask.task( export_task, "export task", priority = 0, period = .001)
     cotask.task_list.append(cl_task)
     cotask.task_list.append(ui_task)
@@ -37,5 +37,9 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             ser.write("Stopped running")
             break
+    
+    print('\n' + str (cotask.task_list))
+    print(cl_task.get_trace())
+    print('')
 
     print('Program Terminated')

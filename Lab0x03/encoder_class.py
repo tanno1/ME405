@@ -6,6 +6,7 @@
 '''
 # imports
 from pyb import Pin, Timer
+import utime
 from array import array
 import motor_class as motor
 import math
@@ -92,6 +93,7 @@ class Encoder:
         self.ar_add_1 = self.ar + 1
 
     def update(self):
+        self.start_time = utime.ticks_us()
         self.current_position = self.timer.counter()
         self.current_delta = self.current_position - self.prev_position
         # check for underflow
@@ -104,11 +106,13 @@ class Encoder:
         self.total_position += self.current_delta
         # update previous position to current position
         self.prev_position = self.current_position
+        self.end_time = utime.ticks_us()
+        self.delta_time = self.end_time - self.start_time
 
     def vel_calc(self):
         # dictionary of velocity values in diff units
-        self.velocity['rad/s']  = self.current_delta * 24.54
-        self.velocity['rpm']    = (self.velocity['rad/s'] * 60)/ (2*math.pi)
+        self.velocity['rad/s']  = (self.current_delta * .3834) / self.delta_time
+        self.velocity['rpm']    = self.velocity['rad/s'] * 9.54
 
     def get_position(self):
         self.update()

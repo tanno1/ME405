@@ -100,10 +100,10 @@ def choose_cmnd(command):
             
         # choose velocity set point 
         elif command == ('s'):
-            print('Enter a velocity value for motor 1 in [rad/s]')
+            print('Enter a velocity value for motor 1 in [rpm]')
             IS_FLAGS['VEL_FLG1'] = True
         elif command == ('S'):
-            print('Enter a velocity value for motor 2 in [rad/s]')
+            print('Enter a velocity value for motor 2 in [rpm]')
             IS_FLAGS['VEL_FLG2'] = True
             
         # trigger step response and send data to be plott'd
@@ -135,6 +135,10 @@ def ui_gen():
 
         elif state == 'S1_HUB':
             #print("UI: in state 1")
+            dot = 0
+            returned_value = ''                                     # reset the returned value string
+            prev = ''
+            idx = 0 
             if vcp.any():                                           
                 command = vcp.read(1)
                 choose_cmnd(command.decode('utf-8'))
@@ -142,48 +146,46 @@ def ui_gen():
                     state = 'S2_CHRRDY'
             
         elif state == 'S2_CHRRDY':  
-            done = False
-            returned_value = ''                                     # reset the returned value string
-            prev = ''
-            idx = 0 
-            while not done:
-                if vcp.any():
-                    valIn = vcp.read(1).decode()                        # read current serial index value
-                    if prev != 'bs' or ( prev == 'bs' and idx == 0 ):
-                        print(valIn, end='')
-                    if valIn.isdigit():                                 # check if digit
-                        returned_value += valIn                     
-                        idx += 1
-                        prev = ''
-                    elif valIn == '.':
-                        if idx == 0:
-                            returned_value += valIn
-                        prev = ''
-                    elif valIn == '-':                                  # check if minus
-                        if idx == 0:                                 
-                            returned_value += valIn
-                        prev = ''                 
-                    elif valIn == '\x7F' and idx != 0:                  # check if backspace                             
-                        returned_value = returned_value[:-1]
-                        print('\r' + " " * 40 + '\r' + returned_value, end = '')
-                        prev = 'bs' 
-                        idx -= 1           
-                    elif valIn == '\n' or valIn == '\r':                # check if enter or carridge return 
-                        if idx != 0:
-                            try:
-                                returned_value = int(returned_value)
-                            except ValueError:
-                                returned_value = float(returned_value)
-                            done = True                                 # complete the state
-                            print('\r\n')
-                        else:
-                            print('No value entered, try again')
-                        prev = ''
+            if vcp.any():
+                valIn = vcp.read(1).decode()                        # read current serial index value
+                if prev != 'bs' or ( prev == 'bs' and idx == 0 ):
+                    print(valIn, end='')
+                if valIn.isdigit():                                 # check if digit
+                    returned_value += valIn                     
+                    idx += 1
+                    prev = ''
+                elif valIn == '.':
+                    if dot != 1:
+                        returned_value += valIn
+                        dot = 1
+                    prev = ''
+                elif valIn == '-':                                  # check if minus
+                    if idx == 0:                                 
+                        returned_value += valIn
+                    prev = ''                 
+                elif valIn == '\x7F' and idx != 0:                  # check if backspace                             
+                    returned_value = returned_value[:-1]
+                    print('\r' + " " * 40 + '\r' + returned_value, end = '')
+                    prev = 'bs' 
+                    idx -= 1           
+                elif valIn == '\n' or valIn == '\r':                # check if enter or carridge return 
+                    if idx != 0:
+                        try:
+                            returned_value = int(returned_value)
+                        except ValueError:
+                            returned_value = float(returned_value)
+                        done = True                                 # complete the state
+                        print('\r\n')
+                    else:
+                        print('No value entered, try again')
+                    prev = ''
+                    state = 'S3_VALDONE'
+
+        elif state == 'S3_VALDONE':
             prev = ''
             idx = 1
             state = 'S1_HUB'                                        # set next state back to hub
             IS_FLAGS['VAL_DONE'] = True                             # set value done flag, picked up by main
             IS_FLAGS['VALUE'] = returned_value                      # set value
-            done = False                                            # reset done flag
         
         yield(state)
