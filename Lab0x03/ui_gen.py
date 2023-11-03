@@ -48,7 +48,7 @@ def choose_cmnd(command):
         print("Position of encoder 1: {}".format(pos))
     elif command == ('P'):
         pos = encoder.enc_2.total_position
-        print("Position of encoder 2: {}".format(pos))
+        print("Position of encoder 2: {}".format(-pos))
     
     # print delta
     elif command == ('d'):
