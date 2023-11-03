@@ -73,11 +73,11 @@ class Encoder:
             @details
             @param
         '''
-        self.timer = timer
-        self.cha = cha
-        self.chb = chb
-        self.ar = ar
-        self.ps = ps
+        self.timer                  = timer
+        self.cha                    = cha
+        self.chb                    = chb
+        self.ar                     = ar
+        self.ps                     = ps
         self.current_delta          = 0                 # initialize delta as 0 for first pass
         self.total_position         = 0                 # initialize total position as 0 for first pass
         self.prev_position          = 0                 # initialize previous position as 0 for first pass
@@ -93,8 +93,8 @@ class Encoder:
         self.ar_add_1 = self.ar + 1
 
     def update(self):
-        self.current_position = self.timer.counter()
-        self.current_delta = self.current_position - self.prev_position
+        self.current_position   = self.timer.counter()
+        self.current_delta      = self.current_position - self.prev_position
         # check for underflow
         if self.current_delta > self.under_check:
             self.current_delta -= self.ar_add_1
@@ -104,11 +104,11 @@ class Encoder:
         # add delta to total position (total movement that does not reset for each rev)
         self.total_position += self.current_delta
         # update previous position to current position
-        self.prev_position = self.current_position
+        self.prev_position      = self.current_position
 
     def vel_calc(self):
         # dictionary of velocity values in diff units
-        self.velocity['rad/s']  = (self.current_delta * .3834)
+        self.velocity['rad/s']  = (self.current_delta * .3834) / 1.6
         self.velocity['rpm']    = self.velocity['rad/s'] * 3.66
 
     def get_position(self):

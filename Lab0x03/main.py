@@ -15,14 +15,13 @@ import cl_gen as cl
 import ui_gen as ui
 
 if __name__ == '__main__':
-    export_task             = 0
+    export_task                 = 0
 
     motor_controller_task   = cl.motor_generator_class(encoder.enc_1, encoder.enc_2, motor.mot_A, motor.mot_B, encoder.collector_1, encoder.collector_2, ui.IS_FLAGS)
 
     # create task objects
     cl_task      = cotask.Task( motor_controller_task.run_gen, "cl task", priority = 1, period = 4, profile=True, trace=False )
     ui_task      = cotask.Task( ui.ui_gen, "ui task", priority = 2, period = 4, profile=True, trace=False )
-    #export_task     = cotask.task( export_task, "export task", priority = 0, period = .001)
     cotask.task_list.append(cl_task)
     cotask.task_list.append(ui_task)
 
