@@ -101,11 +101,11 @@ class motor_generator_class:
                         print('OL data collection started for motor 2')
                         exporter_2 = export.UART_connection()
                         self.driver_2.disable()
-                        self.driver_2.zero()
+                        self.encoder_2.zero()
                         time.sleep_ms(2000)
                         self.collector_2.start(self.duty_2)
                         while self.collector_2.idx <= 29999:
-                            exporter_2.run(f"{self.collector_2.long_position}\t{self.collector_2.long_time}\t{self.collector_2.long_delta}\r\n")
+                            exporter_2.run(f"{-self.collector_2.long_position}\t{self.collector_2.long_time}\t{-self.collector_2.long_delta}\r\n")
                         print('OL data colletion finished for motor 2')
                         self.driver_2.disable()
                         self.flags['OLDATA_FLG2'] = False                       # reset flg
@@ -172,7 +172,7 @@ class motor_generator_class:
                         for i in range(30000):
                             self.encoder_2.update()
                             self.encoder_2.vel_calc()
-                            exporter.run(f"{self.collector_2.long_position}\t{self.collector_2.long_time}\t{self.collector_2.long_delta}\r\n")
+                            exporter.run(f"{-self.collector_2.long_position}\t{self.collector_2.long_time}\t{-self.collector_2.long_delta}\r\n")
                             new_duty = closed_loop_mot_b.closed_loop()
                             self.driver_2.set_duty(new_duty)
                         self.flags['STEP_FLG2'] = False                 # reset flag
