@@ -14,7 +14,7 @@ pos_values  = []
 time_values = []
 vel_values  = []
 
-header1 = "Time (ms)"
+header1 = "Time (s)"
 header2 = "Encoder Position (Ticks)"
 header3 = "Velocity (RPM)"
 
@@ -50,7 +50,10 @@ def data_collect():
                 vel = float(split[2])
                 pos_values.append(pos)
                 time_values.append(time)
-                vel_values.append(vel)
+                if vel < 0:
+                    vel_values.append(vel_values[-1])
+                else:
+                    vel_values.append(vel)
             except IndexError:
                 print('Unicode Decode Error caused Indexing error, data point skipped')
         

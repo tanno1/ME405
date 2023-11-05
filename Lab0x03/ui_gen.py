@@ -63,16 +63,26 @@ def choose_cmnd(command):
     elif command == ('v'):
         start_time1 = time.ticks_us()
         encoder.enc_1.update()
-        pos1        = encoder.enc_1.current_position
+        A_pos1        = encoder.enc_1.current_position
         end_time1   = time.ticks_us()
         encoder.enc_1.update()
-        pos2        = encoder.enc_1.current_position
+        A_pos2        = encoder.enc_1.current_position
         time_diff1   = (end_time1 - start_time1) / 1000
         print(f'time diff: {time_diff1}')
-        print(f'current delta: {pos2 - pos1}')
-        encoder.enc_1.vel_calc(pos1, pos2, time_diff1)
+        print(f'current delta: {A_pos2 - A_pos1}')
+        encoder.enc_1.vel_calc(A_pos1, A_pos2, time_diff1)
         print('Velocity of encoder 1: {} rad/s or {} rpm'.format(encoder.enc_1.velocity['rad/s'], encoder.enc_1.velocity['rpm']))
     elif command == ('V'):
+        start_time2 = time.ticks_us()
+        encoder.enc_2.update()
+        B_pos1        = encoder.enc_2.current_position
+        end_time2   = time.ticks_us()
+        encoder.enc_2.update()
+        B_pos2        = encoder.enc_2.current_position
+        time_diff2   = (end_time2 - start_time2) / 1000
+        print(f'time diff: {time_diff2}')
+        print(f'current delta: {B_pos2 - B_pos1}')
+        encoder.enc_1.vel_calc(B_pos1, B_pos2, time_diff2)
         print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.enc_2.velocity['rad/s'], encoder.enc_2.velocity['rpm']))
 
     # enter a duty cycle   

@@ -42,6 +42,8 @@ class closed_loop:
         if self.l < 0:                                    
             self.l = 0
         
+        print(f'new duty: {self.l}')
+        
         return self.l
         
         

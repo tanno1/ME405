@@ -134,8 +134,7 @@ class motor_generator_class:
             if state == 'S3_CL':
                 if self.flags['CL_FLG'] == True:
                     exporter = export.UART_connection()
-                    self.encoder_1.update()
-                    self.encoder_1.vel_calc()
+
                     if self.flags['K_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.kp = self.flags['VALUE']
                         print('Motor 1 Kp set to: {}'.format(self.flags['VALUE']))
@@ -161,10 +160,22 @@ class motor_generator_class:
                         self.flags['VAL_DONE'] = False                                      # reset flg
 
                     elif self.flags['STEP_FLG1']:
-                        new_duty = closed_loop_mot_a.closed_loop()
-                        self.driver_1.set_duty(new_duty)
-                        exporter.run(f"{self.encoder_1.total_position}\t{i}\t{self.encoder_1.velocity['rpm']}\r\n")
-                        i += 1.6
+                        og_start = time.ticks_us()
+                        for i in range(30000):
+                            # velocity calc
+                            start_time1 = time.ticks_us()
+                            encoder.enc_1.update()
+                            pos1        = encoder.enc_1.current_position
+                            end_time1   = time.ticks_us()
+                            encoder.enc_1.update()
+                            pos2        = encoder.enc_1.current_position
+                            time_diff1  = (end_time1 - start_time1) / 1000
+                            encoder.enc_1.vel_calc(pos1, pos2, time_diff1)
+                            curr_time1  = (end_time1 - og_start) / 1000000
+
+                            new_duty = closed_loop_mot_a.closed_loop()
+                            self.driver_1.set_duty(new_duty)
+                            exporter.run(f"{self.encoder_1.total_position}\t{curr_time1}\t{self.encoder_1.velocity['rpm']}\r\n")
 
                     elif self.flags['STEP_FLG2']:
                         print('Exporter setup...')
