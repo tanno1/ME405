@@ -57,7 +57,7 @@ def choose_cmnd(command):
         print("Delta of en encoder 1: {}".format(delta))
     elif command == ('D'):
         delta = encoder.enc_2.current_delta
-        print("Delta of en encoder 2: {}".format(delta))
+        print("Delta of en encoder 2: {}".format(-delta))
 
     # print Velocity     
     elif command == ('v'):
@@ -68,8 +68,6 @@ def choose_cmnd(command):
         encoder.enc_1.update()
         A_pos2        = encoder.enc_1.current_position
         time_diff1   = (end_time1 - start_time1) / 1000
-        print(f'time diff: {time_diff1}')
-        print(f'current delta: {A_pos2 - A_pos1}')
         encoder.enc_1.vel_calc(A_pos1, A_pos2, time_diff1)
         print('Velocity of encoder 1: {} rad/s or {} rpm'.format(encoder.enc_1.velocity['rad/s'], encoder.enc_1.velocity['rpm']))
     elif command == ('V'):
@@ -80,10 +78,8 @@ def choose_cmnd(command):
         encoder.enc_2.update()
         B_pos2        = encoder.enc_2.current_position
         time_diff2   = (end_time2 - start_time2) / 1000
-        print(f'time diff: {time_diff2}')
-        print(f'current delta: {B_pos2 - B_pos1}')
-        encoder.enc_1.vel_calc(B_pos1, B_pos2, time_diff2)
-        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.enc_2.velocity['rad/s'], encoder.enc_2.velocity['rpm']))
+        encoder.enc_2.vel_calc(B_pos1, B_pos2, time_diff2)
+        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(-encoder.enc_2.velocity['rad/s'], -encoder.enc_2.velocity['rpm']))
 
     # enter a duty cycle   
     elif command == ('m'):
@@ -171,6 +167,9 @@ def ui_gen():
                 valIn = vcp.read(1).decode()                        # read current serial index value
                 if prev != 'bs' or ( prev == 'bs' and idx == 0 ):
                     print(valIn, end='')
+                elif prev == 'bs' and idx != 0:
+                    print(valIn, end='')
+                    idx -= 1
                 if valIn.isdigit():                                 # check if digit
                     returned_value += valIn                     
                     idx += 1
@@ -184,7 +183,7 @@ def ui_gen():
                     if idx == 0:                                 
                         returned_value += valIn
                     prev = ''                 
-                elif valIn == '\x7F' and idx != 0:                  # check if backspace                             
+                elif valIn == '\x7F':                               # check if backspace                             
                     returned_value = returned_value[:-1]
                     print('\r' + " " * 40 + '\r' + returned_value, end = '')
                     prev = 'bs' 
