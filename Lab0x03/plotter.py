@@ -10,9 +10,9 @@ import serial
 import time
 import math
 
-pos_values = []
+pos_values  = []
 time_values = []
-vel_values = []
+vel_values  = []
 
 header1 = "Time (ms)"
 header2 = "Encoder Position (Ticks)"

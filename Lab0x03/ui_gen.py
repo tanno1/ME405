@@ -9,9 +9,10 @@
 import encoder_class as encoder
 import motor_class as motor
 import pyb
+import time
 
-valid_commands = ['z', 'Z', 'p', 'P', 'v', 'V', 'm', 'M', 'g', 'G', 'c', 'C', 'k', 'K', 's', 'S', 'r', 'R', 'o', 'O']
-done = False
+valid_commands  = ['z', 'Z', 'p', 'P', 'v', 'V', 'm', 'M', 'g', 'G', 'c', 'C', 'k', 'K', 's', 'S', 'r', 'R', 'o', 'O']
+done            = False
 
 # flags setup
 IS_FLAGS = {
@@ -60,6 +61,16 @@ def choose_cmnd(command):
 
     # print Velocity     
     elif command == ('v'):
+        start_time1 = time.ticks_us()
+        encoder.enc_1.update()
+        pos1        = encoder.enc_1.current_position
+        end_time1   = time.ticks_us()
+        encoder.enc_1.update()
+        pos2        = encoder.enc_1.current_position
+        time_diff1   = (end_time1 - start_time1) / 1000
+        print(f'time diff: {time_diff1}')
+        print(f'current delta: {pos2 - pos1}')
+        encoder.enc_1.vel_calc(pos1, pos2, time_diff1)
         print('Velocity of encoder 1: {} rad/s or {} rpm'.format(encoder.enc_1.velocity['rad/s'], encoder.enc_1.velocity['rpm']))
     elif command == ('V'):
         print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.enc_2.velocity['rad/s'], encoder.enc_2.velocity['rpm']))

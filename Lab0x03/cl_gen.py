@@ -42,7 +42,7 @@ class motor_generator_class:
         closed_loop_mot_a = cl.closed_loop(self.encoder_1, self.driver_1)           # closed loop a instance
         closed_loop_mot_b = cl.closed_loop(self.encoder_2, self.driver_2)           # closed loop b instance
         exporter = export.UART_connection()
-        i = 1
+        i = 1.6
 
         while True:
 
@@ -66,11 +66,25 @@ class motor_generator_class:
             if state =='S2_OL':
                 if self.flags['CL_FLG'] == False:
                     # update encoders at start of each iteration
+                    start_time1     = time.ticks_us()
                     self.encoder_1.update()
+                    A_pos1          = encoder.enc_1.current_position
+                    end_time1       = time.ticks_us()
+                    self.encoder_1.update()
+                    A_pos2          = encoder.enc_1.current_position
+                    time_diff1      = end_time1 - start_time1
+                    # vel calc
+                    self.encoder_1.vel_calc(A_pos1, A_pos2, time_diff1)
+
+                    start_time2     = time.ticks_us()
                     self.encoder_2.update()
-                    # update encoder velocities at start of each iteration
-                    self.encoder_1.vel_calc()
-                    self.encoder_2.vel_calc()
+                    B_pos1          = encoder.enc_2.current_position
+                    end_time2       = time.ticks_us()
+                    self.encoder_2.update()
+                    B_pos2          = encoder.enc_2.current_position
+                    time_diff1      = end_time2 - start_time2
+                    # vel calc
+                    self.encoder_1.vel_calc(B_pos1, B_pos2, time_diff1)
 
                     if self.flags['DUTY_FLG1'] and self.flags['VAL_DONE']:
                         self.duty_1 = self.flags['VALUE']
@@ -147,9 +161,10 @@ class motor_generator_class:
                         self.flags['VAL_DONE'] = False                                      # reset flg
 
                     elif self.flags['STEP_FLG1']:
-                        closed_loop_mot_a.closed_loop()
+                        new_duty = closed_loop_mot_a.closed_loop()
+                        self.driver_1.set_duty(new_duty)
                         exporter.run(f"{self.encoder_1.total_position}\t{i}\t{self.encoder_1.velocity['rpm']}\r\n")
-                        i += 1
+                        i += 1.6
 
                     elif self.flags['STEP_FLG2']:
                         print('Exporter setup...')

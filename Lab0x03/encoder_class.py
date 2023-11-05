@@ -6,7 +6,7 @@
 '''
 # imports
 from pyb import Pin, Timer
-import utime
+import time
 from array import array
 import motor_class as motor
 import math
@@ -73,6 +73,7 @@ class Encoder:
             @param
         '''
         self.timer                  = timer
+        self.last_update            = time.ticks_us()
         self.cha                    = cha
         self.chb                    = chb
         self.ar                     = ar
@@ -105,9 +106,10 @@ class Encoder:
         # update previous position to current position
         self.prev_position      = self.current_position
 
-    def vel_calc(self):
+    def vel_calc(self, pos1, pos2, time_diff):
         # dictionary of velocity values in diff units
-        self.velocity['rad/s']  = (self.current_delta * .3834) / 1.6
+        delta = pos2 - pos1
+        self.velocity['rad/s']  = delta / time_diff
         self.velocity['rpm']    = self.velocity['rad/s'] * 3.66
 
     def get_position(self):

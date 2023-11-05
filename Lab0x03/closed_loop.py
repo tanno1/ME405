@@ -37,13 +37,12 @@ class closed_loop:
         self.vel_meas   = int(self.encoder.velocity['rpm'])
         self.vel_err    = int(self.vel_ref - self.vel_meas)
         self.l          = int(self.vel_err * self.kp)
-        # if self.l > 100: 
-        #     self.l = 100                                    
+        if self.l > 100: 
+            self.l = 100                                    
         if self.l < 0:                                    
             self.l = 0
-        print("new duty: {}".format(self.l))
-
-        self.motor.set_duty(self.l)
+        
+        return self.l
         
         
 

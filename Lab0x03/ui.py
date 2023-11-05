@@ -1,4 +1,4 @@
-'''
+code ui'''
     @file               ui.py
     @brief              class file to control the keyboard input from users and implement results as a generator task function inside of main.py
     @author             noah tanner, kosimo tonn
