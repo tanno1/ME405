@@ -38,14 +38,13 @@ class collector:
     
     def start(self, duty_cycle):
         self.duty_cycle     = duty_cycle
-        self.type           = type
         self.encoder.zero()
         self.motor.enable()
         self.motor.set_duty(self.duty_cycle)
         self.tim.callback(self.tim_cb)
         if self.idx == 29999:
             self.tim.callback(None)
-    
+
     def tim_cb(self, tim):
         '''!@brief              timer callback for encoder
             @details

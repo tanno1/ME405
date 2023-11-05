@@ -37,7 +37,8 @@ def VeloPlot():
 data = serial.Serial('/dev/cu.usbmodem142303', baudrate= 115600)
 
 def data_collect():
-    while True:
+    stop = False
+    while not stop:
         try:
             line = data.readline().decode('utf-8', errors = 'replace').strip().split(',')
             split = str(line[0])
@@ -46,7 +47,7 @@ def data_collect():
             try: 
                 pos = float(split[0])
                 time = float(split[1])
-                vel = float(split[2]) * 3.66
+                vel = float(split[2])
                 pos_values.append(pos)
                 time_values.append(time)
                 vel_values.append(vel)
@@ -63,21 +64,24 @@ def data_collect():
             print('Keyboard interrupt')
             PosPlot()                        # plot pos vs t
             VeloPlot()                       # plot vel vs t
+            stop = True
 
 def reset():
+    global pos_values, time_values, vel_values
     pos_values      = []
     time_values     = []
-    vel_values    = []
+    vel_values      = []
 
 while True:
     print("Command choices:")
     print("1. data_collect()")
     print("2. reset()")
-    time.sleep(2)
     choice = input("Enter a command number: ")
 
     if choice == "1":
         data_collect()
+        print('Data collection vars reset')
+        reset()
     elif choice == "2":
         reset()
     else:

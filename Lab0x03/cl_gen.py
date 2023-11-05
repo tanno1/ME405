@@ -39,8 +39,10 @@ class motor_generator_class:
 
     def run_gen(self):
         state = 'S0_INIT'
-        closed_loop_mot_a = cl.closed_loop(self.encoder_1)                      # closed loop a instance
-        closed_loop_mot_b = cl.closed_loop(self.encoder_2)                      # closed loop b instance
+        closed_loop_mot_a = cl.closed_loop(self.encoder_1, self.driver_1)           # closed loop a instance
+        closed_loop_mot_b = cl.closed_loop(self.encoder_2, self.driver_2)           # closed loop b instance
+        exporter = export.UART_connection()
+        i = 1
 
         while True:
 
@@ -117,6 +119,9 @@ class motor_generator_class:
 
             if state == 'S3_CL':
                 if self.flags['CL_FLG'] == True:
+                    exporter = export.UART_connection()
+                    self.encoder_1.update()
+                    self.encoder_1.vel_calc()
                     if self.flags['K_FLG1'] and self.flags['VAL_DONE']:
                         closed_loop_mot_a.kp = self.flags['VALUE']
                         print('Motor 1 Kp set to: {}'.format(self.flags['VALUE']))
@@ -142,23 +147,10 @@ class motor_generator_class:
                         self.flags['VAL_DONE'] = False                                      # reset flg
 
                     elif self.flags['STEP_FLG1']:
-                        print('Exporter setup...')
-                        exporter = export.UART_connection()
-                        print('Driver 1 disabled...')
-                        self.driver_1.disable()
-                        print('Driver 1 zero\'d')
-                        self.encoder_1.zero()
-                        time.sleep_ms(2000)
-                        print('CL data collection started for motor 1 with Vref: {} and Kp: {}'.format(closed_loop_mot_a.vel_ref, closed_loop_mot_a.kp))
-                        self.collector_1.start(self.duty_1)
-                        for i in range(30000):
-                            self.encoder_1.update()
-                            self.encoder_1.vel_calc()
-                            exporter.run(f"{self.collector_1.long_position}\t{self.collector_1.long_time}\t{self.collector_1.long_delta}\r\n")
-                            new_duty = closed_loop_mot_a.closed_loop()
-                            self.driver_1.set_duty(new_duty)
-                        self.flags['STEP_FLG1'] = False                 # reset flag
-                    
+                        closed_loop_mot_a.closed_loop()
+                        exporter.run(f"{self.encoder_1.total_position}\t{i}\t{self.encoder_1.velocity['rpm']}\r\n")
+                        i += 1
+
                     elif self.flags['STEP_FLG2']:
                         print('Exporter setup...')
                         exporter = export.UART_connection()

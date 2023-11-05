@@ -15,7 +15,7 @@ class closed_loop:
         @details                this class allows for P, PI, or PID controls calculations and implementation for the dc motor.
     '''
 
-    def __init__(self, encoder: encoder.Encoder):
+    def __init__(self, encoder: encoder.Encoder, motor: motor.L6206):
         '''!@brief              creates a closed loop object
             @param  encoder:    an encoder object for feedback from dc motor
             @type   encoder:    encoder_class
@@ -26,6 +26,7 @@ class closed_loop:
             @rtype:             integer  
         '''
         self.encoder    = encoder
+        self.motor      = motor
         self.vel_ref    = 0
         self.vel_meas   = 0
         self.vel_err    = 0
@@ -33,16 +34,17 @@ class closed_loop:
         self.l          = 0
 
     def closed_loop(self):
-        self.vel_meas   = self.encoder.velocity['rpm']
-        self.vel_err    = self.vel_ref - self.vel_meas
-        self.l          = self.vel_err * self.kp
-        if self.l > 100:                                    # NEW
-            self.l = 100                                    
-        elif self.l < 0:                                    
+        self.vel_meas   = int(self.encoder.velocity['rpm'])
+        self.vel_err    = int(self.vel_ref - self.vel_meas)
+        self.l          = int(self.vel_err * self.kp)
+        # if self.l > 100: 
+        #     self.l = 100                                    
+        if self.l < 0:                                    
             self.l = 0
+        print("new duty: {}".format(self.l))
 
-        #print('Vmeas: {}\t Verr: {}\t L: {}'.format(self.vel_meas, self.vel_err, self.l))
+        self.motor.set_duty(self.l)
         
-        return self.l
+        
 
         
