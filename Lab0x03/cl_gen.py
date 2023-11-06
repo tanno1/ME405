@@ -160,39 +160,81 @@ class motor_generator_class:
                         self.flags['VAL_DONE'] = False                                      # reset flg
 
                     elif self.flags['STEP_FLG1']:
-                        og_start = time.ticks_us()
+                        og_start        = time.ticks_us()
+                        initial_time    = None    
+                        sample_freq     = 250                       # hz
+                        t_interval      = 1000000 / sample_freq     # ms / sample
+
+                        alpha           = .2
+                        ema             = None
+
                         for i in range(30000):
-                            # velocity calc
+                            # beginning time stamp
                             start_time1 = time.ticks_us()
+
+                            if initial_time is None:
+                                initial_time = start_time1
+                            
+                            elapsed_time    = ( time.ticks_diff( start_time1, initial_time ) / 1000000 )
+
+                            # velocity calc
                             encoder.enc_1.update()
-                            pos1        = encoder.enc_1.current_position
-                            end_time1   = time.ticks_us()
+                            pos1            = encoder.enc_1.current_position
+                            end_time1       = time.ticks_us()
                             encoder.enc_1.update()
-                            pos2        = encoder.enc_1.current_position
-                            time_diff1  = (end_time1 - start_time1) / 1000
+                            pos2            = encoder.enc_1.current_position
+                            time_diff1      = (end_time1 - start_time1) / 1000
                             encoder.enc_1.vel_calc(pos1, pos2, time_diff1)
-                            curr_time1  = (end_time1 - og_start) / 1000000
+                            
+                            if ema is None:
+                                ema = self.encoder_1.velocity['rpm']
+                            else:
+                                ema = alpha * self.encoder_1.velocity['rpm'] + (1 - alpha) * ema
 
                             new_duty = closed_loop_mot_a.closed_loop()
                             self.driver_1.set_duty(new_duty)
-                            exporter.run(f"{self.encoder_1.total_position}\t{curr_time1}\t{self.encoder_1.velocity['rpm']}\r\n")
+
+                            exporter.run(f"{self.encoder_1.total_position}\t{elapsed_time}\t{ema}\r\n")
+                            og_start += t_interval
+                        self.flags['STEP_FLG1'] = False                 # reset flag
 
                     elif self.flags['STEP_FLG2']:
-                        print('Exporter setup...')
-                        exporter = export.UART_connection()
-                        print('Driver 2 disabled...')
-                        self.driver_2.disable()
-                        print('Driver 2 zero\'d')
-                        self.encoder_2.zero()
-                        time.sleep_ms(2000)
-                        print('CL data collection started for motor 1 with Vref: {} and Kp: {}'.format(closed_loop_mot_b.vel_ref, closed_loop_mot_b.kp))
-                        self.collector_2.start(self.duty_2)
+                        og_start2        = time.ticks_us()
+                        initial_time2    = None    
+                        sample_freq2     = 250                        # hz
+                        t_interval2      = 1000000 / sample_freq2     # ms / sample
+
+                        alpha2           = .2
+                        ema2             = None
+
                         for i in range(30000):
-                            self.encoder_2.update()
-                            self.encoder_2.vel_calc()
-                            exporter.run(f"{-self.collector_2.long_position}\t{self.collector_2.long_time}\t{-self.collector_2.long_delta}\r\n")
-                            new_duty = closed_loop_mot_b.closed_loop()
-                            self.driver_2.set_duty(new_duty)
+                            # beginning time stamp
+                            start_time2         = time.ticks_us()
+
+                            if initial_time2 is None:
+                                initial_time2   = start_time2
+                            
+                            elapsed_time2       = ( time.ticks_diff( start_time2, initial_time2 ) / 1000000 )
+
+                            # velocity calc
+                            encoder.enc_2.update()
+                            B_pos1              = encoder.enc_2.current_position
+                            end_time2           = time.ticks_us()
+                            encoder.enc_2.update()
+                            B_pos2              = encoder.enc_2.current_position
+                            time_diff2          = (end_time2 - start_time2) / 1000
+                            encoder.enc_2.vel_calc(B_pos1, B_pos2, time_diff2)
+                            
+                            if ema2 is None:
+                                ema2 = self.encoder_2.velocity['rpm']
+                            else:
+                                ema2 = alpha2 * self.encoder_2.velocity['rpm'] + (1 - alpha2) * ema2
+
+                            new_duty2 = closed_loop_mot_b.closed_loop()
+                            self.driver_2.set_duty(new_duty2)
+
+                            exporter.run(f"{-self.encoder_2.total_position}\t{elapsed_time2}\t{-ema2}\r\n")
+                            og_start2 += t_interval2
                         self.flags['STEP_FLG2'] = False                 # reset flag
                 
                 elif self.flags['CL_FLG'] == False:

@@ -22,7 +22,7 @@ def fibonacci_gen(length):
     idx         = 0
 
     while idx < length:
-        yield fib_first                                     # return current fib val
+        yield fib_first                                     # return current fib val, using tuple unpack without needing to make a temp var
         fib_first, fib_sec = fib_sec, fib_first + fib_sec   # calc next fib val
         idx += 1                                            # increment idx                                                
 
