@@ -168,7 +168,7 @@ class motor_generator_class:
                         alpha           = .2
                         ema             = None
 
-                        for i in range(30000):
+                        for i in range((og_start + 30000)/100000):
                             # beginning time stamp
                             start_time1 = time.ticks_us()
 
@@ -233,7 +233,7 @@ class motor_generator_class:
                             new_duty2 = closed_loop_mot_b.closed_loop()
                             self.driver_2.set_duty(new_duty2)
 
-                            exporter.run(f"{-self.encoder_2.total_position}\t{elapsed_time2}\t{-ema2}\r\n")
+                            exporter.run(f"{self.encoder_2.total_position}\t{elapsed_time2}\t{ema2}\r\n")
                             og_start2 += t_interval2
                         self.flags['STEP_FLG2'] = False                 # reset flag
                 

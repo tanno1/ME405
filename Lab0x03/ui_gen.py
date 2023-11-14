@@ -49,7 +49,7 @@ def choose_cmnd(command):
         print("Position of encoder 1: {}".format(pos))
     elif command == ('P'):
         pos = encoder.enc_2.total_position
-        print("Position of encoder 2: {}".format(-pos))
+        print("Position of encoder 2: {}".format(pos))
     
     # print delta
     elif command == ('d'):
@@ -57,7 +57,7 @@ def choose_cmnd(command):
         print("Delta of en encoder 1: {}".format(delta))
     elif command == ('D'):
         delta = encoder.enc_2.current_delta
-        print("Delta of en encoder 2: {}".format(-delta))
+        print("Delta of en encoder 2: {}".format(delta))
 
     # print Velocity     
     elif command == ('v'):
@@ -79,7 +79,7 @@ def choose_cmnd(command):
         B_pos2        = encoder.enc_2.current_position
         time_diff2   = (end_time2 - start_time2) / 1000
         encoder.enc_2.vel_calc(B_pos1, B_pos2, time_diff2)
-        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(-encoder.enc_2.velocity['rad/s'], -encoder.enc_2.velocity['rpm']))
+        print('Velocity of encoder 2: {} rad/s or {} rpm'.format(encoder.enc_2.velocity['rad/s'], encoder.enc_2.velocity['rpm']))
 
     # enter a duty cycle   
     elif command == ('m'):

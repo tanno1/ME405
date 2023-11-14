@@ -140,8 +140,8 @@ tim_6       = Timer(6, freq = 1000)                                 # timer for 
 collector_1 = collector(tim_6, enc_1, motor.mot_A)                  # collector instance
 
 # encoder mot_b
-cha_pin_2   = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)                      # encoder 1, channel a pin
-chb_pin_2   = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)                      # encoder 1, channel b pin
+cha_pin_2   = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)                      # encoder 1, channel a pin
+chb_pin_2   = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)                      # encoder 1, channel b pin
 tim_a_4     = Timer(4, period = ar, prescaler = ps)                 # encoder 1 timer
 cha_2       = tim_a_4.channel(1, pin=cha_pin_2, mode=Timer.ENC_AB)  
 chb_2       = tim_a_4.channel(2, pin=chb_pin_2, mode=Timer.ENC_AB)  
