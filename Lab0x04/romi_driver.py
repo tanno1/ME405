@@ -39,6 +39,8 @@ class romi_driver:
         elif (dir != 0) | (dir != 1)
             print('Invalid direction')
         
+        # set pwm
+        self.pwm.pulse_width_percent(duty)
     
     def enable(self):
         self.EN.high()
