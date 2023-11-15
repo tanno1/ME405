@@ -6,6 +6,14 @@
 '''
 from pyb import I2C
 
+def combine_bytes(msb, lsb):
+    combined_value = ( msb << 8 ) | lsb
+    return combined_value
+
+def combine_to_decimal(combined_bytes):
+    if combined_bytes & 0x8000:
+        combined_values = combined_value - 0x10000
+
 class bno055:
 
     def __init__(self, controller: I2C):
@@ -21,7 +29,12 @@ class bno055:
         self.acc_off_y_m        = 'ACC_OFFSET_Y_MSB'
         self.acc_off_z_l        = 'ACC_OFFSET_Z_LSB'
         self.acc_off_z_m        = 'ACC_OFFSET_Z_MSB'
-        self.acc_offs_list      = [self.acc_off_x_l, self.acc_off_x_m, self.acc_off_y_l, self.acc_off_y_m, self.acc_off_z_l, self.acc_off_z_m]
+        self.acc_offs_list      = [ self.acc_off_x_l, 
+                                    self.acc_off_x_m, 
+                                    self.acc_off_y_l, 
+                                    self.acc_off_y_m, 
+                                    self.acc_off_z_l, 
+                                    self.acc_off_z_m ]
 
         self.mag_off_x_l        = 'MAG_OFFSET_X_LSB'
         self.mag_off_x_m        = 'MAG_OFFSET_X_MSB'
@@ -29,7 +42,12 @@ class bno055:
         self.mag_off_y_m        = 'MAG_OFFSET_Y_MSB'
         self.mag_off_z_l        = 'MAG_OFFSET_Z_LSB'
         self.mag_off_z_m        = 'MAG_OFFSET_Z_MSB'
-        self.mag_offs_list      = [self.mag_off_x_l, self.mag_off_x_m, self.mag_off_y_l, self.mag_off_y_m, self.mag_off_z_l, self.mag_off_z_m]
+        self.mag_offs_list      = [ self.mag_off_x_l, 
+                                    self.mag_off_x_m, 
+                                    self.mag_off_y_l, 
+                                    self.mag_off_y_m, 
+                                    self.mag_off_z_l, 
+                                    self.mag_off_z_m ]
 
         self.gyr_off_x_l        = 'GYR_OFFSET_X_LSB'
         self.gyr_off_x_m        = 'GYR_OFFSET_X_MSB'
@@ -37,12 +55,43 @@ class bno055:
         self.gyr_off_y_m        = 'GYR_OFFSET_Y_MSB'
         self.gyr_off_z_l        = 'GYR_OFFSET_Z_LSB'
         self.gyr_off_z_m        = 'GYR_OFFSET_Z_MSB'
-        self.gyr_offs_list      = [self.gyr_off_x_l, self.gyr_off_x_m, self.gyr_off_y_l, self.gyr_off_y_m, self.gyr_off_z_l, self.gyr_off_z_m]
+        self.gyr_offs_list      = [ self.gyr_off_x_l, 
+                                    self.gyr_off_x_m, 
+                                    self.gyr_off_y_l, 
+                                    self.gyr_off_y_m, 
+                                    self.gyr_off_z_l, 
+                                    self.gyr_off_z_m]
 
         self.acc_rad_l          = 'ACC_RADIUS_LSB'
         self.acc_rad_m          = 'ACC_RADIUS_MSB'
         self.mag_rad_l          = 'MAG_RADIUS_LSB'
         self.mag_rad_m          = 'MAG_RADIUS_MSB'
+
+        self.eul_pitch_l        = 'EUL_Pitch_LSB'
+        self.eul_pitch_m        = 'EUL_Pitch_MSB'
+        self.eul_roll_l         = 'EUL_Roll_LSB'
+        self.eul_roll_m         = 'EUL_Roll_MSB'
+        self.eul_head_l         = 'EUL_Heading_LSB'
+        self.eul_head_m         = 'EUL_Heading_MSB'
+        self.euler_meas_list    = [ self.eul_pitch_m, 
+                                    self.eul_pitch_l, 
+                                    self.eul_roll_m, 
+                                    self.eul_roll_l, 
+                                    self.eul_head_m, 
+                                    self.eul_head_l ]
+
+        self.gyr_x_l            = 'GYR_DATA_X_LSB'
+        self.gyr_x_m            = 'GYR_DATA_X_MSB'
+        self.gyr_y_l            = 'GYR_DATA_Y_LSB'
+        self.gyr_y_m            = 'GYR_DATA_Y_MSB'
+        self.gyr_z_l            = 'GYR_DATA_Z_LSB'
+        self.gyr_z_m            = 'GYR_DATA_Z_MSB'
+        self.gyr_list           = [ self.gyr_x_m,
+                                    self.gyr_x_l,
+                                    self.gyr_y_m,
+                                    self.gyr_y_l,
+                                    self.gyr_z_m,
+                                    self.gyr_z_l ]
 
     def change_mode(self, mode: str):
         self.mode = mode
@@ -90,13 +139,14 @@ class bno055:
         # print(f'MAG Calib Status: {"Calibrated" if cal_ints[3] == 3, else "Not Calibrated"}')    
 
     def get_cal_coeff(self):
-        acc_off = [ 0, 0, 0, 0, 0, 0 ]
-        mag_off = [ 0, 0, 0, 0, 0, 0 ]
-        gyr_off = [ 0, 0, 0, 0, 0, 0 ]
         '''
             @name           get_cal_coeff
             @brief          retrieves calibration coefficients from IMU as an array of packed binary data once cal status checks out
         '''
+        acc_off = [ 0, 0, 0, 0, 0, 0 ]
+        mag_off = [ 0, 0, 0, 0, 0, 0 ]
+        gyr_off = [ 0, 0, 0, 0, 0, 0 ]
+
         for i in self.acc_offs_list:
             for j in acc_off:
                 acc_off[j] = self.controller.mem_read(1, self.imu_address, self.acc_offs_list[i])
@@ -109,7 +159,7 @@ class bno055:
             for j in gyr_off:
                 gyr_off[j] = self.controller.mem_read(1, self.imu_address, self.gyr_offs_list[i])
 
-    def write_cal_coeff(self, acc_bytes, mag_bytes, gyr_bytes)
+    def write_cal_coeff(self, acc_bytes: bytes, mag_bytes: bytes, gyr_bytes: bytes)
     '''
         @name               write_cal_coeff
         @brief              method to write calibration coefficients back to the IMU from pre-recorded packed binary data
@@ -125,13 +175,36 @@ class bno055:
         for bit in mag_bytes:
             for reg in self.mag_offs_list:
                 self.controller.mem_write(bit, self.imu_address, reg, timeout = 1000)
-                
+
     def euler(self):
         '''
             @name           euler
             @brief          reads euler angles from IMU to use as measurements for feedback
         '''
-    
+        eul_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
+
+        for reg in self.euler_meas:
+            for idx in range(6):
+                byte = self.controller.mem_read(8, self.imu_address, reg)
+                eul_meas_bytes[idx] = byte
+                idx += 1
+        # slice list into individual msb, lsb for each euler measurement
+        eul_pitch   = eul_meas_bytes[:2]
+        eul_head    = eul_meas_bytes[2:4]
+        eul_roll    = eul_meas_bytes[4:]
+
+        # combine msb, lsb bytes
+        eul_pitch   = combine_bytes(eul_pitch[0], eul_pitch[1])
+        eul_head    = combine_bytes(eul_head[0], eul_head[1])
+        eul_roll    = combine_bytes(eul_roll[0], eul_proll[1])
+
+        # convert bytes to decimals
+        eul_pitch   = combine_to_decimal(eul_pitch)
+        eul_head    = combine_to_decimal(eul_head)
+        eul_roll    = combine_to_decimal(eul_roll)
+
+        return eul_pitch, eul_head, eul_roll
+
     def ang_vel(self):
         '''
             @name           angular velocity
