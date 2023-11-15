@@ -183,7 +183,7 @@ class bno055:
         '''
         eul_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
 
-        for reg in self.euler_meas:
+        for reg in self.euler_meas_list:
             for idx in range(6):
                 byte = self.controller.mem_read(8, self.imu_address, reg)
                 eul_meas_bytes[idx] = byte
@@ -210,6 +210,27 @@ class bno055:
             @name           angular velocity
             @brief          reads angular velocity from the IMU to use as measurements for feedback    
         '''
+        gyr_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
+
+        for reg in self.gyr_list:
+            for idx in range(6):
+                byte = self.controller.mem_read(8, self.imu_address, reg)
+                gyr_meas_bytes[idx] = byte
+                idx += 1
+        # slice list into individual msb, lsb for each axis
+        gyr_x   = gyr_meas_bytes[:2]
+        gyr_y   = gyr_meas_bytes[2:4]
+        gyr_z   = gyr_meas_bytes[4:]
+        
+        #combine msb, lsb
+        gyr_x   = combine_bytes(gyr_x[0], gyr_x[1])
+        gyr_y   = combine_bytes(gyr_y[0], gyr_y[1])
+        gyr_z   = combine_bytes(gyr_z[0], gyr_z[1])
+
+        # converts bytes to decimal
+        gyr_x   = combine_to_decimal(gyr_x)
+        gyr_y   = combine_to_decimal(gyr_y)
+        gyr_z   = combine_to_decimal(gyr_z)
 
 # create controller
 controller = I2C(1, I2C.controller)
