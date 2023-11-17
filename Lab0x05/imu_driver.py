@@ -69,12 +69,12 @@ class bno055:
         self.mag_rad_l          = 0x69
         self.mag_rad_m          = 0x6A
 
-        self.eul_pitch_l        = 'EUL_Pitch_LSB'
-        self.eul_pitch_m        = 'EUL_Pitch_MSB'
-        self.eul_roll_l         = 'EUL_Roll_LSB'
-        self.eul_roll_m         = 'EUL_Roll_MSB'
-        self.eul_head_l         = 'EUL_Heading_LSB'
-        self.eul_head_m         = 'EUL_Heading_MSB'
+        self.eul_pitch_l        = 0x1A
+        self.eul_pitch_m        = 0x1B
+        self.eul_roll_l         = 0x1C
+        self.eul_roll_m         = 0x1D
+        self.eul_head_l         = 0x1E
+        self.eul_head_m         = 0x1F
         self.euler_meas_list    = [ self.eul_pitch_m, 
                                     self.eul_pitch_l, 
                                     self.eul_roll_m, 
@@ -82,12 +82,12 @@ class bno055:
                                     self.eul_head_m, 
                                     self.eul_head_l ]
 
-        self.gyr_x_l            = 'GYR_DATA_X_LSB'
-        self.gyr_x_m            = 'GYR_DATA_X_MSB'
-        self.gyr_y_l            = 'GYR_DATA_Y_LSB'
-        self.gyr_y_m            = 'GYR_DATA_Y_MSB'
-        self.gyr_z_l            = 'GYR_DATA_Z_LSB'
-        self.gyr_z_m            = 'GYR_DATA_Z_MSB'
+        self.gyr_x_l            = 0x14
+        self.gyr_x_m            = 0x15
+        self.gyr_y_l            = 0x16
+        self.gyr_y_m            = 0x17
+        self.gyr_z_l            = 0x18
+        self.gyr_z_m            = 0x19
         self.gyr_list           = [ self.gyr_x_m,
                                     self.gyr_x_l,
                                     self.gyr_y_m,
