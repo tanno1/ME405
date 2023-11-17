@@ -103,24 +103,24 @@ class bno055:
         '''
         if self.mode == 'IMU':
             reg_value   = 0b1000
-            self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000, addr_size=8)
+            self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000)
             print('Mode changed to IMU')
         elif self.mode == 'COMPASS':
-            reg_value   = bytes(0b1001)
+            reg_value   = 0b1001
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
-            print('Mode changes to COMPASS')
+            print('Mode changeD to COMPASS')
         elif self.mode == 'M4G':
-            reg_value   = bytes(0b1010)
+            reg_value   = 0b1010
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
-            print('Mode changes to M4G')
+            print('Mode changed to M4G')
         elif self.mode == 'NDOF_FMC_OFF':
-            reg_value   = bytes(0b1011)
+            reg_value   = 0b1011
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
-            print('Mode changes to NDOF_FMC_OFF')
+            print('Mode changed to NDOF_FMC_OFF')
         elif self.mode == 'NDOF':
-            reg_value   = bytes(0b1100)
+            reg_value   = 0b1100
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
-            print('Mode changes to NDOF')
+            print('Mode changed to NDOF')
         else:
             print('Invalid mode')
 
@@ -232,9 +232,8 @@ class bno055:
 
 if __name__ == '__main__':
     # create controller
-    i2c = I2C(1, I2C.MASTER)
+    i2c = I2C(1, I2C.CONTROLLER)
     i2c.init(I2C.CONTROLLER, baudrate=400_000)
-    # i2c.init(I2C.PERIPHERAL, addr=0x29)
 
     # create bno055 objects
     imu = bno055(i2c)
