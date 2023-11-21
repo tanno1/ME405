@@ -130,9 +130,11 @@ class bno055:
             @name           calibration_status
             @brief          retrieves calibration status from the imu and parse into individual statuses           
         '''
-        cal_status  = self.controller.mem_read(8, self.imu_address, self.cal_reg)                                                           # read cal_status, return a bytes object                                               
+        cal_status  = self.controller.mem_read(8, self.imu_address, self.cal_reg, addr_size=8)                                                           # read cal_status, return a bytes object                                               
         first_parse = [int.from_bytes(cal_status[i:i+2], byteorder='big', signed=False) for i in range(0, len(cal_status), 2)]              # parse and convert bytes to bin ints
         cal_ints    = [int(''.join(map(str, first_parse[i:i+2])), 2) for i in range(0, len(first_parse), 2)]                                # parse and convert bin ints to int
+        print(cal_ints)
+        return cal_ints
 
     def get_cal_coeff(self):
         '''
@@ -192,7 +194,7 @@ class bno055:
         # combine msb, lsb bytes
         eul_pitch   = combine_bytes(eul_pitch[0], eul_pitch[1])
         eul_head    = combine_bytes(eul_head[0], eul_head[1])
-        eul_roll    = combine_bytes(eul_roll[0], eul_proll[1])
+        eul_roll    = combine_bytes(eul_roll[0], eul_roll[1])
 
         # convert bytes to decimals
         eul_pitch   = combine_to_decimal(eul_pitch)
