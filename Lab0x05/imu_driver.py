@@ -108,7 +108,7 @@ class bno055:
         elif self.mode == 'COMPASS':
             reg_value   = 0b1001
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
-            print('Mode changeD to COMPASS')
+            print('Mode changed to COMPASS')
         elif self.mode == 'M4G':
             reg_value   = 0b1010
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
@@ -130,10 +130,12 @@ class bno055:
             @name           calibration_status
             @brief          retrieves calibration status from the imu and parse into individual statuses           
         '''
-        cal_status  = self.controller.mem_read(8, self.imu_address, self.cal_reg, addr_size=8)                                                           # read cal_status, return a bytes object                                               
-        first_parse = [int.from_bytes(cal_status[i:i+2], byteorder='big', signed=False) for i in range(0, len(cal_status), 2)]              # parse and convert bytes to bin ints
-        cal_ints    = [int(''.join(map(str, first_parse[i:i+2])), 2) for i in range(0, len(first_parse), 2)]                                # parse and convert bin ints to int
-        print(cal_ints)
+        cal_status  = self.controller.mem_read(8, self.imu_address, self.cal_reg, addr_size=8)                                      # read cal_status, return a bytes object                                               
+        sys         = hex(int.from_bytes(cal_status[0:2], 'big'))
+        gyr         = hex(int.from_bytes(cal_status[2:4], 'big'))
+        acc         = hex(int.from_bytes(cal_status[4:6], 'big'))   
+        mag         = hex(int.from_bytes(cal_status[6:8], 'big')) 
+        cal_ints    = [ int(sys, 16), int(gyr, 16), int(acc, 16), int(mag, 16) ]             
         return cal_ints
 
     def get_cal_coeff(self):
@@ -145,17 +147,19 @@ class bno055:
         mag_off = [ 0, 0, 0, 0, 0, 0 ]
         gyr_off = [ 0, 0, 0, 0, 0, 0 ]
 
-        for i in self.acc_offs_list:
-            for j in acc_off:
-                acc_off[j] = self.controller.mem_read(1, self.imu_address, self.acc_offs_list[i])
+        for reg in self.acc_offs_list:
+            for idx in range(0, len(acc_off)):
+                acc_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
 
-        for i in self.mag_offs_list:
-            for j in mag_off:
-                gyr_off[j] = self.controller.mem_read(1, self.imu_address, self.mag_offs_list[i])
+        for reg in self.mag_offs_list:
+            for idx in range(0, len(mag_off)):
+                mag_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
 
-        for i in self.gyr_offs_list:
-            for j in gyr_off:
-                gyr_off[j] = self.controller.mem_read(1, self.imu_address, self.gyr_offs_list[i])
+        for reg in self.gyr_offs_list:
+            for idx in range(0, len(gyr_off)):
+                gyr_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+        
+        return acc_off, mag_off, gyr_off
 
     def write_cal_coeff(self, acc_bytes: bytes, mag_bytes: bytes, gyr_bytes: bytes):
         '''
@@ -170,8 +174,8 @@ class bno055:
             for reg in self.mag_offs_list:
                 self.controller.mem_write(bit, self.imu_address, reg, timeout = 1000)
 
-        for bit in mag_bytes:
-            for reg in self.mag_offs_list:
+        for bit in gyr_bytes:
+            for reg in self.gyr_offs_list:
                 self.controller.mem_write(bit, self.imu_address, reg, timeout = 1000)
 
     def euler(self):
@@ -239,3 +243,8 @@ if __name__ == '__main__':
 
     # create bno055 objects
     imu = bno055(i2c)
+
+    # test bytes
+    acc = b'\x01\x01\x01\x01\x01\x01\x01\x01'
+    mag = b'\x02\x02\x02\x02\x02\x02\x02\x02'
+    gyr = b'\x03\x03\x03\x03\x03\x03\x03\x03'
