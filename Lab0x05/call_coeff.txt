@@ -1,26 +1,10 @@
 #  acc offsets
-b'\xec'     # acc x lsb
-b'\xff'     # acc x msb
-b'\xd0'     # acc y lsb
-b'\xff'     # acc y msb
-b'\xdc'     # acc z lsb
-b'\xff'     # acc z msb
+[b'\xfd', b'\xff', b'\xd3', b'\xff', b'\xdb', b'\xff']
 
 #  mag offsets
-b'\f'       # mag x lsb
-b'\x03'     # mag x msb
-b'\}'       # mag y lsb
-b'\xa4'     # mag y msb
-b'\xfc'     # mag z lsb
-b'\xff'     # mag z msb
+[b'o', b'\x00', b'\x05', b'\x07', b'\xdd', b'\xfc']
 
 #  gyr offsets
-b'\xec'     # gyr x lsb
-b'\xff'     # gyr x msb
-b'\xd0'     # gyr y lsb
-b'\xff'     # gyr y msb
-b'\xdc'     # gyr z lsb
-b'\xff'     # gyr z msb
-
+[b'\xff', b'\xff', b'\xfe', b'\xff', b'\xfe', b'\xff']
 
 
