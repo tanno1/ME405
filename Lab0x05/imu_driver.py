@@ -5,16 +5,17 @@
     @date                   november, 2023
 '''
 from pyb import I2C
+import time
 
 def combine_bytes(msb, lsb):
-    combined_value = ( msb << 8 ) | lsb
+    combined_value = ( msb << 7 ) | lsb
     return combined_value
 
-def combine_to_decimal(combined_bytes):
-    if combined_bytes & 0x8000:
-        combined_values = combined_bytes - 0x10000
-    
-    return combined_values
+def calibrate(imu):
+    while True: 
+        bit = imu.cal_status()
+        print(bit)
+        time.sleep(1.25)
 
 class bno055:
 
@@ -121,6 +122,10 @@ class bno055:
             reg_value   = 0b1100
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
             print('Mode changed to NDOF')
+        elif self.mode == ' CONFIG':
+            reg_value   = 0b0000
+            self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
+            print('Mode changed to CONFIG')
         else:
             print('Invalid mode')
 
@@ -130,13 +135,9 @@ class bno055:
             @name           calibration_status
             @brief          retrieves calibration status from the imu and parse into individual statuses           
         '''
-        cal_status  = self.controller.mem_read(8, self.imu_address, self.cal_reg, addr_size=8)                                      # read cal_status, return a bytes object                                               
-        sys         = hex(int.from_bytes(cal_status[0:2], 'big'))
-        gyr         = hex(int.from_bytes(cal_status[2:4], 'big'))
-        acc         = hex(int.from_bytes(cal_status[4:6], 'big'))   
-        mag         = hex(int.from_bytes(cal_status[6:8], 'big')) 
-        cal_ints    = [ int(sys, 16), int(gyr, 16), int(acc, 16), int(mag, 16) ]             
-        return cal_ints
+        cal_status  = self.controller.mem_read(1, self.imu_address, self.cal_reg, addr_size=8)                                      # read cal_status, return a bytes object                                               
+        bits        = [ (cal_status[0] >> i ) & 1 for i in range(7, -1, -1) ]     
+        return bits
 
     def get_cal_coeff(self):
         '''
@@ -186,26 +187,21 @@ class bno055:
         eul_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
 
         for reg in self.euler_meas_list:
-            for idx in range(6):
+            for idx in range(0, 6):
                 byte = self.controller.mem_read(8, self.imu_address, reg)
-                eul_meas_bytes[idx] = byte
+                eul_meas_bytes[idx] = int.from_bytes(byte, 'big')
                 idx += 1
-        # slice list into individual msb, lsb for each euler measurement
-        eul_pitch   = eul_meas_bytes[:2]
-        eul_head    = eul_meas_bytes[2:4]
-        eul_roll    = eul_meas_bytes[4:]
 
-        # combine msb, lsb bytes
-        eul_pitch   = combine_bytes(eul_pitch[0], eul_pitch[1])
-        eul_head    = combine_bytes(eul_head[0], eul_head[1])
-        eul_roll    = combine_bytes(eul_roll[0], eul_roll[1])
+        # # slice list into individual msb, lsb for each euler measurement
+        # eul_pitch   = combine_bytes(eul_meas_bytes[0], eul_meas_bytes[1])
+        # eul_head    = combine_bytes(eul_meas_bytes[2], eul_meas_bytes[3])
+        # eul_roll    = combine_bytes(eul_meas_bytes[4], eul_meas_bytes[5])
 
-        # convert bytes to decimals
-        eul_pitch   = combine_to_decimal(eul_pitch)
-        eul_head    = combine_to_decimal(eul_head)
-        eul_roll    = combine_to_decimal(eul_roll)
+        # eul_ints    = [ eul_pitch, eul_head, eul_roll]
 
-        return eul_pitch, eul_head, eul_roll
+        # return eul_ints
+
+        return eul_meas_bytes
 
     def ang_vel(self):
         '''
@@ -217,24 +213,17 @@ class bno055:
         for reg in self.gyr_list:
             for idx in range(6):
                 byte = self.controller.mem_read(8, self.imu_address, reg)
-                gyr_meas_bytes[idx] = byte
+                gyr_meas_bytes[idx] = int.from_bytes(byte, 'big')
                 idx += 1
+
         # slice list into individual msb, lsb for each axis
-        gyr_x   = gyr_meas_bytes[:2]
-        gyr_y   = gyr_meas_bytes[2:4]
-        gyr_z   = gyr_meas_bytes[4:]
-        
-        #combine msb, lsb
-        gyr_x   = combine_bytes(gyr_x[0], gyr_x[1])
-        gyr_y   = combine_bytes(gyr_y[0], gyr_y[1])
-        gyr_z   = combine_bytes(gyr_z[0], gyr_z[1])
+        gyr_x       = combine_bytes(gyr_meas_bytes[0], gyr_meas_bytes[1])
+        gyr_y       = combine_bytes(gyr_meas_bytes[2], gyr_meas_bytes[3])
+        gyr_z       = combine_bytes(gyr_meas_bytes[4], gyr_meas_bytes[5])
 
-        # converts bytes to decimal
-        gyr_x   = combine_to_decimal(gyr_x)
-        gyr_y   = combine_to_decimal(gyr_y)
-        gyr_z   = combine_to_decimal(gyr_z)
+        gyr_ints    = [ gyr_x, gyr_y, gyr_z] 
 
-        return gyr_x, gyr_y, gyr_z
+        return gyr_ints
 
 if __name__ == '__main__':
     # create controller
