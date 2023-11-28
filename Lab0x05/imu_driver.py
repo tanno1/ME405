@@ -165,22 +165,23 @@ class bno055:
         
         return acc_off, mag_off, gyr_off
 
-    def write_cal_coeff(self, acc_bytes: bytes, mag_bytes: bytes, gyr_bytes: bytes):
+    def write_cal_coeff(self, cal_vals):
         '''
             @name               write_cal_coeff
             @brief              method to write calibration coefficients back to the IMU from pre-recorded packed binary data
         '''
-        for bit in acc_bytes:
-            for reg in self.acc_offs_list:
-                self.controller.mem_write(bit, self.imu_address, reg, timeout = 1000)
+        idx = 0
+        for reg in self.acc_offs_list:
+            self.controller.mem_write(cal_vals[idx], self.imu_address, reg, timeout = 1000)
+            idx += 1
 
-        for bit in mag_bytes:
-            for reg in self.mag_offs_list:
-                self.controller.mem_write(bit, self.imu_address, reg, timeout = 1000)
+        for reg in self.mag_offs_list:
+            self.controller.mem_write(cal_vals[idx], self.imu_address, reg, timeout = 1000)
+            idx += 1
 
-        for bit in gyr_bytes:
-            for reg in self.gyr_offs_list:
-                self.controller.mem_write(bit, self.imu_address, reg, timeout = 1000)
+        for reg in self.gyr_offs_list:
+            self.controller.mem_write(cal_vals[idx], self.imu_address, reg, timeout = 1000)
+            idx += 1
 
     def euler(self):
         '''
@@ -236,7 +237,11 @@ if __name__ == '__main__':
     # create bno055 objects
     imu = bno055(i2c)
 
-    # test bytes
-    acc = b'\x01\x01\x01\x01\x01\x01\x01\x01'
-    mag = b'\x02\x02\x02\x02\x02\x02\x02\x02'
-    gyr = b'\x03\x03\x03\x03\x03\x03\x03\x03'
+    # call coefficient data
+    try:
+        file = 'cal_coeff.txt'
+        with open(file, 'r') as file:
+            cal_vals = file.readlines()
+            cal_vals = cal_vals[0].split(', ')
+    except:
+        print('No calibration coefficient file found.')
