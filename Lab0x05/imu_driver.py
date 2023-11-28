@@ -122,7 +122,7 @@ class bno055:
             reg_value   = 0b1100
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
             print('Mode changed to NDOF')
-        elif self.mode == ' CONFIG':
+        elif self.mode == 'CONFIG':
             reg_value   = 0b0000
             self.controller.mem_write(reg_value, self.imu_address, self.mode_reg , timeout = 1000 )
             print('Mode changed to CONFIG')
