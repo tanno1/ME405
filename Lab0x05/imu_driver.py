@@ -148,17 +148,20 @@ class bno055:
         mag_off = [ 0, 0, 0, 0, 0, 0 ]
         gyr_off = [ 0, 0, 0, 0, 0, 0 ]
 
+        idx = 0
         for reg in self.acc_offs_list:
-            for idx in range(0, len(acc_off)):
-                acc_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            acc_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            idx += 1
 
+        idx = 0
         for reg in self.mag_offs_list:
-            for idx in range(0, len(mag_off)):
-                mag_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            mag_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            idx += 1
 
+        idx = 0
         for reg in self.gyr_offs_list:
-            for idx in range(0, len(gyr_off)):
-                gyr_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            gyr_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            idx += 1
         
         return acc_off, mag_off, gyr_off
 
