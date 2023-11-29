@@ -5,7 +5,7 @@
     @date                  november, 2023
 '''
 
-from pyb import pin, ADC
+from pyb import Pin, ADC
 import time
 
 # sensor array [ 3, 4, 5, 6, 7, 8, 9 ] with 3 being on left when romi faces forward
@@ -13,11 +13,11 @@ import time
 # setup sensor pins
 P3          = Pin(Pin.cpu.A0, mode=Pin.IN)
 P4          = Pin(Pin.cpu.A1, mode=Pin.IN)
-P5          = Pin(Pin.cpu.A2, mode=Pin.IN)
-P6          = Pin(Pin.cpu.A3, mode=Pin.IN)
-P7          = Pin(Pin.cpu.D13, mode=Pin.IN)
-P8          = Pin(Pin.cpu.D1, mode=Pin.IN)
-P9          = Pin(Pin.cpu.D0, mode=Pin.IN)
+P5          = Pin(Pin.cpu.A4, mode=Pin.IN)
+P6          = Pin(Pin.cpu.B0, mode=Pin.IN)
+P7          = Pin(Pin.cpu.A5, mode=Pin.IN)
+P8          = Pin(Pin.cpu.A2, mode=Pin.IN)
+P9          = Pin(Pin.cpu.A3, mode=Pin.IN)
 
 # adc setup
 adc3        = ADC(P3)
