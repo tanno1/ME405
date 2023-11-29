@@ -24,7 +24,7 @@ class romi_driver:
         self.DIR    = IN2_DIR
         self.EN     = EN
 
-    def set_duty(self, duty: int, dir: int)
+    def set_duty(self, duty: int, dir: int):
         '''
             @name           set_duty
             @brief          method to set duty and direction of motor      

@@ -6,6 +6,7 @@
 '''
 
 from pyb import Pin, ADC
+import romi_driver as driver
 import time
 
 # sensor array [ 3, 4, 5, 6, 7, 8, 9 ] with 3 being on left when romi faces forward
@@ -31,11 +32,62 @@ adc9        = ADC(P9)
 val_array   = [ 0, 0, 0, 0, 0, 0, 0 ]
 adc_array   = [ adc3, adc4, adc5, adc6, adc7, adc8, adc9 ]
 
+# calibration values:
+white = [314.3, 308.7, 304.7, 300.3, 294.1, 1937.8, 3586.8]
+black = [2542.8, 2409.3, 2263.4, 2119.5, 2029.3, 1956.1, 3576.0]
+
+def calibrate(color):
+    cal_array   = [ 0, 0, 0, 0, 0, 0, 0 ]
+    idx         = 0
+    iter        = 10
+
+    if color == 'white':
+        while iter > 0:
+            while idx < len(cal_array):
+                cal_array[idx] += adc_array[idx].read()
+                idx += 1
+            time.sleep(1)
+            idx = 0
+            iter -= 1
+            print(cal_array)
+
+        white_cal_array = [ ( val / 10 ) for val in cal_array ]
+        return white_cal_array
+
+    if color == 'black':
+        while iter > 0:
+            while idx < len(cal_array):
+                cal_array[idx] += adc_array[idx].read()
+                idx += 1
+            time.sleep(1)
+            idx = 0
+            iter -= 1
+            print(cal_array)
+
+        black_cal_array = [ ( val / 10 ) for val in cal_array ]
+        return black_cal_array
+
+def straight():
+    pass
+
+def right():
+    pass
+
+def left():
+    pass
+
+def stop():
+    pass
+
+if __name__ == '__main__':
+
 # read function
-while True:
-    idx = 0
-    for idx in range(0, 7):
-        val_array[idx] = adc_array[idx].read()
-        idx += 1
-    print(val_array)
-    time.sleep(1.25)
+# while True:
+#     idx = 0
+#     for idx in range(0, 7):
+#         val_array[idx] = adc_array[idx].read()
+#         idx += 1
+#     print(val_array)
+#     time.sleep(1.25)
+
+
