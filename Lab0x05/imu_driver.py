@@ -172,15 +172,18 @@ class bno055:
         '''
         idx = 0
         for reg in self.acc_offs_list:
-            self.controller.mem_write(cal_vals[idx], self.imu_address, reg, timeout = 1000)
+            val     = cal_vals[idx]
+            self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
             idx += 1
 
         for reg in self.mag_offs_list:
-            self.controller.mem_write(cal_vals[idx], self.imu_address, reg, timeout = 1000)
+            val     = cal_vals[idx]        
+            self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
             idx += 1
 
         for reg in self.gyr_offs_list:
-            self.controller.mem_write(cal_vals[idx], self.imu_address, reg, timeout = 1000)
+            val     = cal_vals[idx]          
+            self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
             idx += 1
 
     def euler(self):
@@ -242,6 +245,7 @@ if __name__ == '__main__':
         file = 'cal_coeff.txt'
         with open(file, 'r') as file:
             cal_vals = file.readlines()
-            cal_vals = cal_vals[0].split(', ')
+            cal_vals = cal_vals[0].split(',')
+            print(cal_vals)
     except:
         print('No calibration coefficient file found.')
