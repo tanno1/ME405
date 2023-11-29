@@ -36,7 +36,7 @@ class romi_driver:
             self.DIR.low()
         elif dir == 1:
             self.dir.high()
-        elif (dir != 0) | (dir != 1)
+        elif (dir != 0) | (dir != 1):
             print('Invalid direction')
         
         # set pwm

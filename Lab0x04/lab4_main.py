@@ -81,6 +81,12 @@ def stop():
 
 if __name__ == '__main__':
 
+    # left driver
+    left = driver.romi_driver
+
+    # right driver
+    right = driver.romi_driver()
+
 # read function
 # while True:
 #     idx = 0
