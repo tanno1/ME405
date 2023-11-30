@@ -17,6 +17,19 @@ def calibrate(imu):
         print(bit)
         time.sleep(1.25)
 
+def remap(imu):
+    imu.change_mode('config')
+    axis_config_reg     = 0x41
+    axis_sign_reg       = 0x42
+    axis_remap_config   = 0x21
+    axis_remap_sign     = 0x02
+
+    imu.controller.mem_write(axis_remap_config, 0x28, axis_config_reg)
+    imu.controller.mem_write(axis_remap_sign, 0x28, axis_sign_reg)
+    imu.change_mode('imu')
+
+    print('axis remapped, mode changed to imu')
+
 class bno055:
 
     def __init__(self, controller: I2C):
@@ -95,6 +108,15 @@ class bno055:
                                     self.gyr_y_l,
                                     self.gyr_z_m,
                                     self.gyr_z_l ]
+        
+        self.acc_rad_l          = 0x67
+        self.acc_rad_m          = 0x68
+        self.mag_rad_l          = 0x69
+        self.mag_rad_m          = 0x6A
+        self.rad_offs_list      = [ self.acc_rad_m,
+                                    self.acc_rad_l,
+                                    self.mag_rad_m,
+                                    self.mag_rad_l, ]
 
     def change_mode(self, mode: str):
         self.mode = mode
@@ -172,17 +194,26 @@ class bno055:
         '''
         idx = 0
         for reg in self.acc_offs_list:
-            val     = cal_vals[idx]
-            self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
+            val     = int(cal_vals[idx], 16)
+            buf = bytearray([val])
+            self.controller.mem_write(buf, self.imu_address, reg, timeout = 1000)
             idx += 1
 
         for reg in self.mag_offs_list:
-            val     = cal_vals[idx]        
+            val     = int(cal_vals[idx], 16)
+            buf = bytearray([val])        
             self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
             idx += 1
 
         for reg in self.gyr_offs_list:
-            val     = cal_vals[idx]          
+            val     = int(cal_vals[idx], 16)
+            buf = bytearray([val])          
+            self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
+            idx += 1
+
+        for reg in self.rad_offs_list:
+            val     = int(cal_vals[idx], 16)
+            buf = bytearray([val])          
             self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
             idx += 1
 
