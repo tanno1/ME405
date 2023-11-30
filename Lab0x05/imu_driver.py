@@ -12,6 +12,7 @@ def combine_bytes(msb, lsb):
     return combined_value
 
 def calibrate(imu):
+    imu.change_mode('NDOF')
     while True: 
         bit = imu.cal_status()
         print(bit)
@@ -192,6 +193,7 @@ class bno055:
             @name               write_cal_coeff
             @brief              method to write calibration coefficients back to the IMU from pre-recorded packed binary data
         '''
+        imu.change_mode('CONFIG')
         idx = 0
         for reg in self.acc_offs_list:
             val     = int(cal_vals[idx], 16)
@@ -217,6 +219,9 @@ class bno055:
             self.controller.mem_write(val, self.imu_address, reg, timeout = 1000)
             idx += 1
 
+        imu.change_mode('IMU')
+        print('Calibration data writte, mode changed to imu')
+        
     def euler(self):
         '''
             @name           euler
