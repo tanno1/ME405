@@ -12,14 +12,14 @@ def combine_bytes(msb, lsb):
     return combined_value
 
 def calibrate(imu):
-    imu.change_mode('NDOF')
+    #imu.change_mode('CONFIG')
+
     while True: 
         bit = imu.cal_status()
         print(bit)
-        time.sleep(1.25)
 
 def remap(imu):
-    imu.change_mode('config')
+    imu.change_mode('CONFIG')
     axis_config_reg     = 0x41
     axis_sign_reg       = 0x42
     axis_remap_config   = 0x21
@@ -27,7 +27,7 @@ def remap(imu):
 
     imu.controller.mem_write(axis_remap_config, 0x28, axis_config_reg)
     imu.controller.mem_write(axis_remap_sign, 0x28, axis_sign_reg)
-    imu.change_mode('imu')
+    imu.change_mode('IMU')
 
     print('axis remapped, mode changed to imu')
 
@@ -170,6 +170,7 @@ class bno055:
         acc_off = [ 0, 0, 0, 0, 0, 0 ]
         mag_off = [ 0, 0, 0, 0, 0, 0 ]
         gyr_off = [ 0, 0, 0, 0, 0, 0 ]
+        rad_off = [ 0, 0, 0, 0 ]
 
         idx = 0
         for reg in self.acc_offs_list:
@@ -185,6 +186,11 @@ class bno055:
         for reg in self.gyr_offs_list:
             gyr_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
             idx += 1
+
+        for reg in self.rad_offs_list:
+            rad_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
+            idx += 1
+
         
         return acc_off, mag_off, gyr_off
 
