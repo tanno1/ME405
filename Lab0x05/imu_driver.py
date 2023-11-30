@@ -187,12 +187,13 @@ class bno055:
             gyr_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
             idx += 1
 
+        idx = 0
         for reg in self.rad_offs_list:
             rad_off[idx] = self.controller.mem_read(1, self.imu_address, reg)
             idx += 1
 
         
-        return acc_off, mag_off, gyr_off
+        return acc_off, mag_off, gyr_off, rad_off
 
     def write_cal_coeff(self, cal_vals):
         '''
