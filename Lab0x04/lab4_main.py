@@ -5,8 +5,9 @@
     @date                  november, 2023
 '''
 
-from pyb import Pin, ADC
+from pyb import Pin, ADC, Timer
 import romi_driver as driver
+import encoder_class as encoder
 import time
 
 # sensor array [ 3, 4, 5, 6, 7, 8, 9 ] with 3 being on left when romi faces forward
@@ -82,10 +83,45 @@ def stop():
 if __name__ == '__main__':
 
     # left driver
-    left = driver.romi_driver
+    tim_left        = Timer(4, freq = 20_000)
+    pwm_left        = Pin(Pin.cpu.C8)
+    dir_left        = Pin(Pin.cpu.C9)
+    en_left         = Pin(Pin.cpu.C7)
+    left = driver.romi_driver(tim_left, pwm_left, dir_left, en_left)
+
+    # left encoder
+    ar              = 1000
+    ps              = 0
+    cha_left        = Pin(Pin.cpu.B4)
+    chb_left        = Pin(Pin.cpu.B5)
+    enc_tim_left    = Timer(1, freq = 20_000)
+    enc_left        = encoder(enc_tim_left, cha_left, chb_left, ar, ps)
 
     # right driver
-    right = driver.romi_driver()
+    tim_right       = Timer(8, freq = 20_000)
+    pwm_right       = Pin(Pin.cpu.C8)
+    dir_right       = Pin(Pin.cpu.C9)
+    en_right        = Pin(Pin.cpu.C7)
+    cha_right       = Pin(Pin.cpu.A8)
+    chb_right       = Pin(Pin.cpu.A9)
+    right = driver.romi_driver(tim_right, pwm_right, dir_right, en_right)
+    
+    # right encoder
+    enc_tim_right   = Timer(3, )
+    enc_right       = encoder(enc_tim_right)
+
+    # left driver
+    tim_left       = Timer(4, freq = 20_000)
+    pwm_left       = Pin(Pin.cpu.B8)
+    dir_left       = Pin(Pin.cpu.B9)
+    en_left        = Pin(Pin.cpu.B7)
+    cha_left       = Pin(Pin.cpu.B4)
+    chb_left       = Pin(Pin.cpu.B5)
+    left = driver.romi_driver(tim_left, pwm_left, dir_left, en_left)
+
+    # left encoder
+    enc_tim_left   = Timer(3, )
+    enc_left       = encoder(enc_tim_left)
 
 # read function
 # while True:
