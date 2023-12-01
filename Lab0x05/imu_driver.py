@@ -118,6 +118,10 @@ class bno055:
                                     self.acc_rad_l,
                                     self.mag_rad_m,
                                     self.mag_rad_l, ]
+        
+        # set euler units to degres, change to 1xxb for radians
+        self.unit_reg           = 0x3B
+        self.controller.mem_write(2, self.imu_address, self.unit_reg)
 
     def change_mode(self, mode: str):
         self.mode = mode
@@ -236,44 +240,36 @@ class bno055:
         '''
         eul_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
 
+        idx = 0
         for reg in self.euler_meas_list:
-            for idx in range(0, 6):
-                byte = self.controller.mem_read(8, self.imu_address, reg)
-                eul_meas_bytes[idx] = int.from_bytes(byte, 'big')
-                idx += 1
+            byte = self.controller.mem_read(1, self.imu_address, reg)
+            eul_meas_bytes[idx] = int.from_bytes(byte, 'big')
+            idx += 1
 
-        # # slice list into individual msb, lsb for each euler measurement
-        # eul_pitch   = combine_bytes(eul_meas_bytes[0], eul_meas_bytes[1])
-        # eul_head    = combine_bytes(eul_meas_bytes[2], eul_meas_bytes[3])
-        # eul_roll    = combine_bytes(eul_meas_bytes[4], eul_meas_bytes[5])
+        head  = (eul_meas_bytes[0] << 8) | eul_meas_bytes[1]
+        roll  = (eul_meas_bytes[2] << 8) | eul_meas_bytes[3]
+        pitch = (eul_meas_bytes[4] << 8) | eul_meas_bytes[5]
 
-        # eul_ints    = [ eul_pitch, eul_head, eul_roll]
-
-        # return eul_ints
-
-        return eul_meas_bytes
+        print(f'Yaw Rates [ X: {head}, Y: {roll}, Z {pitch} ]')
 
     def ang_vel(self):
         '''
             @name           angular velocity
             @brief          reads angular velocity from the IMU to use as measurements for feedback    
         '''
-        gyr_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
+        gyr_meas_bytes = [ 0, 0, 0, 0, 0, 0 ] # msb, lsb
 
+        idx = 0
         for reg in self.gyr_list:
-            for idx in range(6):
-                byte = self.controller.mem_read(8, self.imu_address, reg)
-                gyr_meas_bytes[idx] = int.from_bytes(byte, 'big')
-                idx += 1
+            byte = self.controller.mem_read(1, self.imu_address, reg)
+            gyr_meas_bytes[idx] = byte
+            idx += 1
 
-        # slice list into individual msb, lsb for each axis
-        gyr_x       = combine_bytes(gyr_meas_bytes[0], gyr_meas_bytes[1])
-        gyr_y       = combine_bytes(gyr_meas_bytes[2], gyr_meas_bytes[3])
-        gyr_z       = combine_bytes(gyr_meas_bytes[4], gyr_meas_bytes[5])
+        x  = (gyr_meas_bytes[0] << 8) | gyr_meas_bytes[1]
+        y  = (gyr_meas_bytes[2] << 8) | gyr_meas_bytes[3]
+        z  = (gyr_meas_bytes[4] << 8) | gyr_meas_bytes[5]
 
-        gyr_ints    = [ gyr_x, gyr_y, gyr_z] 
-
-        return gyr_ints
+        print(f'Yaw Rates [ X: {x}, Y: {y}, Z {z} ]')
 
 if __name__ == '__main__':
     # create controller
