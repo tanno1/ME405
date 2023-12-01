@@ -90,11 +90,8 @@ class bno055:
         self.eul_roll_m         = 0x1D
         self.eul_head_l         = 0x1E
         self.eul_head_m         = 0x1F
-        self.euler_meas_list    = [ self.eul_pitch_m, 
-                                    self.eul_pitch_l, 
-                                    self.eul_roll_m, 
+        self.euler_meas_list    = [ self.eul_pitch_l, 
                                     self.eul_roll_l, 
-                                    self.eul_head_m, 
                                     self.eul_head_l ]
 
         self.gyr_x_l            = 0x14
@@ -103,11 +100,8 @@ class bno055:
         self.gyr_y_m            = 0x17
         self.gyr_z_l            = 0x18
         self.gyr_z_m            = 0x19
-        self.gyr_list           = [ self.gyr_x_m,
-                                    self.gyr_x_l,
-                                    self.gyr_y_m,
+        self.gyr_list           = [ self.gyr_x_l,
                                     self.gyr_y_l,
-                                    self.gyr_z_m,
                                     self.gyr_z_l ]
         
         self.acc_rad_l          = 0x67
@@ -118,10 +112,6 @@ class bno055:
                                     self.acc_rad_l,
                                     self.mag_rad_m,
                                     self.mag_rad_l, ]
-        
-        # set euler units to degres, change to 1xxb for radians
-        self.unit_reg           = 0x3B
-        self.controller.mem_write(2, self.imu_address, self.unit_reg)
 
     def change_mode(self, mode: str):
         self.mode = mode
@@ -238,38 +228,30 @@ class bno055:
             @name           euler
             @brief          reads euler angles from IMU to use as measurements for feedback
         '''
-        eul_meas_bytes = [ 0, 0, 0, 0, 0, 0 ]
+        eul_meas_bytes = [ 0, 0, 0 ] 
 
         idx = 0
         for reg in self.euler_meas_list:
-            byte = self.controller.mem_read(1, self.imu_address, reg)
-            eul_meas_bytes[idx] = int.from_bytes(byte, 'big')
+            byte = self.controller.mem_read(2, self.imu_address, reg)
+            eul_meas_bytes[idx] = (byte[1] << 8) | byte[0]
             idx += 1
 
-        head  = (eul_meas_bytes[0] << 8) | eul_meas_bytes[1]
-        roll  = (eul_meas_bytes[2] << 8) | eul_meas_bytes[3]
-        pitch = (eul_meas_bytes[4] << 8) | eul_meas_bytes[5]
-
-        print(f'Yaw Rates [ X: {head}, Y: {roll}, Z {pitch} ]')
+        print(f'Yaw Rates [ X: {eul_meas_bytes[0]/16}, Y: {eul_meas_bytes[1]/16}, Z {eul_meas_bytes[2/16]} ]')
 
     def ang_vel(self):
         '''
             @name           angular velocity
             @brief          reads angular velocity from the IMU to use as measurements for feedback    
         '''
-        gyr_meas_bytes = [ 0, 0, 0, 0, 0, 0 ] # msb, lsb
+        gyr_meas_bytes = [ 0, 0, 0 ] # msb, lsb
 
         idx = 0
         for reg in self.gyr_list:
-            byte = self.controller.mem_read(1, self.imu_address, reg)
-            gyr_meas_bytes[idx] = byte
+            byte = self.controller.mem_read(2, self.imu_address, reg)
+            gyr_meas_bytes[idx] = (byte[1] << 8) | byte[0]
             idx += 1
 
-        x  = (gyr_meas_bytes[0] << 8) | gyr_meas_bytes[1]
-        y  = (gyr_meas_bytes[2] << 8) | gyr_meas_bytes[3]
-        z  = (gyr_meas_bytes[4] << 8) | gyr_meas_bytes[5]
-
-        print(f'Yaw Rates [ X: {x}, Y: {y}, Z {z} ]')
+        print(f'Angular Velocities [ X: {gyr_meas_bytes[0]}, Y: {gyr_meas_bytes[1]}, Z {gyr_meas_bytes[2]} ]')
 
 if __name__ == '__main__':
     # create controller
