@@ -9,6 +9,7 @@ from pyb import Pin, ADC, Timer
 import romi_driver as driver
 import encoder_class as encoder
 import time
+from math import pi
 
 # sensor array [ 3, 4, 5, 6, 7, 8, 9 ] with 3 being on left when romi faces forward
 
@@ -17,9 +18,9 @@ P3          = Pin(Pin.cpu.A0, mode=Pin.IN)
 P4          = Pin(Pin.cpu.A1, mode=Pin.IN)
 P5          = Pin(Pin.cpu.A4, mode=Pin.IN)
 P6          = Pin(Pin.cpu.B0, mode=Pin.IN)
-P7          = Pin(Pin.cpu.A5, mode=Pin.IN)
-P8          = Pin(Pin.cpu.A2, mode=Pin.IN)
-P9          = Pin(Pin.cpu.A3, mode=Pin.IN)
+P7          = Pin(Pin.cpu.A7, mode=Pin.IN)
+P8          = Pin(Pin.cpu.A6, mode=Pin.IN)
+P9          = Pin(Pin.cpu.A5, mode=Pin.IN)
 
 # adc setup
 adc3        = ADC(P3)
@@ -34,8 +35,9 @@ val_array   = [ 0, 0, 0, 0, 0, 0, 0 ]
 adc_array   = [ adc3, adc4, adc5, adc6, adc7, adc8, adc9 ]
 
 # calibration values:
-white = [314.3, 308.7, 304.7, 300.3, 294.1, 1937.8, 3586.8]
-black = [2542.8, 2409.3, 2263.4, 2119.5, 2029.3, 1956.1, 3576.0]
+white = [285.7, 279.9, 276.7, 272.9, 292.4, 1836.1, 4059.3]
+black = [3274.6, 3094.8, 2866.8, 2749.4, 2084.8, 1858.6, 4059.2]
+
 
 def calibrate(color):
     cal_array   = [ 0, 0, 0, 0, 0, 0, 0 ]
@@ -68,19 +70,96 @@ def calibrate(color):
         black_cal_array = [ ( val / 10 ) for val in cal_array ]
         return black_cal_array
 
-def straight():
-    pass
+def read():
+    idx = 0
+    while idx < len(val_array):
+        val_array[idx] = adc_array[idx].read()
+        idx += 1
+    
+    return val_array
 
-def right():
-    pass
+def calc_centroid():
+    sensor_vals     = read()
+    weighted_sum    = sum(i * val for i, val in enumerate(sensor_vals))
+    total_sum       = sum(sensor_vals)
+    centroid        = weighted_sum / total_sum
 
-def left():
-    pass
+    return centroid
+
+def forward():
+    right.enable()
+    left.enable()
+
+def turn_right(left_speed, right_speed):
+    left.set_duty(left_speed, 0)
+    right.set_duty(right_speed, 0)
+    left.enable()
+    right.disable()
+
+def turn_left(left_speed, right_speed):
+    left.set_duty(left_speed, 0)
+    right.set_duty(right_speed, 0)
+    right.enable()
+    left.disable()
 
 def stop():
-    pass
+    right.disable()
+    left.disable()
+
+cpr         = 1440          # encoder count per revolution of romi wheel
+wheel_dia   = 2.83          # romi wheel diameter in inches
+wheel_circ  = 2.83 * pi
+def calc_distance(counts):
+    rev  = counts / cpr
+    dist = rev * wheel_circ
+    return dist 
+
+# initialize total distance variables
+dist_left = 0
+dist_right = 0
+def loop(threshold, kp, ki, kd):
+    enc_right.update()
+    enc_left.update()
+    dist_left   = calc_distance(-enc_left.total_position)
+    dist_right  = calc_distance(-enc_right.total_position)
+    total_dist  = .5 * (dist_left + dist_right)
+    while total_dist < 75.36:
+        sensor_vals     = read()
+        centroid        = calc_centroid()
+        reference_pt    = len(sensor_vals) / 2
+        pid_output      = pid_controller(centroid, reference_pt, kp, ki, kd)
+        new_left        = base_speed + pid_output
+        new_right       = base_speed - pid_output
+
+        # check encoder values to determine when to stop
+
+        if centroid < reference_pt - threshold:
+            turn_left(new_left, new_right)
+            print('turned left)')
+        elif centroid > reference_pt + threshold:
+            turn_right(new_left, new_right)
+            print('turned right')
+        else:
+            forward()
+    print('arrived at the start')
+
+# initialize variables for pid controller
+prev_error = 0
+integral   = 0  
+
+def pid_controller(centroid, reference_pt, kp, ki, kd):
+    global integral, prev_error
+    error       = reference_pt - centroid
+    integral    += error
+    derivative  = error - prev_error
+
+    pid_res     = kp * error + ki * integral + kd * derivative
+    prev_error  = error
+    print(pid_res)
+    return pid_res
 
 if __name__ == '__main__':
+
     # left driver
     tim_left        = Timer(4, freq = 20_000)
     pwm_left_pin    = Pin(Pin.cpu.B8, mode=Pin.OUT_PP)
@@ -108,10 +187,19 @@ if __name__ == '__main__':
     l_chb       = tim_left_3.channel(2, pin=l_pin_chb, mode=Timer.ENC_AB)  
     enc_right   = encoder.Encoder(tim_left_3, l_cha, l_chb, ar, ps)         # encoder 1 instance
 
-    # # encoder right
-    # r_pin_cha   = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
-    # r_pin_chb   = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
-    # tim_left_1  = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
-    # r_cha       = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
-    # r_chb       = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
-    # enc_left    = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
+    # encoder right
+    r_pin_cha   = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+    r_pin_chb   = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+    tim_left_1  = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
+    r_cha       = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
+    r_chb       = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
+    enc_left    = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
+
+    # set motor speed and direction ( 0 = forward, 1 = reverse )
+    left.disable()
+    right.disable()
+    base_speed = 25
+    # threshold .1 works well
+
+
+
