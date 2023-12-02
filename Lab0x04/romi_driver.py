@@ -20,7 +20,7 @@ class romi_driver:
             @param EN
         '''
         self.tim    = tim
-        self.PWM    = tim.channel(3, pin = IN1_PWM, mode = Timer.PWM)
+        self.PWM    = IN1_PWM
         self.DIR    = IN2_DIR
         self.EN     = EN
 
@@ -35,12 +35,12 @@ class romi_driver:
         if dir == 0:
             self.DIR.low()
         elif dir == 1:
-            self.dir.high()
+            self.DIR.high()
         elif (dir != 0) | (dir != 1):
             print('Invalid direction')
         
         # set pwm
-        self.pwm.pulse_width_percent(duty)
+        self.PWM.pulse_width_percent(duty)
     
     def enable(self):
         self.EN.high()

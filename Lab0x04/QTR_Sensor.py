@@ -41,26 +41,20 @@ class QTR_Sensor:
             @details            returns values from proximity sensor
             @param
         '''
-        sensor_values = [int(self.adc3.read()), 
-                         int(self.adc4.read()),
-                         int(self.adc5.read()),
-                         int(self.adc6.read()),
-                         int(self.adc7.read()),
-                         int(self.adc8.read()),
-                         int(self.adc9.read())]
-        
-        #time.sleep_ms(0.01) #sleep for 1 microsecond
-        
-        #for i in range(len(sensor_values)):
-        #        if sensor_values[i] >= self.line_detected_value:
-        #            sensor_values[i] = 1
-        #        else:
-        #            sensor_values[i] = 0
+        sensor_values = [ int(self.adc3.read()), 
+                          int(self.adc4.read()),
+                          int(self.adc5.read()),
+                          int(self.adc6.read()),
+                          int(self.adc7.read()),
+                          int(self.adc8.read()),
+                          int(self.adc9.read()) ]
                     
         print(sensor_values)
 
 ### from calibration determine where the 1s and 0s are for motor adjustment code
 if __name__ == '__main__':
+
+    # initialize sensor class
     sensor = QTR_Sensor()   
     sensor.read_sensor()
 

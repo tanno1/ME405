@@ -81,55 +81,37 @@ def stop():
     pass
 
 if __name__ == '__main__':
-
     # left driver
     tim_left        = Timer(4, freq = 20_000)
-    pwm_left        = Pin(Pin.cpu.C8)
-    dir_left        = Pin(Pin.cpu.C9)
-    en_left         = Pin(Pin.cpu.C7)
-    left = driver.romi_driver(tim_left, pwm_left, dir_left, en_left)
-
-    # left encoder
-    ar              = 1000
-    ps              = 0
-    cha_left        = Pin(Pin.cpu.B4)
-    chb_left        = Pin(Pin.cpu.B5)
-    enc_tim_left    = Timer(1, freq = 20_000)
-    enc_left        = encoder(enc_tim_left, cha_left, chb_left, ar, ps)
+    pwm_left_pin    = Pin(Pin.cpu.B8, mode=Pin.OUT_PP)
+    pwm_left        = tim_left.channel(3, pin = pwm_left_pin, mode=Timer.PWM)
+    dir_left_pin    = Pin(Pin.cpu.B9, mode=Pin.OUT_PP)
+    en_left_pin     = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
+    left            = driver.romi_driver(tim_left, pwm_left, dir_left_pin, en_left_pin)
 
     # right driver
     tim_right       = Timer(8, freq = 20_000)
-    pwm_right       = Pin(Pin.cpu.C8)
-    dir_right       = Pin(Pin.cpu.C9)
-    en_right        = Pin(Pin.cpu.C7)
-    cha_right       = Pin(Pin.cpu.A8)
-    chb_right       = Pin(Pin.cpu.A9)
-    right = driver.romi_driver(tim_right, pwm_right, dir_right, en_right)
-    
-    # right encoder
-    enc_tim_right   = Timer(3, )
-    enc_right       = encoder(enc_tim_right)
+    pwm_right_pin   = Pin(Pin.cpu.C9)
+    dir_right_pin   = Pin(Pin.cpu.C8, mode=Pin.OUT_PP)
+    en_right_pin    = Pin(Pin.cpu.C7, mode=Pin.OUT_PP)
+    # configure channels 2, 3, 4
+    pwm_right       = tim_right.channel(4, pin = pwm_right_pin, mode=Timer.PWM)
+    right           = driver.romi_driver(tim_right, pwm_right, dir_right_pin, en_right_pin)
 
-    # left driver
-    tim_left       = Timer(4, freq = 20_000)
-    pwm_left       = Pin(Pin.cpu.B8)
-    dir_left       = Pin(Pin.cpu.B9)
-    en_left        = Pin(Pin.cpu.B7)
-    cha_left       = Pin(Pin.cpu.B4)
-    chb_left       = Pin(Pin.cpu.B5)
-    left = driver.romi_driver(tim_left, pwm_left, dir_left, en_left)
+    # encoder left
+    ps          = 0
+    ar          = 1000
+    l_pin_cha   = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+    l_pin_chb   = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+    tim_left_3  = Timer(3, period = ar, prescaler = ps)                     # encoder 1 timer
+    l_cha       = tim_left_3.channel(1, pin=l_pin_cha, mode=Timer.ENC_AB)  
+    l_chb       = tim_left_3.channel(2, pin=l_pin_chb, mode=Timer.ENC_AB)  
+    enc_right   = encoder.Encoder(tim_left_3, l_cha, l_chb, ar, ps)         # encoder 1 instance
 
-    # left encoder
-    enc_tim_left   = Timer(3, )
-    enc_left       = encoder(enc_tim_left)
-
-# read function
-# while True:
-#     idx = 0
-#     for idx in range(0, 7):
-#         val_array[idx] = adc_array[idx].read()
-#         idx += 1
-#     print(val_array)
-#     time.sleep(1.25)
-
-
+    # # encoder right
+    # r_pin_cha   = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+    # r_pin_chb   = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+    # tim_left_1  = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
+    # r_cha       = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
+    # r_chb       = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
+    # enc_left    = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
