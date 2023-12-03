@@ -85,11 +85,8 @@ class bno055:
         self.mag_rad_m          = 0x6A
 
         self.eul_pitch_l        = 0x1A
-        self.eul_pitch_m        = 0x1B
         self.eul_roll_l         = 0x1C
-        self.eul_roll_m         = 0x1D
         self.eul_head_l         = 0x1E
-        self.eul_head_m         = 0x1F
         self.euler_meas_list    = [ self.eul_pitch_l, 
                                     self.eul_roll_l, 
                                     self.eul_head_l ]

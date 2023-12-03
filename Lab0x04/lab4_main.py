@@ -117,13 +117,15 @@ def calc_distance(counts):
 # initialize total distance variables
 dist_left = 0
 dist_right = 0
-def loop(threshold, kp, ki, kd):
-    enc_right.update()
-    enc_left.update()
-    dist_left   = calc_distance(-enc_left.total_position)
-    dist_right  = calc_distance(-enc_right.total_position)
-    total_dist  = .5 * (dist_left + dist_right)
+def loop(threshold, base_speed, kp, ki, kd):
+    total_dist = 0
     while total_dist < 75.36:
+        enc_right.update()
+        enc_left.update()
+        dist_left   = calc_distance(-enc_left.total_position)
+        dist_right  = calc_distance(-enc_right.total_position)
+        total_dist  = .5 * (dist_left + dist_right)
+        print(f"Distances [ L: {dist_left}, R: {dist_right}, Total: {total_dist}]")
         sensor_vals     = read()
         centroid        = calc_centroid()
         reference_pt    = len(sensor_vals) / 2
@@ -141,6 +143,7 @@ def loop(threshold, kp, ki, kd):
             print('turned right')
         else:
             forward()
+    stop()
     print('arrived at the start')
 
 # initialize variables for pid controller
@@ -198,8 +201,7 @@ if __name__ == '__main__':
     # set motor speed and direction ( 0 = forward, 1 = reverse )
     left.disable()
     right.disable()
-    base_speed = 25
-    # threshold .1 works well
+    # VALUES from testing: Threshold: 0.1, P: -, I: -, D: -
 
 
 
