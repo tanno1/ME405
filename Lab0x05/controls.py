@@ -90,17 +90,27 @@ def forward():
     right.enable()
     left.enable()
 
-def turn_right(left_speed, right_speed):
+def turn_right(left_speed):
     left.set_duty(left_speed, 0)
-    right.set_duty(right_speed, 0)
     left.enable()
     right.disable()
 
-def turn_left(left_speed, right_speed):
-    left.set_duty(left_speed, 0)
+def turn_left(right_speed):
     right.set_duty(right_speed, 0)
     right.enable()
     left.disable()
+
+def pivot_right(speed):
+    left.set_duty(speed, 0)
+    right.set_duty(speed, 1)
+    left.enable()
+    right.enable()
+
+def pivot_left(speed):
+    left.set_duty(speed, 1)
+    right.set_duty(speed, 0)
+    left.enable()
+    right.enable()
 
 def stop():
     right.disable()
@@ -179,22 +189,22 @@ pwm_right       = tim_right.channel(4, pin = pwm_right_pin, mode=Timer.PWM)
 right           = driver.romi_driver(tim_right, pwm_right, dir_right_pin, en_right_pin)
 
 # encoder left
-ps          = 0
-ar          = 1000
-l_pin_cha   = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
-l_pin_chb   = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
-tim_left_3  = Timer(3, period = ar, prescaler = ps)                     # encoder 1 timer
-l_cha       = tim_left_3.channel(1, pin=l_pin_cha, mode=Timer.ENC_AB)  
-l_chb       = tim_left_3.channel(2, pin=l_pin_chb, mode=Timer.ENC_AB)  
-enc_right   = encoder.Encoder(tim_left_3, l_cha, l_chb, ar, ps)         # encoder 1 instance
+ps              = 0
+ar              = 1000
+l_pin_cha       = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+l_pin_chb       = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+tim_left_3      = Timer(3, period = ar, prescaler = ps)                     # encoder 1 timer
+l_cha           = tim_left_3.channel(1, pin=l_pin_cha, mode=Timer.ENC_AB)  
+l_chb           = tim_left_3.channel(2, pin=l_pin_chb, mode=Timer.ENC_AB)  
+enc_right       = encoder.Encoder(tim_left_3, l_cha, l_chb, ar, ps)         # encoder 1 instance
 
 # encoder right
-r_pin_cha   = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
-r_pin_chb   = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
-tim_left_1  = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
-r_cha       = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
-r_chb       = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
-enc_left    = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
+r_pin_cha       = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+r_pin_chb       = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+tim_left_1      = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
+r_cha           = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
+r_chb           = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
+enc_left        = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
 
 # set motor speed and direction ( 0 = forward, 1 = reverse )
 left.disable()

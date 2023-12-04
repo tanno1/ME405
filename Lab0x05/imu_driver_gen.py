@@ -5,7 +5,7 @@
     @date                   november, 2023
 '''
 from pyb import I2C
-import controls 
+import ui_gen as ui
 
 def combine_bytes(msb, lsb):
     combined_value = ( msb << 7 ) | lsb
@@ -215,7 +215,7 @@ class bno055:
             idx += 1
 
         imu_obj.change_mode('IMU')
-        print('Calibration data written, mode changed to imu')
+        print('Calibration data writte, mode changed to imu')
         
     def euler(self):
         '''
@@ -227,10 +227,10 @@ class bno055:
         idx = 0
         for reg in self.euler_meas_list:
             byte = self.controller.mem_read(2, self.imu_address, reg)
-            eul_meas_bytes[idx] = ((byte[1] << 8) | byte[0]) / 9
+            eul_meas_bytes[idx] = (byte[1] << 8) | byte[0]
             idx += 1
 
-        print(f'Yaw Rates [ Pitch: {eul_meas_bytes[0]}, Roll: {eul_meas_bytes[1]}, Head: {eul_meas_bytes[2]} ]')
+        print(f'Yaw Rates [ Pitch: {eul_meas_bytes[0]/16}, Roll: {eul_meas_bytes[1]/16}, Head: {eul_meas_bytes[2]/16} ]')
         return eul_meas_bytes
 
     def ang_vel(self):
@@ -248,22 +248,6 @@ class bno055:
 
         print(f'Angular Velocities [ X: {gyr_meas_bytes[0]}, Y: {gyr_meas_bytes[1]}, Z {gyr_meas_bytes[2]} ]')
 
-def face_north(imu):
-    controls.stop()
-    current_angle = imu.euler()
-    print(current_angle[0])
-    if current_angle[0] > 213:
-        controls.pivot_right(15)
-        while not (0 <= current_angle[0] <= 8):
-            current_angle = imu.euler()
-        print('stop')
-        controls.stop()
-    elif current_angle[0] <= 213:
-        controls.pivot_left(15)
-        while not (0 <= current_angle[0] <= 8):
-            current_angle = imu.euler()
-        controls.stop()
-
 def calibrate(thing: bno055):
     bit = thing.cal_status()
 
@@ -276,31 +260,31 @@ def calibrate(thing: bno055):
     
     print('Calibration finished')
     thing.change_mode('CONFIG')
-    print('Calibration finished.')
+    print('Calibration finished. New calibration coefficients:')
+    thing.get_cal_coeff()
 
-def save_calibration(imu, filename):
+class imu_gen():
 
-    val = imu.get_cal_coeff()
+    def __init__(self, imu):
+        self.imu = imu
 
-    with open(filename, 'w') as file:
-        for sublist in val:
-            for item in sublist:
-                integer_val = int.from_bytes(item, 'big')
-                hex_val = hex(integer_val)
-                file.write(hex_val + ',')
+    state = 'S0_INIT'
+    
+    def run_gen(self):
+        while True:
+            if state == 'S0_INIT':
+                print('imu gen state 0')
+                state = 'S1_HUB'
 
-if __name__ == '__main__':
-    file = 'cal_coeff.txt'
-    try:
-        with open(file, 'r') as file:
-            cal_vals = file.readlines()
-            cal_vals = cal_vals[0].split(',')
-            print(cal_vals)
-    except:
-        print('no calibration coefficient file found')
-    # create controller
-    i2c = I2C(1, I2C.CONTROLLER)
-    i2c.init(I2C.CONTROLLER, baudrate=400_000)
+            if state == 'S1_HUB':
+                if ui.IS_FLAGS["NORTH"] == True:
+                    ui.IS_FLAGS["VALUE"] = self.imu.euler()[2]
+            
+            yield(state)
 
-    # create bno055 objects
-    imu_obj = bno055(i2c)
+# create controller
+i2c = I2C(1, I2C.CONTROLLER)
+i2c.init(I2C.CONTROLLER, baudrate=400_000)
+
+# create bno055 objects
+imu_obj = bno055(i2c)

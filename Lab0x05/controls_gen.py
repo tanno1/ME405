@@ -10,6 +10,7 @@ import romi_driver as driver
 import encoder_class as encoder
 import time
 from math import pi
+import imu_driver_gen as imu
 
 # sensor array [ 3, 4, 5, 6, 7, 8, 9 ] with 3 being on left when romi faces forward
 
@@ -179,27 +180,55 @@ pwm_right       = tim_right.channel(4, pin = pwm_right_pin, mode=Timer.PWM)
 right           = driver.romi_driver(tim_right, pwm_right, dir_right_pin, en_right_pin)
 
 # encoder left
-ps          = 0
-ar          = 1000
-l_pin_cha   = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
-l_pin_chb   = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
-tim_left_3  = Timer(3, period = ar, prescaler = ps)                     # encoder 1 timer
-l_cha       = tim_left_3.channel(1, pin=l_pin_cha, mode=Timer.ENC_AB)  
-l_chb       = tim_left_3.channel(2, pin=l_pin_chb, mode=Timer.ENC_AB)  
-enc_right   = encoder.Encoder(tim_left_3, l_cha, l_chb, ar, ps)         # encoder 1 instance
+ps              = 0
+ar              = 1000
+l_pin_cha       = Pin(Pin.cpu.B4, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+l_pin_chb       = Pin(Pin.cpu.B5, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+tim_left_3      = Timer(3, period = ar, prescaler = ps)                     # encoder 1 timer
+l_cha           = tim_left_3.channel(1, pin=l_pin_cha, mode=Timer.ENC_AB)  
+l_chb           = tim_left_3.channel(2, pin=l_pin_chb, mode=Timer.ENC_AB)  
+enc_right       = encoder.Encoder(tim_left_3, l_cha, l_chb, ar, ps)         # encoder 1 instance
 
 # encoder right
-r_pin_cha   = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
-r_pin_chb   = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
-tim_left_1  = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
-r_cha       = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
-r_chb       = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
-enc_left    = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
+r_pin_cha       = Pin(Pin.cpu.A8, mode=Pin.OUT_PP)                          # encoder 1, channel a pin
+r_pin_chb       = Pin(Pin.cpu.A9, mode=Pin.OUT_PP)                          # encoder 1, channel b pin
+tim_left_1      = Timer(1, period = ar, prescaler = ps)                     # encoder 1 timer
+r_cha           = tim_left_1.channel(1, pin=r_pin_cha, mode=Timer.ENC_AB)  
+r_chb           = tim_left_1.channel(2, pin=r_pin_chb, mode=Timer.ENC_AB)  
+enc_left        = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # encoder 1 instance
 
 # set motor speed and direction ( 0 = forward, 1 = reverse )
-left.disable()
-right.disable()
+# left.disable()
+# right.disable()
 # VALUES from testing: Threshold: 0.1, P: -, I: -, D: -
+
+class controls_gen():
+    def __init__(self, enc_right, enc_left, driver_left, driver_right, flags):
+    
+        self.enc_right = enc_right
+        self.enc_left  = enc_left
+        self.mot_left  = driver_left
+        self.mot_right = driver_right
+        self.flags     = flags
+
+    def run_gen(self):
+
+        state = 'S0_INIT'
+
+        while True:
+            if state == 'S0_INIT':
+                print('controls state 0')
+                state = 'S1_HUB'
+                tolerance = '50'
+            if state == 'S1_HUB':
+                if self.flags["NORTH"] == True:
+                    if self.flags["VALUE"] != 0:
+                        turn_left(0, 20)
+                    
+                    
+            yield(state)
+
+
 
 
 
