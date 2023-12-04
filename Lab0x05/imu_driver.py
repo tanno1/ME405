@@ -251,18 +251,11 @@ class bno055:
 def face_north(imu):
     controls.stop()
     current_angle = imu.euler()
-    print(current_angle[0])
-    if current_angle[0] > 213:
-        controls.pivot_right(15)
-        while not (0 <= current_angle[0] <= 8):
-            current_angle = imu.euler()
-        print('stop')
-        controls.stop()
-    elif current_angle[0] <= 213:
-        controls.pivot_left(15)
-        while not (0 <= current_angle[0] <= 8):
-            current_angle = imu.euler()
-        controls.stop()
+    controls.pivot_left(15)
+    while not (0 <= current_angle[0] <= 7):
+        current_angle = imu.euler()
+    print('stop')
+    controls.stop()
 
 def calibrate(thing: bno055):
     bit = thing.cal_status()
@@ -288,19 +281,19 @@ def save_calibration(imu, filename):
                 integer_val = int.from_bytes(item, 'big')
                 hex_val = hex(integer_val)
                 file.write(hex_val + ',')
+    print(f'Calibration results saved to: {filename}')
 
-if __name__ == '__main__':
-    file = 'cal_coeff.txt'
-    try:
-        with open(file, 'r') as file:
-            cal_vals = file.readlines()
-            cal_vals = cal_vals[0].split(',')
-            print(cal_vals)
-    except:
-        print('no calibration coefficient file found')
-    # create controller
-    i2c = I2C(1, I2C.CONTROLLER)
-    i2c.init(I2C.CONTROLLER, baudrate=400_000)
+# file = 'cal_coeff.txt'
+# try:
+#     with open(file, 'r') as file:
+#         cal_vals = file.readlines()
+#         cal_vals = cal_vals[0].split(',')
+#         print(cal_vals)
+# except:
+#     print('no calibration coefficient file found')
+# create controller
+i2c = I2C(1, I2C.CONTROLLER)
+i2c.init(I2C.CONTROLLER, baudrate=400_000)
 
-    # create bno055 objects
-    imu_obj = bno055(i2c)
+# create bno055 objects
+imu_obj = bno055(i2c)

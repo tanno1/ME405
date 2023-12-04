@@ -28,13 +28,13 @@ def choose_cmnd(command):
     elif command == ('v'):
         imu.imu_obj.ang_vel()
     elif command == ('n'):
-        IS_FLAGS["NORTH"] = True
+        imu.face_north(imu.imu_obj)
 
 def ui_gen():
     state = 'S0_INIT'
+    print('there')
     
     while True:
-
         if state == 'S0_INIT':
             vcp = pyb.USB_VCP()
             print("Awaiting the next command...")

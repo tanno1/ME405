@@ -101,7 +101,7 @@ def turn_left(right_speed):
     left.disable()
 
 def pivot_right(speed):
-    left.set_duty(speed, 0)
+    left.set_duty(speed+5, 0)
     right.set_duty(speed, 1)
     left.enable()
     right.enable()
@@ -173,8 +173,8 @@ def pid_controller(centroid, reference_pt, kp, ki, kd):
 
 # left driver
 tim_left        = Timer(4, freq = 20_000)
-pwm_left_pin    = Pin(Pin.cpu.B8, mode=Pin.OUT_PP)
-pwm_left        = tim_left.channel(3, pin = pwm_left_pin, mode=Timer.PWM)
+pwm_left_pin    = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
+pwm_left        = tim_left.channel(1, pin = pwm_left_pin, mode=Timer.PWM)
 dir_left_pin    = Pin(Pin.cpu.B9, mode=Pin.OUT_PP)
 en_left_pin     = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
 left            = driver.romi_driver(tim_left, pwm_left, dir_left_pin, en_left_pin)
