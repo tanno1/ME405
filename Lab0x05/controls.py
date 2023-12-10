@@ -210,6 +210,3 @@ enc_left        = encoder.Encoder(tim_left_1, r_cha, r_chb, ar, ps)         # en
 left.disable()
 right.disable()
 # VALUES from testing: Threshold: 0.1, P: -, I: -, D: -
-
-
-
