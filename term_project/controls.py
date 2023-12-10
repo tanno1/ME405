@@ -88,7 +88,9 @@ def calc_centroid():
 
     return centroid
 
-def forward():
+def forward(speed):
+    right.set_duty(speed, 1)
+    left.set_duty(speed, 1)
     right.enable()
     left.enable()
 
@@ -104,6 +106,18 @@ def turn_left(left_speed, right_speed):
     right.enable()
     left.disable()
 
+def pivot_right(speed):
+    left.set_duty(speed, 1)
+    right.set_duty(speed, 0)
+    left.enable()
+    right.enable()
+
+def pivot_left(speed):
+    left.set_duty(speed, 0)
+    right.set_duty(speed, 1)
+    left.enable()
+    right.enable()
+
 def stop():
     right.disable()
     left.disable()
@@ -111,6 +125,7 @@ def stop():
 cpr         = 1440          # encoder count per revolution of romi wheel
 wheel_dia   = 2.83          # romi wheel diameter in inches
 wheel_circ  = 2.83 * pi
+
 def calc_distance(counts):
     rev  = counts / cpr
     dist = rev * wheel_circ
@@ -188,17 +203,65 @@ def pid_controller(centroid, reference_pt, kp, ki, kd):
 
 def obstacle():
     # only enter this funciton when limit switch == 1
-    ang = 
+    ang = imu.imu_obj.euler[0]
     # 1. pivot 90 deg right
-    while ang
+    pivot_right(25)
+    while ang < (ang + 90):                 # check if CW rot coresponds to + 90 rot
+        ang = imu.imu_obj.euler[0]
+    stop()
 
     # 2. move 9" forward
+    total_dist = 0
+    forward(25)
+    while total_dist < 9: 
+        enc_right.update()
+        enc_left.update()
+        dist_left   = calc_distance(-enc_left.total_position)
+        dist_right  = calc_distance(-enc_right.total_position)
+        total_dist  = .5 * (dist_left + dist_right)
+    stop()
+
     # 3. pivot 90 deg left
+    ang = imu.imu_obj.euler[0]
+    pivot_left(25)
+    while ang < (ang - 90):                 # check if CCW rot coresponds to - 90 rot
+        ang = imu.imu_obj.euler[0]
+    stop()
     # 4. move 18" forward
+    total_dist = 0
+    forward(25)
+    while total_dist < 18: 
+        enc_right.update()
+        enc_left.update()
+        dist_left   = calc_distance(-enc_left.total_position)
+        dist_right  = calc_distance(-enc_right.total_position)
+        total_dist  = .5 * (dist_left + dist_right)
+    stop()
+
     # 5. pivot 90 deg left
+    ang = imu.imu_obj.euler[0]
+    pivot_left(25)
+    while ang < (ang - 90):                 # check if CCW rot coresponds to - 90 rot
+        ang = imu.imu_obj.euler[0]
+    stop()
+
     # 6. move 9" forward
+    total_dist = 0
+    forward(25)
+    while total_dist < 9: 
+        enc_right.update()
+        enc_left.update()
+        dist_left   = calc_distance(-enc_left.total_position)
+        dist_right  = calc_distance(-enc_right.total_position)
+        total_dist  = .5 * (dist_left + dist_right)
+    stop()
+
     # 7. pivot 90 deg right
-    # 8. continue program
+    ang = imu.imu_obj.euler[0]
+    pivot_right(25)
+    while ang < (ang + 90):                 # check if CW rot coresponds to + 90 rot
+        ang = imu.imu_obj.euler[0]
+    stop()
 
 # left driver
 tim_left        = Timer(4, freq = 20_000)
