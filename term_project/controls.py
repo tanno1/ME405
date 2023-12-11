@@ -37,7 +37,8 @@ val_array   = [ 0, 0, 0, 0, 0, 0, 0 ]
 adc_array   = [ adc3, adc4, adc5, adc6, adc7, adc8, adc9 ]
 
 # calibration values:
-white = [285.7, 279.9, 276.7, 272.9, 292.4, 1836.1, 4059.3]
+white = [312.7, 305.7, 300.8, 296.9, 289.2, 301.5, 311.6]
+calib_bound = sum(white) / 6
 black = [3274.6, 3094.8, 2866.8, 2749.4, 2084.8, 1858.6, 4059.2]
 
 
@@ -88,9 +89,9 @@ def calc_centroid():
 
     return centroid
 
-def forward(speed):
-    right.set_duty(speed, 1)
-    left.set_duty(speed, 1)
+def forward(left_speed, right_speed):
+    right.set_duty(right_speed, 0)
+    left.set_duty(left_speed, 0)
     right.enable()
     left.enable()
 
@@ -136,22 +137,40 @@ dist_left = 0
 dist_right = 0
 
 def loop(threshold, base_speed, kp, ki, kd):
+    prev_error      = 0
+    integral        = 0
+    min_integral    = 0
+    max_integral    = 100
+    max_output      = 100
+    min_output      = 0 
+    skip_allat = 0
+
     while True:
         sensor_vals     = read()
-        centroid        = calc_centroid()
-        reference_pt    = len(sensor_vals) / 2
-        pid_output      = pid_controller(centroid, reference_pt, kp, ki, kd)
-        new_left        = base_speed + pid_output
-        new_right       = base_speed - pid_output
-
-        if centroid < reference_pt - threshold:
-            turn_left(new_left, new_right)
-            print('turned left)')
-        elif centroid > reference_pt + threshold:
-            turn_right(new_left, new_right)
-            print('turned right')
+        if all(value < 500 for value in sensor_vals):
+            forward(base_speed, base_speed)
+            print('abyss detected')
         else:
-            forward()
+            centroid        = calc_centroid()
+            reference_pt    = len(sensor_vals) / 2
+            pid_output      = pid_controller(centroid, reference_pt, kp, ki, kd)
+            new_left        = base_speed + pid_output
+            new_right       = base_speed - pid_output
+
+            if centroid < reference_pt - threshold:
+                turn_left(new_left, new_right)
+                print('turned left)')
+            elif centroid > reference_pt + threshold:
+                turn_right(new_left, new_right)
+                print('turned right')
+            else:
+                forward(new_left, new_right)
+                print('moved forward')
+
+        print(f'Left speed: {new_left}, Right speed: {new_right}, PID: {pid_output}')
+        skip_allat = 0
+        time.sleep(.025)
+
 
 def loop_and_stop(threshold, base_speed, kp, ki, kd):
     total_dist = 0
@@ -187,18 +206,31 @@ def test_switch():
     print(val)
 
 # initialize variables for pid controller
-prev_error = 0
-integral   = 0  
+prev_error      = 0
+integral        = 0
+min_integral    = 0
+max_integral    = 100
+max_output      = 100
+min_output      = 0  
 
 def pid_controller(centroid, reference_pt, kp, ki, kd):
-    global integral, prev_error
+    global integral, prev_error, max_integral, min_integral, max_output, min_output
+    
     error       = reference_pt - centroid
-    integral    += error
-    derivative  = error - prev_error
+    # apply integral clamp
+    integral = max(min(integral, max_integral), min_integral)
 
-    pid_res     = kp * error + ki * integral + kd * derivative
+    # calc pid result
+    pid_res     = kp * error + ki * integral + kd * (error - prev_error)
+
+    # apply saturation limits
+    pid_res = max(min(pid_res, max_output), min_output)
+
+    if min_output <= pid_res < max_output:
+        integral    += error
+
     prev_error  = error
-    print(pid_res)
+
     return pid_res
 
 def obstacle():
@@ -276,6 +308,7 @@ tim_right       = Timer(8, freq = 20_000)
 pwm_right_pin   = Pin(Pin.cpu.C9)
 dir_right_pin   = Pin(Pin.cpu.C8, mode=Pin.OUT_PP)
 en_right_pin    = Pin(Pin.cpu.C7, mode=Pin.OUT_PP)
+
 # configure channels 2, 3, 4
 pwm_right       = tim_right.channel(4, pin = pwm_right_pin, mode=Timer.PWM)
 right           = driver.romi_driver(tim_right, pwm_right, dir_right_pin, en_right_pin)
@@ -304,4 +337,5 @@ switch_pin  = Pin(Pin.cpu.C0, mode=Pin.IN, pull=Pin.PULL_UP)
 # set motor speed and direction ( 0 = forward, 1 = reverse )
 left.disable()
 right.disable()
+
 # VALUES from testing: Threshold: 0.1, P: -, I: -, D: -
