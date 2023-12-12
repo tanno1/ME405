@@ -110,14 +110,14 @@ def turn_left(left_speed, right_speed):
     left.disable()
 
 def pivot_right(speed):
-    left.set_duty(speed, 1)
-    right.set_duty(speed, 0)
+    left.set_duty(speed, 0)
+    right.set_duty(speed, 1)
     left.enable()
     right.enable()
 
 def pivot_left(speed):
-    left.set_duty(speed, 0)
-    right.set_duty(speed, 1)
+    left.set_duty(speed, 1)
+    right.set_duty(speed, 0)
     left.enable()
     right.enable()
 

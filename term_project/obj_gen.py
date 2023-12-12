@@ -19,6 +19,8 @@ def obj_hit_gen():
             if value == 1:
                 controls.stop()
                 print('OBJECT HIT')
+                ang_ref = imu.imu_obj.euler()[0]
+                print(f'ANG REF: {ang_ref}')
                 state = 'S1_HIT'
                 flags['OBJ'] = True
         
@@ -27,12 +29,13 @@ def obj_hit_gen():
 
             if substate == '90_RIGHT':
                 ang = imu.imu_obj.euler()[0]
-                controls.pivot_right(25)
-                if ang < (ang + 160):
+                print(ang)
+                controls.pivot_right(15)
+                if ang < (ang_ref + 160):
                     continue
                 else:
                     controls.stop()
-                    substate == '9IN_FOR'
+                    substate = '9IN_FOR'
             
             if substate == '9IN_FOR':
                 # get current distance and add tot total
@@ -42,18 +45,18 @@ def obj_hit_gen():
                 # check if travel complete
                 if total_dist > 9:
                     controls.stop()
-                    substate == '90_LEFT'
+                    substate = '90_LEFT'
                     total_dist = 0
-
 
             if substate == '90_LEFT':
                 ang = imu.imu_obj.euler()[0]
+                ang_og = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang - 160):
+                if ang < (ang_ref - 160):
                     continue
                 else:
                     controls.stop()
-                    substate == '18IN_FOR'
+                    substate = '18IN_FOR'
 
             if substate == '18IN_FOR':
                 # get current distance and add tot total
@@ -63,17 +66,18 @@ def obj_hit_gen():
                 # check if travel complete
                 if total_dist > 18:
                     controls.stop()
-                    substate == '90_LEFT_2'
+                    substate = '90_LEFT_2'
                     total_dist = 0
             
             if substate == '90_LEFT_2':
+                ang_og = imu.imu_obj.euler()[0]
                 ang = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang - 160):
+                if ang < (ang_ref - 160):
                     continue
                 else:
                     controls.stop()
-                    substate == '9IN_FOR_2'
+                    substate = '9IN_FOR_2'
             
             if substate == '9IN_FOR_2':
                 # get current distance and add tot total
@@ -83,17 +87,18 @@ def obj_hit_gen():
                 # check if travel complete
                 if total_dist > 9:
                     controls.stop()
-                    substate == '90_RIGHT_2'
+                    substate = '90_RIGHT_2'
                     total_dist = 0
 
             if substate == '90_RIGHT_2':
+                ang_og = imu.imu_obj.euler()[0]
                 ang = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang + 160):
+                if ang < (ang_ref + 160):
                     continue
                 else:
                     controls.stop()
-                    substate == 'DONE'
+                    substate = 'DONE'
             
             if substate == 'DONE':
                 print('object avoided')

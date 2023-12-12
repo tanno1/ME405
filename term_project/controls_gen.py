@@ -32,7 +32,6 @@ def line_follow_gen():
 
                 # get current sensor reading and determine what to do
                 sensor_vals     = controls.read()
-                print(sensor_vals)
                 if all(value < 500 for value in sensor_vals):
                     controls.forward(base_speed, base_speed)
                     print('abyss detected')
