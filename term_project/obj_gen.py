@@ -15,7 +15,6 @@ def obj_hit_gen():
     while True:
         if state == 'S0_WAIT':
             value = controls.switch()
-            print('waiitng for hit')
             # check if hit
             if value == 1:
                 controls.stop()
