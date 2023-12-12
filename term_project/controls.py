@@ -299,7 +299,7 @@ def obstacle():
 tim_left        = Timer(4, freq = 20_000)
 pwm_left_pin    = Pin(Pin.cpu.B6, mode=Pin.OUT_PP)
 pwm_left        = tim_left.channel(1, pin = pwm_left_pin, mode=Timer.PWM)
-dir_left_pin    = Pin(Pin.cpu.B9, mode=Pin.OUT_PP)
+dir_left_pin    = Pin(Pin.cpu.B10, mode=Pin.OUT_PP)
 en_left_pin     = Pin(Pin.cpu.B7, mode=Pin.OUT_PP)
 left            = driver.romi_driver(tim_left, pwm_left, dir_left_pin, en_left_pin)
 

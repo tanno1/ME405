@@ -28,7 +28,7 @@ def obj_hit_gen():
             if substate == '90_RIGHT':
                 ang = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang + 90):
+                if ang < (ang + 160):
                     continue
                 else:
                     controls.stop()
@@ -49,7 +49,7 @@ def obj_hit_gen():
             if substate == '90_LEFT':
                 ang = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang - 90):
+                if ang < (ang - 160):
                     continue
                 else:
                     controls.stop()
@@ -69,7 +69,7 @@ def obj_hit_gen():
             if substate == '90_LEFT_2':
                 ang = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang - 90):
+                if ang < (ang - 160):
                     continue
                 else:
                     controls.stop()
@@ -89,7 +89,7 @@ def obj_hit_gen():
             if substate == '90_RIGHT_2':
                 ang = imu.imu_obj.euler()[0]
                 controls.pivot_right(25)
-                if ang < (ang + 90):
+                if ang < (ang + 160):
                     continue
                 else:
                     controls.stop()

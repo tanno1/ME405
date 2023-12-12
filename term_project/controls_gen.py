@@ -32,6 +32,7 @@ def line_follow_gen():
 
                 # get current sensor reading and determine what to do
                 sensor_vals     = controls.read()
+                print(sensor_vals)
                 if all(value < 500 for value in sensor_vals):
                     controls.forward(base_speed, base_speed)
                     print('abyss detected')
@@ -45,15 +46,15 @@ def line_follow_gen():
                     if centroid < reference_pt - threshold:
                         controls.turn_left(new_left, new_right)
                         flags['TURN'] = True
-                        #print('turned left')
+                        print('turned left')
                     elif centroid > reference_pt + threshold:
                         controls.turn_right(new_left, new_right)
                         flags['TURN'] = True
-                        #print('turned right')
+                        print('turned right')
                     else:
                         controls.forward(new_left, new_right)
                         flags['STRAIGHT'] = True
-                        #print('moved forward')
+                        print('moved forward')
 
                 #print(f'Left speed: {new_left}, Right speed: {new_right}, PID: {pid_output}')
             

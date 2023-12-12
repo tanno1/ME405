@@ -6,6 +6,7 @@
 import cotask
 import pyb
 import controls_gen
+import controls
 import obj_gen
 import uos
 import imu_driver as imu
