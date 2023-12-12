@@ -230,7 +230,7 @@ class bno055:
             eul_meas_bytes[idx] = ((byte[1] << 8) | byte[0]) / 9
             idx += 1
 
-        print(f'Yaw Rates [ Pitch: {eul_meas_bytes[0]}, Roll: {eul_meas_bytes[1]}, Head: {eul_meas_bytes[2]} ]')
+        #print(f'Yaw Rates [ Pitch: {eul_meas_bytes[0]}, Roll: {eul_meas_bytes[1]}, Head: {eul_meas_bytes[2]} ]')
         return eul_meas_bytes
 
     def ang_vel(self):
@@ -283,15 +283,6 @@ def save_calibration(imu, filename):
                 file.write(hex_val + ',')
     print(f'Calibration results saved to: {filename}')
 
-# file = 'cal_coeff.txt'
-# try:
-#     with open(file, 'r') as file:
-#         cal_vals = file.readlines()
-#         cal_vals = cal_vals[0].split(',')
-#         print(cal_vals)
-# except:
-#     print('no calibration coefficient file found')
-# create controller
 i2c = I2C(1, I2C.CONTROLLER)
 i2c.init(I2C.CONTROLLER, baudrate=400_000)
 

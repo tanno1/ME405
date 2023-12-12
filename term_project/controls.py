@@ -23,6 +23,7 @@ P6          = Pin(Pin.cpu.B0, mode=Pin.IN)
 P7          = Pin(Pin.cpu.A7, mode=Pin.IN)
 P8          = Pin(Pin.cpu.A6, mode=Pin.IN)
 P9          = Pin(Pin.cpu.A5, mode=Pin.IN)
+PX          = Pin(Pin.cpu.C1, mode=Pin.IN)
 
 # adc setup
 adc3        = ADC(P3)
@@ -32,13 +33,14 @@ adc6        = ADC(P6)
 adc7        = ADC(P7)
 adc8        = ADC(P8)
 adc9        = ADC(P9)
+adcx        = ADC(PX)
 
-val_array   = [ 0, 0, 0, 0, 0, 0, 0 ]
-adc_array   = [ adc3, adc4, adc5, adc6, adc7, adc8, adc9 ]
+val_array   = [ 0, 0, 0, 0, 0, 0, 0, 0]
+adc_array   = [ adc3, adc4, adc5, adc6, adc7, adc8, adc9, adcx ]
 
 # calibration values:
 white = [312.7, 305.7, 300.8, 296.9, 289.2, 301.5, 311.6]
-calib_bound = sum(white) / 6
+calib_bound = sum(white) / len(val_array)
 black = [3274.6, 3094.8, 2866.8, 2749.4, 2084.8, 1858.6, 4059.2]
 
 
@@ -143,7 +145,6 @@ def loop(threshold, base_speed, kp, ki, kd):
     max_integral    = 100
     max_output      = 100
     min_output      = 0 
-    skip_allat = 0
 
     while True:
         sensor_vals     = read()
@@ -152,7 +153,7 @@ def loop(threshold, base_speed, kp, ki, kd):
             print('abyss detected')
         else:
             centroid        = calc_centroid()
-            reference_pt    = len(sensor_vals) / 2
+            reference_pt    = 3
             pid_output      = pid_controller(centroid, reference_pt, kp, ki, kd)
             new_left        = base_speed + pid_output
             new_right       = base_speed - pid_output
@@ -168,7 +169,6 @@ def loop(threshold, base_speed, kp, ki, kd):
                 print('moved forward')
 
         print(f'Left speed: {new_left}, Right speed: {new_right}, PID: {pid_output}')
-        skip_allat = 0
         time.sleep(.025)
 
 
@@ -201,9 +201,9 @@ def loop_and_stop(threshold, base_speed, kp, ki, kd):
     stop()
     print('arrived at the start')
 
-def test_switch():
+def switch():
     val = switch_pin.value()
-    print(val)
+    return val
 
 # initialize variables for pid controller
 prev_error      = 0
