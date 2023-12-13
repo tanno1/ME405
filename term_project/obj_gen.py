@@ -70,7 +70,7 @@ def obj_hit_gen():
 
         if state == '18IN_FOR':
             # get current distance and add tot total
-            controls.forward(19, 15)
+            controls.forward(18, 15)
             total_dist      += flags['CUR_DIST']
             print(total_dist)
             # check if travel complete
@@ -92,9 +92,8 @@ def obj_hit_gen():
                 continue
         
         if state == '9IN_FOR_2':
-            print('move 9 in forward')
             # get current distance and add tot total
-            controls.forward(18, 15)
+            controls.forward(17, 15)
             total_dist      += flags['CUR_DIST']
             # check if travel complete
             if total_dist > 6:
@@ -104,7 +103,6 @@ def obj_hit_gen():
                 ang_ref = imu.imu_obj.euler()[0]
 
         if state == '90_RIGHT_2':
-            print('turn 90 right')
             ang = imu.imu_obj.euler()[0]
             controls.pivot_right(15)
             diff = normalize_angle(ang, ang_ref)
@@ -117,6 +115,6 @@ def obj_hit_gen():
         if state == 'DONE':
             print('object avoided')
             flags['OBJ'] = False
-            state == 'S0_WAIT'
+            state = 'S0_WAIT'
 
         yield(state)

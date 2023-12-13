@@ -16,12 +16,13 @@ flags       = { 'STRAIGHT':     False,
 current_dist = 0
 
 def line_follow_gen():
-    threshold   = .3
+    threshold   = .25
     base_speed  = 25
     kp          = 3
     ki          = .02
     kd          = .4
     state       = 'S0_LOOP'
+    abyss_count = 0
 
     while True:
 
@@ -37,8 +38,13 @@ def line_follow_gen():
                 sensor_vals     = controls.read()
                 if all(value < 500 for value in sensor_vals):
                     controls.forward(base_speed, base_speed)
-                    print('abyss detected')
+                    abyss_count += 1
+                    print(abyss_count)
+                    if abyss_count >= 60:
+                        controls.stop()
+                        state = 'GO_HOME'
                 else:
+                    abyss_count = 0
                     centroid        = controls.calc_centroid()
                     reference_pt    = len(sensor_vals) / 2
                     pid_output      = controls.pid_controller(centroid, reference_pt, kp, ki, kd)
@@ -66,5 +72,8 @@ def line_follow_gen():
                 d_left = controls.calc_distance(-controls.enc_left.current_delta)
                 d_right = controls.calc_distance(-controls.enc_right.current_delta)
                 flags['CUR_DIST'] = .5 * (d_left + d_right)
+        
+        if state == 'GO_HOME':
+            controls.stop()
 
         yield(state)
