@@ -70,7 +70,7 @@ def obj_hit_gen():
 
         if state == '18IN_FOR':
             # get current distance and add tot total
-            controls.forward(18, 15)
+            controls.forward(17, 15)
             total_dist      += flags['CUR_DIST']
             print(total_dist)
             # check if travel complete
@@ -93,20 +93,27 @@ def obj_hit_gen():
         
         if state == '9IN_FOR_2':
             # get current distance and add tot total
-            controls.forward(17, 15)
-            total_dist      += flags['CUR_DIST']
-            # check if travel complete
-            if total_dist > 6:
+            sensor_vals = controls.read()
+            if all(value < 500 for value in sensor_vals):
+                controls.forward(17, 15)
+            else:
                 controls.stop()
                 state = '90_RIGHT_2'
-                total_dist = 0
                 ang_ref = imu.imu_obj.euler()[0]
+            # controls.forward(17, 15)
+            # total_dist      += flags['CUR_DIST']
+            # # check if travel complete
+            # if total_dist > 6:
+            #     controls.stop()
+            #     state = '90_RIGHT_2'
+            #     total_dist = 0
+            #     ang_ref = imu.imu_obj.euler()[0]
 
         if state == '90_RIGHT_2':
             ang = imu.imu_obj.euler()[0]
             controls.pivot_right(15)
             diff = normalize_angle(ang, ang_ref)
-            if abs(diff) >= 160:
+            if abs(diff) >= 80:
                 controls.stop()
                 state = 'DONE'
             else:

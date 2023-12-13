@@ -23,6 +23,7 @@ def line_follow_gen():
     kd          = .4
     state       = 'S0_LOOP'
     abyss_count = 0
+    wall        = 0
 
     while True:
 
@@ -40,7 +41,7 @@ def line_follow_gen():
                     controls.forward(base_speed, base_speed)
                     abyss_count += 1
                     print(abyss_count)
-                    if abyss_count >= 60:
+                    if (abyss_count >= 50) and (wall == 1):
                         controls.stop()
                         state = 'GO_HOME'
                 else:
@@ -72,6 +73,7 @@ def line_follow_gen():
                 d_left = controls.calc_distance(-controls.enc_left.current_delta)
                 d_right = controls.calc_distance(-controls.enc_right.current_delta)
                 flags['CUR_DIST'] = .5 * (d_left + d_right)
+                wall = 1
         
         if state == 'GO_HOME':
             controls.stop()
