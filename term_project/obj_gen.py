@@ -7,6 +7,13 @@
 import controls
 from controls_gen import flags
 import imu_driver as imu
+total_deg = 640
+
+def normalize_angle(ang, ang_ref):
+    diff =(ang - ang_ref) % total_deg
+    if diff > total_deg / 2:
+        diff -= total_deg
+    return diff
 
 def obj_hit_gen():
     state       = 'S0_WAIT'
@@ -23,12 +30,15 @@ def obj_hit_gen():
                 flags['OBJ'] = True
         
         if state == 'S1_HIT':
-            state = '90_RIGHT'
+            state   = '90_RIGHT'
+            ang_ref = imu.imu_obj.euler()[0]
+            print('ang_ref')
 
         if state == '90_RIGHT':
             ang = imu.imu_obj.euler()[0]
             controls.pivot_right(15)
-            if 190 < ang < 194:
+            diff = normalize_angle(ang, ang_ref)
+            if abs(diff) >= 160:
                 controls.stop()
                 state = '9IN_FOR'
                 total_dist  = 0
@@ -37,21 +47,22 @@ def obj_hit_gen():
         
         if state == '9IN_FOR':
             # get current distance and add tot total
-            controls.forward(18, 15)
+            controls.forward(17, 15)
             total_dist += flags['CUR_DIST']
             print(total_dist)
             # check if travel complete
-            if total_dist > 4.5:
-                ref_ang = imu.imu_obj.euler()[0]
+            if total_dist > 6:
                 controls.stop()
                 state = '90_LEFT'
                 total_dist = 0
+                ang_ref = imu.imu_obj.euler()[0]
 
         if state == '90_LEFT':
             ang = imu.imu_obj.euler()[0]
-            print(ang)
-            controls.pivot_left(25)
-            if  ang < 35:
+            controls.pivot_left(15)
+            diff = normalize_angle(ang, ang_ref)
+            print(diff)
+            if abs(diff) >= 160:
                 controls.stop()
                 state= '18IN_FOR'
             else:
@@ -59,22 +70,24 @@ def obj_hit_gen():
 
         if state == '18IN_FOR':
             # get current distance and add tot total
-            controls.forward(18, 15)
+            controls.forward(19, 15)
             total_dist      += flags['CUR_DIST']
             print(total_dist)
             # check if travel complete
-            if total_dist > 9:
+            if total_dist > 12:
                 controls.stop()
                 state = '90_LEFT_2'
                 total_dist = 0
+                ang_ref = imu.imu_obj.euler()[0]
         
         if state == '90_LEFT_2':
-            print('turn 90 left')
             ang = imu.imu_obj.euler()[0]
-            controls.pivot_left(25)
-            if 518 < ang < 522:
+            controls.pivot_left(15)
+            diff = normalize_angle(ang, ang_ref)
+            if abs(diff) >= 150:
                 controls.stop()
-                #state = '9IN_FOR_2'
+                state = '9IN_FOR_2'
+                total_dist = 0
             else:
                 continue
         
@@ -82,19 +95,20 @@ def obj_hit_gen():
             print('move 9 in forward')
             # get current distance and add tot total
             controls.forward(18, 15)
-            current_dist    = .5 * ( flags['R_DIST'] + flags['L_DIST'])
-            total_dist      += current_dist
+            total_dist      += flags['CUR_DIST']
             # check if travel complete
-            if total_dist > 9:
+            if total_dist > 6:
                 controls.stop()
                 state = '90_RIGHT_2'
                 total_dist = 0
+                ang_ref = imu.imu_obj.euler()[0]
 
         if state == '90_RIGHT_2':
             print('turn 90 right')
             ang = imu.imu_obj.euler()[0]
-            controls.pivot_right(25)
-            if ang < 35:
+            controls.pivot_right(15)
+            diff = normalize_angle(ang, ang_ref)
+            if abs(diff) >= 160:
                 controls.stop()
                 state = 'DONE'
             else:
