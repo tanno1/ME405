@@ -41,7 +41,7 @@ def obj_hit_gen():
             total_dist += flags['CUR_DIST']
             print(total_dist)
             # check if travel complete
-            if total_dist > 9:
+            if total_dist > 4.5:
                 ref_ang = imu.imu_obj.euler()[0]
                 controls.stop()
                 state = '90_LEFT'
@@ -74,7 +74,7 @@ def obj_hit_gen():
             controls.pivot_left(25)
             if 518 < ang < 522:
                 controls.stop()
-                state = '9IN_FOR_2'
+                #state = '9IN_FOR_2'
             else:
                 continue
         
