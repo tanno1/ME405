@@ -42,11 +42,11 @@ if __name__ == '__main__':
         with open(file, 'r') as file:
             cal_vals = file.readlines()
             cal_vals = cal_vals[0].split(',')
-            print(dir(imu))
+            imu.imu_obj.write_cal_coeff(cal_vals)
 
     # create task objects
     controls_task       = cotask.Task(controls_gen.line_follow_gen, "controls task", priority = 3, period = 20, profile = True, trace=False )
-    obj_task            = cotask.Task(obj_gen.obj_hit_gen, "object task", priority = 2, period = 20, profile = True, trace=False  )
+    obj_task            = cotask.Task(obj_gen.obj_hit_gen, "object task", priority = 2, period = 40, profile = True, trace=False  )
 
 
     # add tasks to task list
