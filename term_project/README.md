@@ -4,10 +4,10 @@
 #### California Polytechnic State University, San Luis Obispo
 
 ## <u>Overview</u>
-Girlfriend #2 is a line following robot designed to follow a course designed specifically for the term project competition. Our design emphasizes simplicity and minimalism, as we have found that complexity in mechatronics projects should be avoided if there is a simpler solution. The specific requirements for the project can be found in the [references](#references) section
+Girlfriend #2 is a line following robot designed to follow a course designed specifically for the term project competition. Our design emphasizes simplicity and minimalism, as we have found that complexity in mechatronics projects should be avoided if there is a simpler solution. The specific requirements for the project can be found in the [references](#references) section.
 
 ![Photo of Girlfriend #2](./Screen%20Shot%202023-12-14%20at%2012.36.21%20PM.png)
-
+![CAD Render of Girlfriend #2](./robot.JPG)
 ## <u>Hardware Setup and Design</u>
 The components that we were provided with were the following: 
 - [Romi Robot Kit](https://www.pololu.com/category/202/romi-chassis-and-accessories)
