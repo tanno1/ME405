@@ -10,7 +10,7 @@ Girlfriend #2 is a line following robot designed to follow a course designed spe
 
 ## <u>Hardware Setup and Design</u>
 The components that we were provided with were the following: 
-- [Romi robot kit](https://www.pololu.com/category/202/romi-chassis-and-accessories)
+- [Romi Robot Kit](https://www.pololu.com/category/202/romi-chassis-and-accessories)
 - [Motor Driver and Power Distribution Board]( https://www.pololu.com/product/3543)
 - [Romi Encoder Pair Kit](https://www.pololu.com/product/3542)
 - [Nucleo-L476RG](https://www.st.com/en/evaluation-tools/nucleo-l476rg.html)
