@@ -15,6 +15,7 @@ The components that we were provided with were the following:
 - [Romi Encoder Pair Kit](https://www.pololu.com/product/3542)
 - [Nucleo-L476RG](https://www.st.com/en/evaluation-tools/nucleo-l476rg.html)
 - Shoe of Brian (Designed by Professor Ridgley)
+- BNO055 IMU Breakout Board
 - Assembly Items
     | Quantity | Name |
     |----------|------|
@@ -28,10 +29,9 @@ The components that we were provided with were the following:
     | 8x | M2.5 Nylon Lock Nuts |
     | 8x | M2.5 Nylon Washer |
     | 1x | Acrylic Romi-to-Shoe Adapter |
-    | 1x | Romi-to-shoe Power Cable |
+    | 1x | Romi-to-Shoe Power Cable |
     | 2x | Romi-to-Shoe Encoder Cable |
     | 2x | Romi-to-shoe Motor Cable |
-- BNO055 IMU Breakout Board
 
 Prior to the addition of our other components, the base model of the robot was assembled based on the instructions that can be found in the [references](#references) section.
 
@@ -41,7 +41,7 @@ With the base of the project built, in order to complete the term project requir
 - [Snap-Action Switch with Roller](https://www.pololu.com/product/1404)
 - [Duracell AA battery x40](https://www.costco.com/duracell-coppertop-alkaline-aa-batteries%2C-40-count.product.100836545.html)
 
-The Reflectance sensors were attatched using 3 leftover M2.5 x 8mm standoffs, and 3 M2.5 Nylon Lock Nuts. They were directly fastened into holes on the Romi Chasis on the front. For the snap-action switch implementation, a custom 3D printed part was designed to hold the switch out front of the robot. Various cables for sensor outputs and power were made from wire and pin headers that were provided by professor Refvem. A detailed wiring layout can be found in the [excel](#references) sheet.
+The Reflectance sensors were attached using 3 leftover M2.5 x 8mm standoffs, and 3 M2.5 Nylon Lock Nuts. They were directly fastened into holes on the Romi Chasis on the front. For the snap-action switch implementation, a custom 3D printed part was designed to hold the switch out front of the robot. Various cables for sensor outputs and power were made from wire and pin headers that were provided by professor Refvem. A detailed wiring layout can be found in the [excel](#references) sheet.
 
 ## <u>Software Setup and Design</u>
 Table 1 shows the files required to run our robot and a short description of what each file does. 
