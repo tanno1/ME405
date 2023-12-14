@@ -60,7 +60,7 @@ Table 1 shows the files required to run our robot and a short description of wha
 | ```cotask.py``` | task scheduler file written by Professor Ridgley |
 | ```cal_coeff.txt``` | calibration coefficient file for the imu |
 
-Girlfriend #2 works through the usage of 3 different generator functions, and 8 support files that are scheduled in a main file using ```cotask.py```. Each generator function is designed as a finite state machine that runs cooperatively, yielding its current state after each execution, switching between states when certain conditions have been met. Through testing, task frequencies were determined. Finite state machines 
+Girlfriend #2 works through the usage of 3 different generator functions, and 8 support files that are scheduled in a main file using ```cotask.py```. Each generator function is designed as a finite state machine that runs cooperatively, yielding its current state after each execution, switching between states when certain conditions have been met. Through testing and utilizing the cotask class, task frequencies were determined that were slightly above the average execution time for each task, allowing them to run as quick as possible, without risking late executions and subsequent errors that could stem from that.
 #### Task Diagram
 
 #### Finite State Machines

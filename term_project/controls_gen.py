@@ -24,6 +24,7 @@ def line_follow_gen():
     state       = 'S0_LOOP'
     abyss_count = 0
     wall        = 0
+    finish      = 0
 
     while True:
 
@@ -44,6 +45,10 @@ def line_follow_gen():
                     if (abyss_count >= 50) and (wall == 1):
                         controls.stop()
                         state = 'GO_HOME'
+                        ang_ref = imu.imu_obj.euler()[0]
+                        finish = 1
+                    elif (abyss_count >= 50) and (wall == 1) and (finish == 1):
+                        controls.stop()
                 else:
                     abyss_count = 0
                     centroid        = controls.calc_centroid()
@@ -76,6 +81,30 @@ def line_follow_gen():
                 wall = 1
         
         if state == 'GO_HOME':
-            controls.stop()
+            ang = imu.imu_obj.euler()[0]
+            controls.pivot_left(15)
+            diff = obj_gen.py.normalize_angle(ang, ang_ref)
+            if abs(diff) >= 160:
+                controls.stop()
+                state = 'FIND_HOME_LINE'
+        
+        if state == 'FIND_HOME_LINE':
+            sensor_vals = controls.read()
+            if all(value < 500 for value in sensor_vals):
+                controls.forward(17, 15)
+            else:
+                controls.stop()
+                state = 'FINAL_LEFT'
+                ang_ref = imu.imu_obj.euler()[0]
+        
+        if state == 'FINAL_LEFT':
+            ang = imu.imu_obj.euler()[0]
+            controls.pivot_right(15)
+            diff = normalize_angle(ang, ang_ref)
+            if abs(diff) >= 80:
+                controls.stop()
+                state = 'S0_LOOP'
+            else:
+                continue
 
         yield(state)
