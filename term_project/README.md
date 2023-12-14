@@ -3,12 +3,12 @@
 #### ME 405, Professor Charlie Refvem
 #### California Polytechnic State University, San Luis Obispo
 
-## Overview
+## <u>Overview</u>
 Girlfriend #2 is a line following robot designed to follow a course designed specifically for the term project competition. Our design emphasizes simplicity and minimalism, as we have found that complexity in mechatronics projects should be avoided if there is a simpler solution. The specific requirements for the project can be found in the [references](#references) section
 
 *INSERT PHOTO OF ROBOT*
 
-## Hardware Setup and Design
+## <u>Hardware Setup and Design</u>
 The components that we were provided with were the following: 
 - [Romi robot kit](https://www.pololu.com/category/202/romi-chassis-and-accessories)
 - [Motor Driver and Power Distribution Board]( https://www.pololu.com/product/3543)
@@ -43,9 +43,8 @@ With the base of the project built, in order to complete the term project requir
 
 The Reflectance sensors were attatched using 3 leftover M2.5 x 8mm standoffs, and 3 M2.5 Nylon Lock Nuts. They were directly fastened into holes on the Romi Chasis on the front. For the snap-action switch implementation, a custom 3D printed part was designed to hold the switch out front of the robot. Various cables for sensor outputs and power were made from wire and pin headers that were provided by professor Refvem. A detailed wiring layout can be found in the [excel](#references) sheet.
 
-## Software Setup and Design
+## <u>Software Setup and Design</u>
 Table 1 shows the files required to run our robot and a short description of what each file does. 
-#### Table 1.
 | File Name | Description |
 |-----------|-------------|
 | ```encoder_class.py``` | encoder class to operate the romi encoders |
@@ -60,18 +59,40 @@ Table 1 shows the files required to run our robot and a short description of wha
 | ```cotask.py``` | task scheduler file written by Professor Ridgley |
 | ```cal_coeff.txt``` | calibration coefficient file for the imu |
 
+<i><center>Table 1: Required Files</center></i>
 Girlfriend #2 works through the usage of 3 different generator functions, and 8 support files that are scheduled in a main file using ```cotask.py```. Each generator function is designed as a finite state machine that runs cooperatively, yielding its current state after each execution, switching between states when certain conditions have been met. Through testing and utilizing the cotask class, task frequencies were determined that were slightly above the average execution time for each task, allowing them to run as quick as possible, without risking late executions and subsequent errors that could stem from that.
-#### Task Diagram
 
-#### Finite State Machines
+At execution of the ```term_main.py``` file, the first thing the program does is search for a imu calibration coefficients file. Euler angles from the imu are used throughout the object detection program, so if there is no calibraiton coefficient file detected, the robot will enter its calibration state and will not operate until it has completed the BNO055 calibration process at which point it will write the corresponding calibration coefficients to a ```cal_coeff.txt`` file and save it.
 
-## Demonstration
+In order to utilize the task scheduler ```cotask.py```, the next thing the program does is create task objects that intake generator funcitons (from ```controls_gen.py``` and ```obj_gen.py```) as well as priorities and frequencies that can be seen in the [finite state machines](#finite-state-machines) diagrams. Another thing that was added when creating the task objects was setting ```profile = True``` and ```trace = False```. Both of these allow tracking of the execution times of the tasks which proved to be extremely helpful in determining where blocking code was throughout testing. This schedule will run continuously until a KeyboardInterrupt is detected at which point it will exit and print the trace data. 
 
-## Calculations
+Moving deeper into the generator functions, the first generator function is the controls
+generator function, appropriately titled ```line_follow_gen()``` from ```controls_gen.py```. At initialization of the generator function, a few parameters are front and center at the top of the code in lines 19-27. This allowed for quick changing of these values throughout testing. The main parameters of importance here are the threshold, base_speed, kp, ki, and kd. The threshold is a tolerance value that is adjusted to control how "centered" the line was going to be in the control loop. It is discussed more heavily in the ```controls.py``` section [here](#controls). Table 2 below shows the values for each of the parameters that we determined through testing. The standard PID tuning approach was implemented when tuning the robots movement however we were unable to get it to follow the line without any level of jerkiness in the movements. The threshold had a large impact on the cleanliness of the movement, however higher threshold values, which made the movement cleaner, would throw the robot off on the tight turn section and it would not follow the turns very closely.
 
-## Analysis
+In the body of the generator function, there are multiple states that can be seen in the [finite state machine](#controls-generator-finite-state-machine). In the main 'S0_LOOP', the main logic for determing line following is implemented. For the line following to work, the reflectance sensor values, all setup as ADC analog inputs, are read using pyb.read() and stored in a list. That list is iterated through to check the values. If they are all less than 500 (indicating white), the robot will continue moving forward. This had to be implemented so that on the hatched line sections the robot would not continue the last previous movement (left or right), when it got to the end of a hatched section and reached a white part before the next hatched section. If the values are not all less than 500, then that means there is some black deteched and the robot needs to either turn left or right. In order to do this as smoothly as possible, a helper function from the ```controls.py``` file is called which determines the centroid, given the current sensor readings. The calculated centroid is then input along with a reference point (the middle of the array), into the pid_controller() helper function which will calculate a pid_res parameter that will be added or subtracted to each of the wheel base_speeds. The most significant note in the pid controller is that we bound the integral to a maximum of 100 and a mimumum of 100 so that we did not generate integral windup.
 
-## References
+|threshold|base_speed|kp|ki|kd|
+----------|----------|--|--|--|
+|.25|25|3|.02|.03|
+
+<i>Table 2: Parameters</i>
+
+### <u>Finite State Machines</u>
+#### <center>Controls Generator Finite State Machine</center>
+![Controls Generator Finite State Machine](./controls%20gen%20fsm.png)
+#### <center>Object Detection Generator Finite State Machine</center>
+![Object Detection Finite State Machine](./obj_gen%20fsm.png)
+#### <u>Task Diagrams</u>
+#### <center>Term_main.py Task Diagram</center>
+![Main Program Task Diagram](./task%20state%20diagram%20.png)
+
+## <u>Demonstration</u>
+
+## <u>Calculations</u>
+
+## <u>Analysis</u>
+
+## <u>References</u>
 1. [Term Project Assignment](./ME405_2238_Lab_0x06.pdf)
 2. [Romi Assembly Instructions](./ME405_2238_Romi_Assembly.pdf)
 3. [Wiring Spreadsheet](./wiring.xlsx)
