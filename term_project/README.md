@@ -94,6 +94,10 @@ For getting back to the start, we were originally going to use absolute position
 ![Main Program Task Diagram](./task%20state%20diagram%20.png)
 
 ## <u>Demonstration</u>
+<video width="640" height="360" controls>
+  <source src="./IMG_3071.mp4" type="video/quicktime">
+  Your browser does not support the video tag.
+</video>
 
 ## <u>Calculations</u>
 
