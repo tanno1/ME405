@@ -47,17 +47,17 @@ The Reflectance sensors were attached using 3 leftover M2.5 x 8mm standoffs, and
 Table 1 shows the files required to run our robot and a short description of what each file does. 
 | File Name | Description |
 |-----------|-------------|
-| ```encoder_class.py``` | encoder class to operate the romi encoders |
-| ```controls.py``` | robot operation file to control movement and function of the reflectance sensors |
-| ```romi_driver.py``` | motor driver class to operate the romi motor drivers |
-| ```imu_driver.py``` | BNO055 driver class used to get euler angle data from the imu |
-| ```position_calcs.py``` | calcuation file to determine the global positioning of the robot |
-| ```position_tracker.py``` | file to track and record the global positioning of the robot as it moves through the course |
-| ```term_main.py``` | main file that sets up and runs each generator function cooperatively
-| ```controls_gen.py``` | generator implementation of the controls file |
-| ```obj_gen.py``` | object handling generator function to avoid the wall |
-| ```cotask.py``` | task scheduler file written by Professor Ridgley |
-| ```cal_coeff.txt``` | calibration coefficient file for the imu |
+| ```encoder_class.py``` |Updates the encoder value as motor runs and handles timer overflow error, and returns position and velocity values. |
+| ```controls.py``` | Initializes reflectance sensors, each motor, and each motor’s encoder. Sets up PID controller as a callable function. |
+| ```romi_driver.py``` | Motor Driver class to set duty cycles for motors. |
+| ```imu_driver.py``` | BNO055 driver class used to initialize and remap IMU, and get Euler angle data. |
+| ```position_calcs.py``` | Calculation file that uses each wheel's distance traveled to determine the positioning of the robot on global x and y axes. |
+| ```position_tracker.py``` | File to track and record the global positioning of the robot as it moves through the course using geometry. |
+| ```term_main.py``` | Main file that sets up and runs each generator function cooperatively. |
+| ```controls_gen.py``` | Generator function that sets the PID controller values, and sets states to follow the line normally, or to navigate the obstacle when detected by the snap-action switch. |
+| ```obj_gen.py``` | Object handling generator function to navigate around the obstacle by making 90 degrees turns. |
+| ```cotask.py``` | Task scheduler file written by Professor Ridgley. |
+| ```cal_coeff.txt``` | Calibration coefficient file for the IMU containing driver values. |
 
 <i><center>Table 1: Required Files</center></i>
 Girlfriend #2 works through the usage of 3 different generator functions, and 8 support files that are scheduled in a main file using ```cotask.py```. Each generator function is designed as a finite state machine that runs cooperatively, yielding its current state after each execution, switching between states when certain conditions have been met. Through testing and utilizing the cotask class, task frequencies were determined that were slightly above the average execution time for each task, allowing them to run as quick as possible, without risking late executions and subsequent errors.
