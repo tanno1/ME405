@@ -80,10 +80,9 @@ In the body of the generator function, there are multiple states that can be see
 
 The next generator function is the from the 'obj_hit_gen' function from the ```obj_gen.py``` file. This function could have likely been implemented into the controls_gen file as its own states, but for the sake of continuing with our scheduler setup, we kept it as a separate generator function. In the main loop of this function, it simply checks the value of the snap-action switch on the front of the robot and detects if it has hit the wall or not. If it has, then an interstate variable ```flags['OBJ']``` is set to ```True```. At the next run of the ```line_follow_gen()``` task, that flag will be seen as ```True```, and it will enter a waiting state where it the only thing it does it update the encoders and convert the encoder readings to a distance which will be set to the ```flags['CUR_DIST']``` interstate variable that the ```obj_gen.py``` file can read and utilize. The actual object avoidance is hard-coded into 90 degree rotations, and distance-based movements. Each of these rotations and movements is divided as its own state so that there is no blocking code. At each run of the code, the current distance or euler heading angle is determined, and if it corresponds to a 90 degree rotation in the correct direction, or exceeds the distance requirement, then the robot will stop, and set the next state. We originally had some errors with the coding of this section that made it difficult to get exactly back onto the line after the object using strictly angle and distance, so the final state of this object avoidance will head forward until it hits the line again, and then it will turn right slightly, and then continue the main line following program by resetting the ```flags['OBJ']``` to ```False``` and allowing ```line_follow_gen()``` to continue its running.
 
-At the finish, we found that there was a consistent amount of white area detected which caused the robot to go forward in the state where all sensor values were less than 500. Seeing this as an opportunity for stop logic, everytime it enters the state where all sensor values are less than 500, it increments a variable we titled ```abyss_count```. Anytime this variable reaches 50, the robot will stop because it knows it has reached the end. At this point, it will set ```state = 'GO_HOME'``` in ```line_follow_gen()``` , which will use similar logic as the ```obj_gen.py``` file to turn the robot towards the start line again, move forward until it reaches the line, and then turn left, head to the start, and then once again max out the ```abyss_count``` and stop.
+For the original course, at the finish, we found that there was a consistent amount of white area detected which caused the robot to go forward in the state where all sensor values were less than 500. Seeing this as an opportunity for stop logic, everytime it enters the state where all sensor values are less than 500, it increments a variable we titled ```abyss_count```. Anytime this variable reaches 50, the robot will stop because it knows it has reached the end. At this point, it will set ```state = 'GO_HOME'``` in ```line_follow_gen()``` , which will use similar logic as the ```obj_gen.py``` file to turn the robot towards the start line again, move forward until it reaches the line, and then turn left, head to the start, and then once again max out the ```abyss_count``` and stop. To get back to the start, we were originally going to use absolute positioning with the imu; however, we had difficulty in implementing the global positioning. In a future iteration of the robot, removing some of this hardcoding would be the first step in improving the robot, and the imu integration for global positioning would be essential.
 
-For getting back to the start, we were originally going to use absolute positioning with the imu; however, we had difficulty in implementing the global positioning. In a future iteration of the robot, removing some of this hardcoding would be the first step in improving the robot, and the imu integration for global positioning would be essential.
-
+The issue with this logic is that it was slightly hard-coded to fit that first track. In the second day of testing, with the new final track, we tried to implement less hardcoding and optimize the robot to stop at the end based off of the x and y position values. Through the inclusion of an instance of the position_tracking class from ```position_tracker.py```, the distance that the robot had moved was constantly calcuated in each iteration of the ```line_follow_gen()```, regardless of the state. With this logic implemented, we were able to set a stop condition for the robot that would stop it once the object avoidance task had been completed, and it had reached a x value of -29,000. The units were not determined, however we were able to confirm that in reference to the starting position, the x and y travel values based off of encoder readings allowed us to get accurate x, y positions for the robot. Issues with this coding are discussed in [analysis](#analysis).
 ### <u>Finite State Machines</u>
 #### <center>Controls Generator Finite State Machine</center>
 ![Controls Generator Finite State Machine](./controls%20gen%20fsm.png)
@@ -94,14 +93,19 @@ For getting back to the start, we were originally going to use absolute position
 ![Main Program Task Diagram](./task%20state%20diagram%20.png)
 
 ## <u>Demonstration</u>
-<video width="640" height="360" controls>
-  <source src="./IMG_3071.mp4" type="video/quicktime">
-  Your browser does not support the video tag.
-</video>
+Since we cannot include a video file in Markdown, you can [watch the video](https://youtu.be/Cl39gHbn6ug) that we put on youtube. This demonstration video highlights the robot going around the track all the way, avoiding the obstacle, and then ending up at the finish line where it orients itself towards the start again and stops. In the [analysis](#analysis) section, some issues that can clearly be seen in the video are addressed. 
 
 ## <u>Calculations</u>
 
 ## <u>Analysis</u>
+Some issues can be seen within the video, but here is a complete list of all the issues that we have found through our testing. Understanding these shortcomings can allow us to make upgrades to the code in the future, and provide refleciton opportunity for our design and software implementation.
+- the robot does not land squarely in the finish box
+- the robots movement is shaky throughout the track
+- the robot does avoid the box, but is inconsistent and sometimes hits it
+- the robot does not move back to the start, and the final realignment of the imu can be seen in the video as significantly off-axis with the starting angle.
+- the robot x, y position values vary significantly
+
+
 
 ## <u>References</u>
 1. [Term Project Assignment](./ME405_2238_Lab_0x06.pdf)
