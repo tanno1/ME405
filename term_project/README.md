@@ -97,9 +97,10 @@ Since we cannot include a video file in Markdown, you can [watch the video](http
 
 ## <u>Calculations</u>
 ![Global Positioning Hand Calculations](./hand_calcs.png)
-Calculations were based off of a simple turning maneuver about a point.
 
-To implement the analysis, various values are supplied. The wheelbase is a known value, taken from measuring the CAD file. The distance travelled by the right and left wheels are determined by using the encoder counts multiplied by the circumference of the wheels. These three 'knowns' allow to calculate the angle theta, which is the heading change of the robot, and the radius r to the point about which the robot is rotating around. THe r and theta value are used to calculate the change in x and change in y on global axes, which can be added to the x and y value of the robot's center for every small turn. This allows for the robot to track it's position. 
+Calculations were based off of a simple turning maneuver about a point exampple.
+
+To implement the analysis, various values are supplied. The wheelbase is a known value, taken from measuring the CAD file. The distance travelled by the right and left wheels are determined by using the encoder counts multiplied by the circumference of the wheels. These three 'knowns' allow to calculate the angle theta, which is the heading change of the robot, and the radius r to the point about which the robot is rotating around. THe r and theta value are used to calculate the change in x and change in y on global axes, which can be added to the x and y value of the robot's center for every small turn. This allows for the robot to track its position. 
 
 ## <u>Analysis</u>
 Some issues can be seen within the video, but here is a complete list of all the issues that we have found through our testing. Understanding these shortcomings can allow us to make upgrades to the code in the future, and provide refleciton opportunity for our design and software implementation.
