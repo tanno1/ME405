@@ -3,6 +3,16 @@
 #### ME 405 - Professor Refvem
 #### California Polytechnic State University, San Luis Obispo
 
+## <u>Sections</u>
+[Overview](#overview)
+[Hardware Setup and Design](#hardware-setup-and-design)
+[Software Setup and Design](#software-setup-and-design)
+[Finite State Machines](#finite-state-machines)
+[Demonstrations](#demonstrations)_
+[Calculations](#calculations)
+[Analysis](#analysis)
+[References](#references)
+
 ## <u>Overview</u>
 Girlfriend #2 is a line following robot designed to follow a course designed specifically for the term project competition. Our design emphasizes simplicity and minimalism, as we have found that complexity in mechatronics projects should be avoided if there is a simpler solution. The specific requirements for the project can be found in the [references](#references) section.
 
@@ -92,7 +102,7 @@ The issue with this logic is that it was slightly hard-coded to fit that first t
 #### <center>Term_main.py Task Diagram</center>
 ![Main Program Task Diagram](./task%20state%20diagram%20.png)
 
-## <u>Demonstration</u>
+## <u>Demonstrations</u>
 Since we cannot include a video file in Markdown, you can [watch the video](https://youtu.be/Cl39gHbn6ug) that we put on youtube. This demonstration video highlights the robot going around the track all the way, avoiding the obstacle, and then ending up at the finish line where it orients itself towards the start again and stops. In the [analysis](#analysis) section, some issues that can clearly be seen in the video are addressed. 
 
 ## <u>Calculations</u>
