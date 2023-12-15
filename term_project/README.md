@@ -60,6 +60,8 @@ Table 1 shows the files required to run our robot and a short description of wha
 | ```cal_coeff.txt``` | Calibration coefficient file for the IMU containing driver values. |
 
 <i><center>Table 1: Required Files</center></i>
+
+
 Girlfriend #2 works through the usage of 3 different generator functions, and 8 support files that are scheduled in a main file using ```cotask.py```. Each generator function is designed as a finite state machine that runs cooperatively, yielding its current state after each execution, switching between states when certain conditions have been met. Through testing and utilizing the cotask class, task frequencies were determined that were slightly above the average execution time for each task, allowing them to run as quick as possible, without risking late executions and subsequent errors.
 
 At execution of the ```term_main.py``` file, the first thing the program does is search for a imu calibration coefficients file. Euler angles from the imu are used throughout the object detection program, so if there is no calibraiton coefficient file detected, the robot will enter its calibration state and will not operate until it has completed the BNO055 calibration process, at which point it will write the corresponding calibration coefficients to a ```cal_coeff.txt`` file and save it.
