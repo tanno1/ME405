@@ -3,6 +3,26 @@
 #### ME 405 - Professor Refvem
 #### California Polytechnic State University, San Luis Obispo
 
+## <u>Table of Contents</u>
+[Overview](#overview)
+
+[Hardware Setup and Design](#hardware-setup-and-design)
+
+[Software Setup and Design](#software-setup-and-design)
+
+[Finite State Machines](#finite-state-machines)
+
+[Task Diagrams](#task-diagrams)
+
+[Demonstrations](#demonstrations)_
+
+[Calculations](#calculations)
+
+[Analysis](#analysis)
+
+[References](#references)
+
+
 ## <u>Overview</u>
 Girlfriend #2 is a line following robot designed to follow a course designed specifically for the term project competition. Our design emphasizes simplicity and minimalism, as we have found that complexity in mechatronics projects should be avoided if there is a simpler solution. The specific requirements for the project can be found in the [references](#references) section.
 
@@ -83,20 +103,25 @@ The next generator function is the from the 'obj_hit_gen' function from the ```o
 For the original course, at the finish, we found that there was a consistent amount of white area detected which caused the robot to go forward in the state where all sensor values were less than 500. Seeing this as an opportunity for stop logic, everytime it enters the state where all sensor values are less than 500, it increments a variable we titled ```abyss_count```. Anytime this variable reaches 50, the robot will stop because it knows it has reached the end. At this point, it will set ```state = 'GO_HOME'``` in ```line_follow_gen()``` , which will use similar logic as the ```obj_gen.py``` file to turn the robot towards the start line again, move forward until it reaches the line, and then turn left, head to the start, and then once again max out the ```abyss_count``` and stop. To get back to the start, we were originally going to use absolute positioning with the imu; however, we had difficulty in implementing the global positioning. In a future iteration of the robot, removing some of this hardcoding would be the first step in improving the robot, and the imu integration for global positioning would be essential.
 
 The issue with this logic is that it was slightly hard-coded to fit that first track. In the second day of testing, with the new final track, we tried to implement less hardcoding and optimize the robot to stop at the end based off of the x and y position values. Through the inclusion of an instance of the position_tracking class from ```position_tracker.py```, the distance that the robot had moved was constantly calcuated in each iteration of the ```line_follow_gen()```, regardless of the state. With this logic implemented, we were able to set a stop condition for the robot that would stop it once the object avoidance task had been completed, and it had reached a x value of -29,000. The units were not determined, however we were able to confirm that in reference to the starting position, the x and y travel values based off of encoder readings allowed us to get accurate x, y positions for the robot. Issues with this coding are discussed in [analysis](#analysis).
-### <u>Finite State Machines</u>
+## <u>Finite State Machines</u>
 #### <center>Controls Generator Finite State Machine</center>
 ![Controls Generator Finite State Machine](./controls%20gen%20fsm.png)
 #### <center>Object Detection Generator Finite State Machine</center>
 ![Object Detection Finite State Machine](./obj_gen%20fsm.png)
-#### <u>Task Diagrams</u>
+
+## <u>Task Diagrams</u>
 #### <center>Term_main.py Task Diagram</center>
 ![Main Program Task Diagram](./task%20state%20diagram%20.png)
 
-## <u>Demonstration</u>
+## <u>Demonstrations</u>
 Since we cannot include a video file in Markdown, you can [watch the video](https://youtu.be/Cl39gHbn6ug) that we put on youtube. This demonstration video highlights the robot going around the track all the way, avoiding the obstacle, and then ending up at the finish line where it orients itself towards the start again and stops. In the [analysis](#analysis) section, some issues that can clearly be seen in the video are addressed. 
 
 ## <u>Calculations</u>
 ![Global Positioning Hand Calculations](./hand_calcs.png)
+
+Calculations were based off of a simple turning maneuver about a point exampple.
+
+To implement the analysis, various values are supplied. The wheelbase is a known value, taken from measuring the CAD file. The distance travelled by the right and left wheels are determined by using the encoder counts multiplied by the circumference of the wheels. These three 'knowns' allow to calculate the angle theta, which is the heading change of the robot, and the radius r to the point about which the robot is rotating around. THe r and theta value are used to calculate the change in x and change in y on global axes, which can be added to the x and y value of the robot's center for every small turn. This allows for the robot to track its position. 
 
 ## <u>Analysis</u>
 Some issues can be seen within the video, but here is a complete list of all the issues that we have found through our testing. Understanding these shortcomings can allow us to make upgrades to the code in the future, and provide refleciton opportunity for our design and software implementation.
