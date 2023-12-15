@@ -96,6 +96,7 @@ The issue with this logic is that it was slightly hard-coded to fit that first t
 Since we cannot include a video file in Markdown, you can [watch the video](https://youtu.be/Cl39gHbn6ug) that we put on youtube. This demonstration video highlights the robot going around the track all the way, avoiding the obstacle, and then ending up at the finish line where it orients itself towards the start again and stops. In the [analysis](#analysis) section, some issues that can clearly be seen in the video are addressed. 
 
 ## <u>Calculations</u>
+![Global Positioning Hand Calculations](./hand_calcs.png)
 
 ## <u>Analysis</u>
 Some issues can be seen within the video, but here is a complete list of all the issues that we have found through our testing. Understanding these shortcomings can allow us to make upgrades to the code in the future, and provide refleciton opportunity for our design and software implementation.
