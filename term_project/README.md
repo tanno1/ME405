@@ -103,5 +103,5 @@ For getting back to the start, we were originally going to use absolute position
 1. [Term Project Assignment](./ME405_2238_Lab_0x06.pdf)
 2. [Romi Assembly Instructions](./ME405_2238_Romi_Assembly.pdf)
 3. [Wiring Spreadsheet](./wiring.xlsx)
-
+4. [Complete SolidWorks Assembly File](https://1drv.ms/f/s!Ail9YMu9l_GQgcVt14ULjMlydwsFTg?e=Kn2ENl)
 
