@@ -100,6 +100,7 @@ For getting back to the start, we were originally going to use absolute position
 </video>
 
 ## <u>Calculations</u>
+![Global Positioning Hand Calculations](./hand_calcs.png)
 
 ## <u>Analysis</u>
 
