@@ -5,6 +5,7 @@
 '''
 
 import controls
+import imu_driver as imu
 
 flags       = { 'STRAIGHT':     False,
                     'TURN':     False,
@@ -14,6 +15,13 @@ flags       = { 'STRAIGHT':     False,
                     'CUR_DIST': 0,       }
 
 current_dist = 0
+total_deg    = 640
+
+def normalize_angle(ang, ang_ref):
+    diff =(ang - ang_ref) % total_deg
+    if diff > total_deg / 2:
+        diff -= total_deg
+    return diff
 
 def line_follow_gen():
     threshold   = .25
@@ -43,10 +51,11 @@ def line_follow_gen():
                     abyss_count += 1
                     print(abyss_count)
                     if (abyss_count >= 50) and (wall == 1):
-                        controls.stop()
-                        state = 'GO_HOME'
-                        ang_ref = imu.imu_obj.euler()[0]
-                        finish = 1
+                        #controls.stop()
+                        #state = 'GO_HOME'
+                        #ang_ref = imu.imu_obj.euler()[0]
+                        #finish = 1
+                        pass
                     elif (abyss_count >= 50) and (wall == 1) and (finish == 1):
                         controls.stop()
                 else:
@@ -83,7 +92,7 @@ def line_follow_gen():
         if state == 'GO_HOME':
             ang = imu.imu_obj.euler()[0]
             controls.pivot_left(15)
-            diff = obj_gen.py.normalize_angle(ang, ang_ref)
+            diff = normalize_angle(ang, ang_ref)
             if abs(diff) >= 160:
                 controls.stop()
                 state = 'FIND_HOME_LINE'
@@ -101,8 +110,8 @@ def line_follow_gen():
             ang = imu.imu_obj.euler()[0]
             controls.pivot_right(15)
             diff = normalize_angle(ang, ang_ref)
-            if abs(diff) >= 80:
-                controls.stop()
+            if abs(diff) >= 320:
+                controls.forward(17, 15)
                 state = 'S0_LOOP'
             else:
                 continue

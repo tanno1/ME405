@@ -113,7 +113,7 @@ def obj_hit_gen():
             ang = imu.imu_obj.euler()[0]
             controls.pivot_right(15)
             diff = normalize_angle(ang, ang_ref)
-            if abs(diff) >= 80:
+            if abs(diff) >= 70:
                 controls.stop()
                 state = 'DONE'
             else:
