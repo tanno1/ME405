@@ -124,11 +124,7 @@ Since we cannot include a video file in Markdown, you can [watch the video](http
 
 Calculations were based off of a simple turning maneuver with arcs about a point.
 
-<<<<<<< HEAD
 To implement the analysis, various values are supplied. The wheelbase is a known value, taken from measuring the CAD file. The distance travelled by the right and left wheels are determined by using the encoder counts multiplied by the circumference of the wheels. These three 'knowns' allow to calculate the angle theta, which is the heading change of the robot, and the radius r to the point about which the robot is rotating around. THe r and theta value are used to calculate the change in x and change in y on global axes, which can be added to the x and y value of the robot's center for every small turn. This allows for the robot to track its position. 
-=======
-To implement the analysis, various values are supplied. The wheelbase is a known value, taken from measuring the CAD file. The distance traveled by the right and left wheels are determined by using the encoder counts multiplied by the circumference of the wheels. These three 'knowns' allow to calculate the angle theta, which is the heading change of the robot, and the radius r to the point about which the robot is rotating around. The r and theta value are used to calculate the change in x and change in y on global axes, which can be added to the x and y value of the robot's center for every small turn. This allows for the robot to track its position. 
->>>>>>> 2f5c2582721ac7403eb5cd33b66d5939afe87a77
 
 ## <u>Analysis</u>
 Some issues can be seen within the video, but here is a complete list of all the issues that we have found through our testing. Understanding these shortcomings can allow us to make upgrades to the code in the future, and provide ample reflection opportunity for our design and software implementation.
